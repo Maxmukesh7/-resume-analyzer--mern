@@ -94,8 +94,67 @@ npm run dev:client
 ---
 
 ## Project Phases
-- **Phase 1**: Initial Project Architecture Setup, Decoupled Folders, Database Config, and Server initialization. (Current)
-- **Phase 2**: Authentication & User Management (JWT, bcrypt). (Future)
-- **Phase 3**: Resume Upload (Multer) & PDF Text Extraction. (Future)
-- **Phase 4**: AI Integration (Gemini/OpenAI Analysis). (Future)
-- **Phase 5**: UI Dashboard, Analytics & Styling. (Future)
+- **Phase 1**: Decoupled MERN Folder Setup, Database Configuration, and Initial Server. (Completed)
+- **Phase 2**: Landing Page UI Construction & Responsive Design. (Completed)
+- **Phase 3**: Single Page Single-Page App Core Components & Workspace Dashboards. (Completed)
+- **Phase 4**: Production-Ready Express Backend Foundation & API Route Frameworks. (Current)
+- **Phase 5**: Database Integration, JWT Authentication, and Live Parser Connections. (Future)
+
+---
+
+## API Documentation
+
+All routes are prefixed with `/api`.
+
+### 1. Authentication Routes (`/api/auth`)
+*   `POST /auth/register`: Create a new user account.
+    *   **Payload**: `{ "name": "...", "email": "...", "password": "..." }`
+    *   **Response**: `201 Created`
+*   `POST /auth/login`: Authenticate email and credentials.
+    *   **Payload**: `{ "email": "...", "password": "..." }`
+    *   **Response**: `200 OK`
+*   `POST /auth/forgot-password`: Dispatch a password reset link.
+    *   **Payload**: `{ "email": "..." }`
+    *   **Response**: `200 OK`
+*   `POST /auth/reset-password/:token`: Reset account password.
+    *   **Payload**: `{ "password": "..." }`
+    *   **Response**: `200 OK`
+
+### 2. User Management Routes (`/api/users`)
+*   `GET /users/profile`: Fetch current user details.
+    *   **Response**: `200 OK`
+*   `PUT /users/profile`: Modify user settings.
+    *   **Payload**: `{ "name": "...", "email": "..." }` (Optional fields)
+    *   **Response**: `200 OK`
+*   `PUT /users/settings`: Change application display/notifications preferences.
+    *   **Payload**: `{ "darkMode": true, "theme": "..." }`
+    *   **Response**: `200 OK`
+
+### 3. Resume History Routes (`/api/resume`)
+*   `GET /resume/history`: Get list of user's resume uploads (supports `?page=...&limit=...` query parameters).
+    *   **Response**: `200 OK`
+*   `GET /resume/:id`: Retrieve single resume meta parameters.
+    *   **Response**: `200 OK`
+*   `DELETE /resume/:id`: Remove scan entry log from user database.
+    *   **Response**: `200 OK`
+
+### 4. File Upload Routes (`/api/upload`)
+*   `POST /upload`: Upload single document (PDF/DOCX) using Multipart Form-Data.
+    *   **Form Param**: `resume` (File)
+    *   **Response**: `201 Created`
+
+### 5. Diagnostics Routes (`/api/analysis`)
+*   `POST /analysis/scan`: Run AI diagnostic parser scan over resume.
+    *   **Payload**: `{ "resumeId": "..." }`
+    *   **Response**: `200 OK`
+*   `GET /analysis/report/:id`: Retrieve structured diagnostic score records.
+    *   **Response**: `200 OK`
+
+### 6. Stats Dashboard Routes (`/api/dashboard`)
+*   `GET /dashboard/stats`: Retrieve user's activity numbers and score histories.
+    *   **Response**: `200 OK`
+
+### 7. Administrative Routes (`/api/admin`)
+*   `GET /admin/stats`: Admin portal overview.
+    *   **Response**: `200 OK`
+
