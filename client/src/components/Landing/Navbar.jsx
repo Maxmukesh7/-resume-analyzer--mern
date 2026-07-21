@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes, FaRobot } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,11 +21,11 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Features', href: '#features' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Home', href: '/' },
+    { name: 'Features', href: '/#features' },
+    { name: 'How It Works', href: '/#how-it-works' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -37,14 +39,14 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <div className="p-2 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl text-white shadow-[0_0_15px_rgba(37,99,235,0.3)]">
               <FaRobot size={22} className="group-hover:rotate-12 transition-transform duration-300" />
             </div>
             <span className="text-xl font-extrabold text-white tracking-wide bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
               AI Resume <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Analyzer</span>
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
@@ -61,10 +63,16 @@ export default function Navbar() {
 
           {/* Desktop Call to Actions */}
           <div className="hidden md:flex items-center gap-4">
-            <button className="px-5 py-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200">
+            <button 
+              onClick={() => navigate('/login')}
+              className="px-5 py-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors duration-200 cursor-pointer"
+            >
               Login
             </button>
-            <button className="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl shadow-[0_4px_20px_rgba(79,70,229,0.3)] hover:shadow-[0_4px_25px_rgba(79,70,229,0.5)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0">
+            <button 
+              onClick={() => navigate('/register')}
+              className="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl shadow-[0_4px_20px_rgba(79,70,229,0.3)] hover:shadow-[0_4px_25px_rgba(79,70,229,0.5)] transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+            >
               Get Started
             </button>
           </div>
@@ -91,18 +99,15 @@ export default function Navbar() {
             className="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-lg flex flex-col justify-center items-center md:hidden"
           >
             <div className="flex flex-col gap-6 text-center">
-              {navLinks.map((link, idx) => (
-                <motion.a
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
+              {navLinks.map((link) => (
+                <a
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
                   className="text-2xl font-bold text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   {link.name}
-                </motion.a>
+                </a>
               ))}
 
               <motion.div
@@ -112,14 +117,20 @@ export default function Navbar() {
                 className="flex flex-col gap-4 mt-8 w-64"
               >
                 <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-full py-3 text-slate-300 hover:text-white font-semibold border border-slate-800 rounded-xl bg-slate-900/40"
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/login');
+                  }}
+                  className="w-full py-3 text-slate-300 hover:text-white font-semibold border border-slate-800 rounded-xl bg-slate-900/40 cursor-pointer"
                 >
                   Login
                 </button>
                 <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-white font-bold shadow-lg"
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/register');
+                  }}
+                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 rounded-xl text-white font-bold shadow-lg cursor-pointer"
                 >
                   Get Started
                 </button>
