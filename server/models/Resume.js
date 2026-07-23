@@ -34,6 +34,41 @@ const resumeSchema = new mongoose.Schema(
     status: {
       type: String,
       default: 'uploaded'
+    },
+    parsedText: {
+      type: String,
+      default: ''
+    },
+    parsedData: {
+      type: Object,
+      default: () => ({
+        fullName: '',
+        email: '',
+        phone: '',
+        skills: [],
+        education: [],
+        experience: [],
+        projects: [],
+        certifications: [],
+        languages: [],
+        linkedin: '',
+        github: '',
+        portfolio: '',
+        location: ''
+      })
+    },
+    parsedAt: {
+      type: Date,
+      default: null
+    },
+    parseStatus: {
+      type: String,
+      enum: ['pending', 'parsing', 'parsed', 'failed'],
+      default: 'pending'
+    },
+    parseError: {
+      type: String,
+      default: ''
     }
   },
   {

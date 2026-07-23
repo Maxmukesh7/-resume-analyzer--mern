@@ -53,3 +53,50 @@ export const deleteResume = async (id) => {
   const response = await api.delete(`/resumes/${id}`);
   return response.data;
 };
+
+/**
+ * Trigger or re-run resume text and candidate parsing
+ * @param {string} id 
+ * @param {boolean} [force] 
+ */
+export const parseResume = async (id, force = false) => {
+  const response = await api.post(`/resumes/${id}/parse`, { force });
+  return response.data;
+};
+
+/**
+ * Get parsed candidate details for a resume
+ * @param {string} id 
+ */
+export const getParsedResume = async (id) => {
+  const response = await api.get(`/resumes/${id}/parsed`);
+  return response.data;
+};
+
+/**
+ * Get extracted raw text for a resume
+ * @param {string} id 
+ */
+export const getResumeText = async (id) => {
+  const response = await api.get(`/resumes/${id}/text`);
+  return response.data;
+};
+
+/**
+ * Trigger ATS resume evaluation scoring engine (0-100)
+ * @param {string} id 
+ * @param {boolean} [force] 
+ */
+export const analyzeResume = async (id, force = false) => {
+  const response = await api.post(`/resumes/${id}/analyze`, { force });
+  return response.data;
+};
+
+/**
+ * Get cached ATS evaluation report for a resume
+ * @param {string} id 
+ */
+export const getResumeAnalysis = async (id) => {
+  const response = await api.get(`/resumes/${id}/analysis`);
+  return response.data;
+};

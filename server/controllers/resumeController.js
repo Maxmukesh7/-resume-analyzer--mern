@@ -4,10 +4,12 @@ import Resume from '../models/Resume.js';
 import asyncHandler from '../middleware/asyncHandler.js';
 import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
+import { parseAndSaveResume } from '../services/resumeParserService.js';
+import { evaluateResumeAts } from '../services/atsEngineService.js';
 
 /**
- * @desc    Upload a resume file (PDF/DOCX)
- * @route   POST /api/resume/upload
+ * @desc    Upload a resume file (PDF/DOC/DOCX) and automatically parse text & candidate details
+ * @route   POST /api/resumes/upload
  * @access  Private
  */
 export const uploadResume = asyncHandler(async (req, res) => {
@@ -18,7 +20,7 @@ export const uploadResume = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Please select a valid resume file (PDF, DOC, or DOCX) to upload.');
   }
 
-  const resume = await Resume.create({
+  let resume = await Resume.create({
     user: req.user._id,
     originalName: req.file.originalname,
     fileName: req.file.filename,
@@ -26,13 +28,21 @@ export const uploadResume = asyncHandler(async (req, res) => {
     fileSize: req.file.size,
     uploadPath: req.file.path,
     uploadDate: new Date(),
-    status: 'uploaded'
+    status: 'uploaded',
+    parseStatus: 'pending'
   });
+
+  // Automatically trigger parsing after successful upload
+  try {
+    resume = await parseAndSaveResume(resume._id, true);
+  } catch (err) {
+    console.warn('⚠️ Automated parsing warning on upload:', err.message);
+  }
 
   return successResponse(
     res,
     resume,
-    'Resume uploaded and saved successfully.',
+    'Resume uploaded and parsed successfully.',
     201
   );
 });
@@ -117,5 +127,129 @@ export const deleteResume = asyncHandler(async (req, res) => {
     res,
     { id },
     'Resume deleted successfully from storage and database.'
+  );
+});
+
+/**
+ * @desc    Trigger/Re-run resume text & detail parsing
+ * @route   POST /api/resumes/:id/parse
+ * @access  Private
+ */
+export const parseResume = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const resume = await Resume.findById(id);
+
+  if (!resume) {
+    throw new ApiError(404, 'Resume not found.');
+  }
+
+  if (resume.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'Access denied. You do not have permission to parse this resume.');
+  }
+
+  const updatedResume = await parseAndSaveResume(id, req.body?.force === true);
+
+  return successResponse(
+    res,
+    updatedResume,
+    'Resume parsed successfully.'
+  );
+});
+
+/**
+ * @desc    Get parsed candidate details for a specific resume
+ * @route   GET /api/resumes/:id/parsed
+ * @access  Private
+ */
+export const getParsedResume = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const resume = await Resume.findById(id);
+
+  if (!resume) {
+    throw new ApiError(404, 'Resume not found.');
+  }
+
+  if (resume.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'Access denied.');
+  }
+
+  // If not parsed yet, trigger parsing
+  if (resume.parseStatus !== 'parsed' || !resume.parsedData?.fullName) {
+    const updated = await parseAndSaveResume(id, false);
+    return successResponse(res, updated.parsedData, 'Parsed resume data retrieved successfully.');
+  }
+
+  return successResponse(
+    res,
+    resume.parsedData,
+    'Parsed resume data retrieved successfully.'
+  );
+});
+
+/**
+ * @desc    Get extracted raw text for a specific resume
+ * @route   GET /api/resumes/:id/text
+ * @access  Private
+ */
+export const getResumeText = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const resume = await Resume.findById(id);
+
+  if (!resume) {
+    throw new ApiError(404, 'Resume not found.');
+  }
+
+  if (resume.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'Access denied.');
+  }
+
+  if (!resume.parsedText && resume.parseStatus !== 'failed') {
+    const updated = await parseAndSaveResume(id, false);
+    return successResponse(
+      res,
+      { rawText: updated.parsedText, textLength: updated.parsedText?.length || 0 },
+      'Extracted raw text retrieved successfully.'
+    );
+  }
+
+  return successResponse(
+    res,
+    { rawText: resume.parsedText, textLength: resume.parsedText?.length || 0 },
+    'Extracted raw text retrieved successfully.'
+  );
+});
+
+/**
+ * @desc    Analyze a resume using ATS Evaluation Engine (0-100 score)
+ * @route   POST /api/resumes/:id/analyze
+ * @access  Private
+ */
+export const analyzeResume = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const force = req.body?.force === true;
+
+  const analysis = await evaluateResumeAts(id, req.user._id, force);
+
+  return successResponse(
+    res,
+    analysis,
+    'ATS resume evaluation generated successfully.'
+  );
+});
+
+/**
+ * @desc    Get cached ATS analysis report for a resume
+ * @route   GET /api/resumes/:id/analysis
+ * @access  Private
+ */
+export const getResumeAnalysis = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const analysis = await evaluateResumeAts(id, req.user._id, false);
+
+  return successResponse(
+    res,
+    analysis,
+    'ATS evaluation report retrieved successfully.'
   );
 });

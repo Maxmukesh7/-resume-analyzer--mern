@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaFileAlt, FaInfoCircle, FaTrash, FaChevronLeft, FaChevronRight, FaSpinner } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Badge from '../../components/Common/Badge';
@@ -16,6 +17,7 @@ export default function ResumeHistory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const itemsPerPage = 5;
 
@@ -58,8 +60,10 @@ export default function ResumeHistory() {
   }, [filteredResumes, currentPage]);
 
   const handleViewDetails = (resume) => {
-    setSelectedResume(resume);
-    setIsModalOpen(true);
+    const itemId = resume._id || resume.id;
+    if (itemId) {
+      navigate(`/dashboard/resume/${itemId}`);
+    }
   };
 
   const handleDelete = async (id, fileName) => {
@@ -196,6 +200,14 @@ export default function ResumeHistory() {
                       </td>
                       <td className="px-6 py-4.5 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => navigate(`/dashboard/report?id=${itemId}`)}
+                            className="p-2 text-xs font-semibold rounded-lg text-purple-400 hover:text-white hover:bg-purple-600/10 border border-purple-500/20 transition-all flex items-center gap-1.5"
+                            title="View ATS Evaluation Report"
+                          >
+                            <FaInfoCircle size={12} />
+                            <span className="hidden sm:inline">ATS Score</span>
+                          </button>
                           <button
                             onClick={() => handleViewDetails(item)}
                             className="p-2 text-xs font-semibold rounded-lg text-blue-400 hover:text-white hover:bg-blue-600/10 border border-blue-500/20 transition-all flex items-center gap-1.5"

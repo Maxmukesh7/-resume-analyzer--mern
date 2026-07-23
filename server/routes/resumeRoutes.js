@@ -6,7 +6,12 @@ import {
   uploadResume,
   getResumes,
   getResumeDetails,
-  deleteResume
+  deleteResume,
+  parseResume,
+  getParsedResume,
+  getResumeText,
+  analyzeResume,
+  getResumeAnalysis
 } from '../controllers/resumeController.js';
 import ApiError from '../utils/apiError.js';
 
@@ -43,5 +48,20 @@ router.get('/:id', getResumeDetails);
 
 // Route: Delete Resume by ID
 router.delete('/:id', deleteResume);
+
+// Route: Trigger/Re-run Resume parsing
+router.post('/:id/parse', parseResume);
+
+// Route: Get Parsed Candidate details
+router.get('/:id/parsed', getParsedResume);
+
+// Route: Get Raw Extracted Resume text
+router.get('/:id/text', getResumeText);
+
+// Route: Analyze Resume with ATS Engine
+router.post('/:id/analyze', analyzeResume);
+
+// Route: Get ATS Analysis Report
+router.get('/:id/analysis', getResumeAnalysis);
 
 export default router;
