@@ -9,7 +9,8 @@ import {
   FaCog, 
   FaSignOutAlt, 
   FaRobot,
-  FaTimes
+  FaTimes,
+  FaBriefcase
 } from 'react-icons/fa';
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -21,6 +22,7 @@ export default function Sidebar({ isOpen, onClose }) {
     { name: 'Resume History', path: '/dashboard/history', icon: <FaHistory size={18} /> },
     { name: 'ATS Reports', path: '/dashboard/report', icon: <FaChartBar size={18} /> },
     { name: 'AI Insights', path: '/dashboard/ai-analysis', icon: <FaRobot size={18} /> },
+    { name: 'Job Match', path: '/dashboard/job-match', icon: <FaBriefcase size={18} /> },
     { name: 'Profile', path: '/dashboard/profile', icon: <FaUser size={18} /> },
     { name: 'Settings', path: '/dashboard/settings', icon: <FaCog size={18} /> },
   ];

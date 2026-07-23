@@ -1,0 +1,34 @@
+%PDF-1.4
+1 0 obj <</Type /Catalog /Pages 2 0 R>> endobj
+2 0 obj <</Type /Pages /Kids [3 0 R] /Count 1>> endobj
+3 0 obj <</Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources <</Font <</F1 5 0 R>>>>>> endobj
+4 0 obj <</Length 250>> stream
+BT
+/F1 12 Tf
+100 700 Td
+(David Miller | Senior Frontend Engineer) Tj
+0 -20 Td
+(david.miller@example.com | +1 555-8888 | Seattle, WA) Tj
+0 -20 Td
+(Skills: JavaScript, TypeScript, React, HTML, CSS, Tailwind, Redux, Git) Tj
+0 -20 Td
+(Education: Bachelor of Science in Software Engineering - University of Washington) Tj
+0 -20 Td
+(Experience: Developed responsive React web apps, optimized load speed by 30%.) Tj
+0 -20 Td
+(Projects: Built interactive dashboard app using React and Tailwind CSS.) Tj
+ET
+endstream endobj
+5 0 obj <</Type /Font /Subtype /Type1 /BaseFont /Helvetica>> endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000244 00000 n 
+0000000545 00000 n 
+trailer <</Size 6 /Root 1 0 R>>
+startxref
+614
+%%EOF

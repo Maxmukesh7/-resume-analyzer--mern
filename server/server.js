@@ -25,6 +25,7 @@ import analysisRoutes from './routes/analysisRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import jobMatchRoutes from './routes/jobMatch.routes.js';
 
 // Load env variables
 dotenv.config();
@@ -94,6 +95,7 @@ app.use('/api/analysis', analysisRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/job-match', jobMatchRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
