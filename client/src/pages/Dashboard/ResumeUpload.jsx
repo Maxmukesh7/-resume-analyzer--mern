@@ -53,16 +53,18 @@ export default function ResumeUpload() {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
+      console.log('selected file:', selectedFile);
       validateAndSelectFile(selectedFile);
     }
   };
 
   const validateAndSelectFile = (selectedFile) => {
+    console.log('selected file:', selectedFile);
     const name = selectedFile.name.toLowerCase();
-    const isValidExtension = name.endsWith('.pdf') || name.endsWith('.docx');
+    const isValidExtension = name.endsWith('.pdf') || name.endsWith('.doc') || name.endsWith('.docx');
 
     if (!isValidExtension) {
-      showToast('Invalid file format. Only PDF (.pdf) and DOCX (.docx) files are allowed.', 'error');
+      showToast('Invalid file format. Only PDF (.pdf), DOC (.doc), and DOCX (.docx) files are allowed.', 'error');
       return;
     }
 
@@ -76,7 +78,7 @@ export default function ResumeUpload() {
     setUploaded(false);
   };
 
-  const handleRemoveFile = () => {
+  const handleRemoveFile = (quiet = false) => {
     setFile(null);
     setUploadProgress(0);
     setUploading(false);
@@ -84,7 +86,9 @@ export default function ResumeUpload() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    showToast('File removed.', 'info');
+    if (!quiet) {
+      showToast('File removed.', 'info');
+    }
   };
 
   const handleUploadSubmit = async () => {
@@ -93,11 +97,15 @@ export default function ResumeUpload() {
       return;
     }
 
+    console.log('selected file:', file);
+
     setUploading(true);
     setUploadProgress(0);
 
     const formData = new FormData();
     formData.append('resume', file);
+
+    console.log('FormData file:', formData.get('resume'));
 
     try {
       await uploadResume(formData, (progress) => {
@@ -108,6 +116,10 @@ export default function ResumeUpload() {
       setUploaded(true);
       setUploadProgress(100);
       showToast('Resume uploaded successfully!', 'success');
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (error) {
       setUploading(false);
       const errorMessage = error.response?.data?.message || 'Failed to upload resume. Please try again.';
@@ -116,7 +128,10 @@ export default function ResumeUpload() {
   };
 
   const triggerFileInput = () => {
-    fileInputRef.current.click();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    fileInputRef.current?.click();
   };
 
   const getFileIcon = (fileName) => {
@@ -139,7 +154,7 @@ export default function ResumeUpload() {
       <div>
         <h1 className="text-2xl font-extrabold text-white tracking-wide">Upload Resume</h1>
         <p className="text-slate-450 text-xs mt-1.5 font-semibold">
-          Upload your resume in PDF or DOCX format (Max size: 5MB).
+          Upload your resume in PDF, DOC, or DOCX format (Max size: 5MB).
         </p>
       </div>
 
@@ -148,7 +163,7 @@ export default function ResumeUpload() {
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
-          accept=".pdf,.docx"
+          accept=".pdf,.doc,.docx"
           className="hidden"
         />
 
@@ -175,9 +190,11 @@ export default function ResumeUpload() {
               <p className="text-xs text-slate-500 font-semibold mt-1">or click to browse local files</p>
             </div>
             <div className="border border-slate-800/80 bg-slate-900/60 rounded-xl px-4 py-1.5 mt-2 flex gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-              <span>PDF Supported (.pdf)</span>
+              <span>PDF (.pdf)</span>
               <span className="text-slate-700">|</span>
-              <span>DOCX Supported (.docx)</span>
+              <span>DOC (.doc)</span>
+              <span className="text-slate-700">|</span>
+              <span>DOCX (.docx)</span>
               <span className="text-slate-700">|</span>
               <span>Max 5 MB</span>
             </div>
@@ -277,7 +294,7 @@ export default function ResumeUpload() {
                 ) : (
                   <>
                     <Button
-                      onClick={handleRemoveFile}
+                      onClick={() => handleRemoveFile(true)}
                       variant="outline"
                       className="flex-1"
                     >

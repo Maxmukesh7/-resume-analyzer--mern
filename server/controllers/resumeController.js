@@ -11,8 +11,11 @@ import { successResponse } from '../utils/apiResponse.js';
  * @access  Private
  */
 export const uploadResume = asyncHandler(async (req, res) => {
+  console.log('req.file:', req.file);
+  console.log('req.file.originalname:', req.file?.originalname);
+
   if (!req.file) {
-    throw new ApiError(400, 'Please select a valid resume file (PDF or DOCX) to upload.');
+    throw new ApiError(400, 'Please select a valid resume file (PDF, DOC, or DOCX) to upload.');
   }
 
   const resume = await Resume.create({
@@ -23,7 +26,7 @@ export const uploadResume = asyncHandler(async (req, res) => {
     fileSize: req.file.size,
     uploadPath: req.file.path,
     uploadDate: new Date(),
-    status: 'Uploaded'
+    status: 'uploaded'
   });
 
   return successResponse(
@@ -40,6 +43,10 @@ export const uploadResume = asyncHandler(async (req, res) => {
  * @access  Private
  */
 export const getResumes = asyncHandler(async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   const resumes = await Resume.find({ user: req.user._id }).sort({ uploadDate: -1 });
 
   return successResponse(

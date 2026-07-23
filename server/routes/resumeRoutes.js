@@ -32,6 +32,7 @@ const handleUpload = (req, res, next) => {
 router.use(authenticateUser);
 
 // Route: Upload single resume file
+router.post('/', handleUpload, uploadResume);
 router.post('/upload', handleUpload, uploadResume);
 
 // Route: Get all resumes for authenticated user

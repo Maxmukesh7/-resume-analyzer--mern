@@ -27,9 +27,10 @@ const storage = multer.diskStorage({
 
 // Extension and Mimetype Filter
 const fileFilter = (req, file, cb) => {
-  const allowedExtensions = ['.pdf', '.docx'];
+  const allowedExtensions = ['.pdf', '.doc', '.docx'];
   const allowedMimeTypes = [
     'application/pdf',
+    'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   ];
 
@@ -40,7 +41,7 @@ const fileFilter = (req, file, cb) => {
   if (isValidExt && isValidMime) {
     cb(null, true);
   } else {
-    cb(new ApiError(400, 'Unsupported file format. Only PDF and DOCX files are allowed!'), false);
+    cb(new ApiError(400, 'Unsupported file format. Only PDF (.pdf), DOC (.doc), and DOCX (.docx) files are allowed!'), false);
   }
 };
 

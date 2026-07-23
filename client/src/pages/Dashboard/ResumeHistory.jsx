@@ -101,10 +101,14 @@ export default function ResumeHistory() {
   };
 
   const getFileTypeLabel = (fileType, originalName) => {
-    if (fileType?.includes('pdf') || originalName?.toLowerCase().endsWith('.pdf')) {
+    const lowerName = originalName?.toLowerCase() || '';
+    if (fileType?.includes('pdf') || lowerName.endsWith('.pdf')) {
       return 'PDF';
     }
-    if (fileType?.includes('word') || fileType?.includes('document') || originalName?.toLowerCase().endsWith('.docx')) {
+    if (fileType?.includes('msword') || lowerName.endsWith('.doc')) {
+      return 'DOC';
+    }
+    if (fileType?.includes('word') || fileType?.includes('document') || lowerName.endsWith('.docx')) {
       return 'DOCX';
     }
     return 'FILE';
