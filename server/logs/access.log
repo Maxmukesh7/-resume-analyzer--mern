@@ -214,3 +214,8 @@
 [2026-07-23T06:22:54.753Z] OPTIONS /api/resumes?_t=1784787774741 204 - 1ms - IP: ::1
 [2026-07-23T06:22:54.957Z] GET /api/resumes?_t=1784787774741 200 - 195ms - IP: ::1
 [2026-07-23T06:22:54.958Z] GET /api/resumes?_t=1784787774741 200 - 198ms - IP: ::1
+[2026-07-23T06:34:19.018Z] POST /api/auth/register 201 - 287ms - IP: ::1
+[2026-07-23T06:34:19.544Z] POST /api/resumes/upload 201 - 510ms - IP: ::1
+[2026-07-23T06:34:20.089Z] POST /api/ai/analyze/6a61b5eb7c121b8976958293 200 - 536ms - IP: ::1
+[2026-07-23T06:34:20.295Z] GET /api/ai/report/6a61b5eb7c121b8976958293 200 - 193ms - IP: ::1
+[2026-07-23T06:34:20.551Z] GET /api/ai/history 200 - 253ms - IP: ::1
