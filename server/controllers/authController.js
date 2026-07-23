@@ -1,4 +1,5 @@
 import asyncHandler from '../middleware/asyncHandler.js';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
@@ -23,6 +24,15 @@ export const register = asyncHandler(async (req, res) => {
   const { fullName, email, password } = req.body;
 
   // Prevent duplicate emails
+  const dbState = mongoose.connection.readyState;
+  const stateLabels = { 0: 'Disconnected', 1: 'Connected', 2: 'Connecting', 3: 'Disconnecting' };
+  console.log(`🔌 [DEBUG] Mongoose connection state before User.findOne(): readyState = ${dbState} (${stateLabels[dbState] || 'Unknown'})`);
+
+  if (dbState !== 1) {
+    console.error(`💥 [DEBUG] Mongoose is not connected! State: ${dbState} (${stateLabels[dbState] || 'Unknown'})`);
+    throw new ApiError(503, `Database connection is not ready (state: ${stateLabels[dbState] || dbState}). Please try again.`);
+  }
+
   console.log('🔍 [DEBUG] Checking if email already exists:', email);
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -70,6 +80,15 @@ export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   // Find user by email
+  const dbState = mongoose.connection.readyState;
+  const stateLabels = { 0: 'Disconnected', 1: 'Connected', 2: 'Connecting', 3: 'Disconnecting' };
+  console.log(`🔌 [DEBUG] Mongoose connection state before User.findOne(): readyState = ${dbState} (${stateLabels[dbState] || 'Unknown'})`);
+
+  if (dbState !== 1) {
+    console.error(`💥 [DEBUG] Mongoose is not connected! State: ${dbState} (${stateLabels[dbState] || 'Unknown'})`);
+    throw new ApiError(503, `Database connection is not ready (state: ${stateLabels[dbState] || dbState}). Please try again.`);
+  }
+
   const user = await User.findOne({ email });
   if (!user) {
     throw new ApiError(401, 'Invalid email or password.');

@@ -1,54 +1,114 @@
+import fs from 'fs';
+import path from 'path';
+import Resume from '../models/Resume.js';
 import asyncHandler from '../middleware/asyncHandler.js';
+import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
-import { getPaginationParams, getPaginationMetadata } from '../utils/paginationHelper.js';
 
 /**
- * @desc    Get paginated resume upload history logs
- * @route   GET /api/resume/history
- * @access  Private (Mocked)
+ * @desc    Upload a resume file (PDF/DOCX)
+ * @route   POST /api/resume/upload
+ * @access  Private
  */
-export const getHistory = asyncHandler(async (req, res) => {
-  const { page, limit } = getPaginationParams(req.query, 5);
+export const uploadResume = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    throw new ApiError(400, 'Please select a valid resume file (PDF or DOCX) to upload.');
+  }
 
-  const dummyResumesList = [
-    { id: 'res-001', name: 'Mukesh_SDE_Resume_v1.pdf', uploadDate: '2026-07-20', score: 92, status: 'Optimized', fileSize: '1.2 MB' },
-    { id: 'res-002', name: 'Mukesh_Frontend_Resume.pdf', uploadDate: '2026-07-18', score: 84, status: 'Good', fileSize: '980 KB' },
-    { id: 'res-003', name: 'Mukesh_Resume_Draft.docx', uploadDate: '2026-07-10', score: 58, status: 'Needs Action', fileSize: '450 KB' },
-    { id: 'res-004', name: 'General_Resume_Backup.pdf', uploadDate: '2026-06-15', score: 68, status: 'Needs Action', fileSize: '1.1 MB' }
-  ];
+  const resume = await Resume.create({
+    user: req.user._id,
+    originalName: req.file.originalname,
+    fileName: req.file.filename,
+    fileType: req.file.mimetype,
+    fileSize: req.file.size,
+    uploadPath: req.file.path,
+    uploadDate: new Date(),
+    status: 'Uploaded'
+  });
 
-  const totalItems = dummyResumesList.length;
-  const paginatedData = dummyResumesList.slice((page - 1) * limit, page * limit);
-  const metadata = getPaginationMetadata(totalItems, page, limit);
-
-  return successResponse(res, { resumes: paginatedData, pagination: metadata }, 'Resume history fetched successfully.');
+  return successResponse(
+    res,
+    resume,
+    'Resume uploaded and saved successfully.',
+    201
+  );
 });
 
 /**
- * @desc    Get detailed diagnostic data for a specific resume
+ * @desc    Get all uploaded resumes for the logged-in user
+ * @route   GET /api/resume
+ * @access  Private
+ */
+export const getResumes = asyncHandler(async (req, res) => {
+  const resumes = await Resume.find({ user: req.user._id }).sort({ uploadDate: -1 });
+
+  return successResponse(
+    res,
+    resumes,
+    'Resumes retrieved successfully.'
+  );
+});
+
+/**
+ * @desc    Get detailed data for a specific resume owned by logged-in user
  * @route   GET /api/resume/:id
- * @access  Private (Mocked)
+ * @access  Private
  */
 export const getResumeDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const dummyResume = {
-    id,
-    name: 'Mukesh_SDE_Resume_v1.pdf',
-    uploadDate: '2026-07-20',
-    score: 92,
-    status: 'Optimized',
-    fileSize: '1.2 MB',
-    keywords: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'Tailwind CSS']
-  };
-  return successResponse(res, dummyResume, 'Resume details retrieved successfully.');
+
+  const resume = await Resume.findById(id);
+
+  if (!resume) {
+    throw new ApiError(404, 'Resume not found.');
+  }
+
+  // Ownership check
+  if (resume.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'Access denied. You do not have permission to view this resume.');
+  }
+
+  return successResponse(
+    res,
+    resume,
+    'Resume details retrieved successfully.'
+  );
 });
 
 /**
- * @desc    Delete a resume scan entry from database history
+ * @desc    Delete a resume document from MongoDB and physical storage
  * @route   DELETE /api/resume/:id
- * @access  Private (Mocked)
+ * @access  Private
  */
 export const deleteResume = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  return successResponse(res, { id }, `Resume entry ${id} successfully deleted.`);
+
+  const resume = await Resume.findById(id);
+
+  if (!resume) {
+    throw new ApiError(404, 'Resume not found.');
+  }
+
+  // Ownership check
+  if (resume.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'Access denied. You do not have permission to delete this resume.');
+  }
+
+  // Delete physical file from disk if it exists
+  if (resume.uploadPath && fs.existsSync(resume.uploadPath)) {
+    try {
+      await fs.promises.unlink(resume.uploadPath);
+    } catch (err) {
+      console.error(`Failed to delete physical file at ${resume.uploadPath}:`, err.message);
+    }
+  }
+
+  // Delete MongoDB document
+  await Resume.deleteOne({ _id: id });
+
+  return successResponse(
+    res,
+    { id },
+    'Resume deleted successfully from storage and database.'
+  );
 });

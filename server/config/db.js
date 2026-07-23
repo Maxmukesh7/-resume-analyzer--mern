@@ -6,21 +6,24 @@ import mongoose from 'mongoose';
 const connectDB = async () => {
   // Ensure connection is initialized only once
   if (mongoose.connection.readyState === 1 || mongoose.connection.readyState === 2) {
-    return;
+    return mongoose.connection;
   }
 
   const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
   
   if (!uri) {
-    console.error('Database connection error: MONGO_URI or MONGODB_URI environment variables are not defined.');
+    console.error('💥 Database connection error: MONGO_URI or MONGODB_URI environment variables are not defined.');
     process.exit(1);
   }
 
   try {
-    await mongoose.connect(uri);
+    const conn = await mongoose.connect(uri);
     console.log('✅ MongoDB Connected');
+    console.log(`📌 MongoDB Host: ${conn.connection.host}`);
+    return conn;
   } catch (error) {
-    console.error(`Database Connection Error: ${error.message}`);
+    console.error(`💥 Database Connection Error: ${error.message}`);
+    throw error;
   }
 };
 

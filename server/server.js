@@ -28,9 +28,6 @@ import adminRoutes from './routes/adminRoutes.js';
 // Load env variables
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 const PORT = parseInt(process.env.PORT, 10) || 5000;
 
@@ -141,7 +138,16 @@ process.on('unhandledRejection', (err) => {
 
 let portRetryAttempts = {};
 
-const startServer = (port) => {
+const startServer = async (port) => {
+  try {
+    // 1. Connect to database before listening to requests
+    await connectDB();
+  } catch (err) {
+    console.error('💥 Server startup aborted due to database connection error:', err.message);
+    process.exit(1);
+  }
+
+  // 2. Start Express app server after DB is ready
   const server = app.listen(port, () => {
     console.log(`🚀 Server running on port ${port}`);
   });

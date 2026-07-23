@@ -1,35 +1,54 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaFilter, FaFileAlt, FaChartLine, FaTrash, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaSearch, FaFileAlt, FaInfoCircle, FaTrash, FaChevronLeft, FaChevronRight, FaSpinner } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Badge from '../../components/Common/Badge';
+import Modal from '../../components/Common/Modal';
+import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
-import { mockHistory } from '../../utils/mockData';
+import { getResumes, deleteResume } from '../../services/resumeService';
 
 export default function ResumeHistory() {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
-  const [resumes, setResumes] = useState(mockHistory);
+  const [resumes, setResumes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedResume, setSelectedResume] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const navigate = useNavigate();
   const { showToast } = useToast();
-
   const itemsPerPage = 5;
+
+  const fetchResumes = async () => {
+    try {
+      setLoading(true);
+      const res = await getResumes();
+      // Handle both res.data and array responses safely
+      const data = res.data || res;
+      setResumes(Array.isArray(data) ? data : []);
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Failed to load resume history.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchResumes();
+  }, []);
 
   // Filter and search logic
   const filteredResumes = useMemo(() => {
     return resumes.filter((item) => {
-      const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
-      const matchesFilter = statusFilter === 'All' || item.status === statusFilter;
-      return matchesSearch && matchesFilter;
+      const fileName = item.originalName || item.fileName || '';
+      return fileName.toLowerCase().includes(search.toLowerCase());
     });
-  }, [resumes, search, statusFilter]);
+  }, [resumes, search]);
 
-  // Reset page when filter or search changes
+  // Reset page when search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, statusFilter]);
+  }, [search]);
 
   // Pagination calculation
   const totalPages = Math.ceil(filteredResumes.length / itemsPerPage) || 1;
@@ -38,25 +57,57 @@ export default function ResumeHistory() {
     return filteredResumes.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredResumes, currentPage]);
 
-  const handleViewReport = (id) => {
-    navigate(`/dashboard/report?id=${id}`);
+  const handleViewDetails = (resume) => {
+    setSelectedResume(resume);
+    setIsModalOpen(true);
   };
 
-  const handleDelete = (id, name) => {
-    setResumes((prev) => prev.filter((item) => item.id !== id));
-    showToast(`Removed '${name}' from history.`, 'info');
+  const handleDelete = async (id, fileName) => {
+    if (!window.confirm(`Are you sure you want to delete '${fileName}'?`)) {
+      return;
+    }
+
+    try {
+      setDeletingId(id);
+      await deleteResume(id);
+      setResumes((prev) => prev.filter((item) => (item._id || item.id) !== id));
+      showToast(`Resume '${fileName}' deleted successfully.`, 'success');
+      if (selectedResume && (selectedResume._id === id || selectedResume.id === id)) {
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Failed to delete resume.', 'error');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
-  const getScoreVariant = (score) => {
-    if (score >= 85) return 'success';
-    if (score >= 70) return 'info';
-    return 'warning';
+  const getFriendlySize = (bytes) => {
+    if (!bytes) return '0 Bytes';
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
   };
 
-  const getStatusVariant = (status) => {
-    if (status === 'Optimized') return 'success';
-    if (status === 'Good') return 'info';
-    return 'warning';
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getFileTypeLabel = (fileType, originalName) => {
+    if (fileType?.includes('pdf') || originalName?.toLowerCase().endsWith('.pdf')) {
+      return 'PDF';
+    }
+    if (fileType?.includes('word') || fileType?.includes('document') || originalName?.toLowerCase().endsWith('.docx')) {
+      return 'DOCX';
+    }
+    return 'FILE';
   };
 
   return (
@@ -65,11 +116,11 @@ export default function ResumeHistory() {
       <div>
         <h1 className="text-2xl font-extrabold text-white tracking-wide">Resume History</h1>
         <p className="text-slate-450 text-xs mt-1.5 font-semibold">
-          Review, search, and manage your previously analyzed resumes and their diagnostics.
+          Review, view details, and manage your uploaded resumes.
         </p>
       </div>
 
-      {/* Filters & Search Control Bar */}
+      {/* Control Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search */}
         <div className="relative max-w-sm w-full">
@@ -82,24 +133,6 @@ export default function ResumeHistory() {
             className="w-full pl-10 pr-4 py-2.5 bg-slate-900/40 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all text-xs"
           />
         </div>
-
-        {/* Filter Dropdown */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-            <FaFilter size={10} />
-            <span>Filter:</span>
-          </span>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs font-semibold text-slate-350 focus:outline-none focus:border-blue-500/50 cursor-pointer"
-          >
-            <option value="All">All Scores</option>
-            <option value="Optimized">Optimized (&ge; 85%)</option>
-            <option value="Good">Good (70% - 84%)</option>
-            <option value="Needs Action">Needs Action (&lt; 70%)</option>
-          </select>
-        </div>
       </div>
 
       {/* History Table Card */}
@@ -110,66 +143,84 @@ export default function ResumeHistory() {
               <tr className="bg-slate-900/70 border-b border-slate-800/80 text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">
                 <th className="px-6 py-4">File Name</th>
                 <th className="px-6 py-4">Upload Date</th>
-                <th className="px-6 py-4">ATS Score</th>
-                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">File Size</th>
+                <th className="px-6 py-4">File Type</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-850/30">
-              {paginatedResumes.length > 0 ? (
-                paginatedResumes.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-800/10 transition-colors group">
-                    <td className="px-6 py-4.5">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-blue-600/10 border border-blue-500/15 text-blue-400 rounded-lg group-hover:scale-105 transition-transform">
-                          <FaFileAlt size={14} />
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="px-6 py-12 text-center text-slate-500 text-xs">
+                    <div className="flex items-center justify-center gap-2">
+                      <FaSpinner className="animate-spin text-blue-400" size={16} />
+                      <span>Loading resume history...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : paginatedResumes.length > 0 ? (
+                paginatedResumes.map((item) => {
+                  const itemId = item._id || item.id;
+                  const name = item.originalName || item.fileName || 'Untitled Resume';
+                  const fileTypeLabel = getFileTypeLabel(item.fileType, name);
+
+                  return (
+                    <tr key={itemId} className="hover:bg-slate-800/10 transition-colors group">
+                      <td className="px-6 py-4.5">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-600/10 border border-blue-500/15 text-blue-400 rounded-lg group-hover:scale-105 transition-transform">
+                            <FaFileAlt size={14} />
+                          </div>
+                          <div>
+                            <span className="text-xs font-bold text-white block truncate max-w-xs md:max-w-md" title={name}>
+                              {name}
+                            </span>
+                            <span className="text-[10px] text-slate-500 font-semibold">{item.fileName}</span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-xs font-bold text-white block truncate max-w-xs md:max-w-md">
-                            {item.name}
-                          </span>
-                          <span className="text-[10px] text-slate-500 font-semibold">{item.fileSize}</span>
+                      </td>
+                      <td className="px-6 py-4.5 text-xs text-slate-400 font-medium">
+                        {formatDate(item.uploadDate)}
+                      </td>
+                      <td className="px-6 py-4.5 text-xs text-slate-400 font-medium">
+                        {getFriendlySize(item.fileSize)}
+                      </td>
+                      <td className="px-6 py-4.5">
+                        <Badge variant={fileTypeLabel === 'PDF' ? 'danger' : 'info'}>
+                          {fileTypeLabel}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4.5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleViewDetails(item)}
+                            className="p-2 text-xs font-semibold rounded-lg text-blue-400 hover:text-white hover:bg-blue-600/10 border border-blue-500/20 transition-all flex items-center gap-1.5"
+                            title="View Details"
+                          >
+                            <FaInfoCircle size={12} />
+                            <span className="hidden sm:inline">Details</span>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(itemId, name)}
+                            disabled={deletingId === itemId}
+                            className="p-2 text-xs font-semibold rounded-lg text-rose-400 hover:text-white hover:bg-rose-600/10 border border-rose-500/20 transition-all disabled:opacity-50"
+                            title="Delete Resume"
+                          >
+                            {deletingId === itemId ? (
+                              <FaSpinner className="animate-spin" size={12} />
+                            ) : (
+                              <FaTrash size={12} />
+                            )}
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4.5 text-xs text-slate-400 font-medium">
-                      {item.uploadDate}
-                    </td>
-                    <td className="px-6 py-4.5">
-                      <Badge variant={getScoreVariant(item.score)}>
-                        {item.score}%
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4.5">
-                      <Badge variant={getStatusVariant(item.status)}>
-                        {item.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4.5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleViewReport(item.id)}
-                          className="p-2 text-xs font-semibold rounded-lg text-blue-400 hover:text-white hover:bg-blue-600/10 border border-blue-500/20 transition-all flex items-center gap-1.5"
-                          title="View Diagnosis"
-                        >
-                          <FaChartLine size={12} />
-                          <span className="hidden sm:inline">Report</span>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id, item.name)}
-                          className="p-2 text-xs font-semibold rounded-lg text-rose-455 hover:text-white hover:bg-rose-600/10 border border-rose-500/20 transition-all"
-                          title="Delete Resume"
-                        >
-                          <FaTrash size={12} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan="5" className="px-6 py-12 text-center text-slate-500 text-xs">
-                    No matching resumes found
+                    No uploaded resumes found.
                   </td>
                 </tr>
               )}
@@ -219,6 +270,69 @@ export default function ResumeHistory() {
           </div>
         )}
       </Card>
+
+      {/* Resume Details Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Resume Details"
+        size="md"
+      >
+        {selectedResume && (
+          <div className="space-y-4 text-xs">
+            <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2.5">
+              <div className="flex justify-between">
+                <span className="text-slate-500 font-semibold">Original File Name:</span>
+                <span className="text-slate-200 font-bold truncate max-w-[200px]" title={selectedResume.originalName}>
+                  {selectedResume.originalName}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 font-semibold">Stored File Name:</span>
+                <span className="text-slate-300 font-mono text-[11px] truncate max-w-[200px]" title={selectedResume.fileName}>
+                  {selectedResume.fileName}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 font-semibold">File Type:</span>
+                <span className="text-slate-200 font-semibold">{selectedResume.fileType}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 font-semibold">File Size:</span>
+                <span className="text-slate-200 font-semibold">{getFriendlySize(selectedResume.fileSize)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 font-semibold">Upload Date:</span>
+                <span className="text-slate-200 font-semibold">{formatDate(selectedResume.uploadDate)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 font-semibold">Upload Status:</span>
+                <Badge variant="success">{selectedResume.status || 'Uploaded'}</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 font-semibold">Database Record ID:</span>
+                <span className="text-slate-400 font-mono text-[10px]">{selectedResume._id || selectedResume.id}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Close
+              </Button>
+              <Button
+                variant="danger"
+                icon={<FaTrash size={12} />}
+                onClick={() => handleDelete(selectedResume._id || selectedResume.id, selectedResume.originalName)}
+              >
+                Delete Resume
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

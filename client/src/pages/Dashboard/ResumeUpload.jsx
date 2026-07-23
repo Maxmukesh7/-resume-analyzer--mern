@@ -6,19 +6,24 @@ import {
   FaFilePdf, 
   FaFileWord, 
   FaTimes, 
-  FaCheckCircle, 
-  FaPlay
+  FaCheckCircle,
+  FaSpinner,
+  FaHistory
 } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Button from '../../components/Common/Button';
+import Badge from '../../components/Common/Badge';
 import { useToast } from '../../components/Common/Toast';
+import { uploadResume } from '../../services/resumeService';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export default function ResumeUpload() {
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [uploaded, setUploaded] = useState(false);
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -41,64 +46,73 @@ export default function ResumeUpload() {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
-      validateAndProcessFile(droppedFile);
+      validateAndSelectFile(droppedFile);
     }
   };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      validateAndProcessFile(selectedFile);
+      validateAndSelectFile(selectedFile);
     }
   };
 
-  const validateAndProcessFile = (selectedFile) => {
+  const validateAndSelectFile = (selectedFile) => {
     const name = selectedFile.name.toLowerCase();
     const isValidExtension = name.endsWith('.pdf') || name.endsWith('.docx');
 
     if (!isValidExtension) {
-      showToast('Unsupported format! Please upload PDF or DOCX.', 'error');
+      showToast('Invalid file format. Only PDF (.pdf) and DOCX (.docx) files are allowed.', 'error');
       return;
     }
 
-    // Accept file, reset state, and simulate upload
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      showToast('File size exceeds maximum limit of 5 MB.', 'error');
+      return;
+    }
+
     setFile(selectedFile);
     setUploadProgress(0);
-    setUploading(true);
-
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setUploading(false);
-          showToast('File uploaded successfully!', 'success');
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 150);
+    setUploaded(false);
   };
 
   const handleRemoveFile = () => {
     setFile(null);
     setUploadProgress(0);
     setUploading(false);
-    setAnalyzing(false);
+    setUploaded(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     showToast('File removed.', 'info');
   };
 
-  const handleAnalyze = () => {
-    if (!file) return;
-    setAnalyzing(true);
+  const handleUploadSubmit = async () => {
+    if (!file) {
+      showToast('Please select a file to upload.', 'error');
+      return;
+    }
 
-    showToast('AI parser is reading content...', 'info');
-    
-    // Simulate complex scanning algorithm
-    setTimeout(() => {
-      showToast('Scanned keywords matches successfully!', 'success');
-      // Redirect to the first mock report
-      navigate('/dashboard/report?id=res-001');
-    }, 2500);
+    setUploading(true);
+    setUploadProgress(0);
+
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    try {
+      await uploadResume(formData, (progress) => {
+        setUploadProgress(progress);
+      });
+
+      setUploading(false);
+      setUploaded(true);
+      setUploadProgress(100);
+      showToast('Resume uploaded successfully!', 'success');
+    } catch (error) {
+      setUploading(false);
+      const errorMessage = error.response?.data?.message || 'Failed to upload resume. Please try again.';
+      showToast(errorMessage, 'error');
+    }
   };
 
   const triggerFileInput = () => {
@@ -125,7 +139,7 @@ export default function ResumeUpload() {
       <div>
         <h1 className="text-2xl font-extrabold text-white tracking-wide">Upload Resume</h1>
         <p className="text-slate-450 text-xs mt-1.5 font-semibold">
-          Upload your resume in PDF or DOCX format to scan and optimize it against ATS systems.
+          Upload your resume in PDF or DOCX format (Max size: 5MB).
         </p>
       </div>
 
@@ -161,14 +175,16 @@ export default function ResumeUpload() {
               <p className="text-xs text-slate-500 font-semibold mt-1">or click to browse local files</p>
             </div>
             <div className="border border-slate-800/80 bg-slate-900/60 rounded-xl px-4 py-1.5 mt-2 flex gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-              <span>PDF Supported</span>
+              <span>PDF Supported (.pdf)</span>
               <span className="text-slate-700">|</span>
-              <span>DOCX Supported</span>
+              <span>DOCX Supported (.docx)</span>
+              <span className="text-slate-700">|</span>
+              <span>Max 5 MB</span>
             </div>
           </motion.div>
         )}
 
-        {/* Upload Progress & Preview Container */}
+        {/* Preview Card & Upload Status */}
         <AnimatePresence>
           {file && (
             <motion.div
@@ -177,7 +193,7 @@ export default function ResumeUpload() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="space-y-6"
             >
-              {/* File Info Card */}
+              {/* File Info Preview Card */}
               <div className="flex items-center justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-2xl">
                 <div className="flex items-center gap-4 min-w-0">
                   {getFileIcon(file.name)}
@@ -185,15 +201,25 @@ export default function ResumeUpload() {
                     <h4 className="text-sm font-bold text-white truncate" title={file.name}>
                       {file.name}
                     </h4>
-                    <span className="text-xs text-slate-500 font-semibold mt-0.5 block">
-                      {getFriendlySize(file.size)}
-                    </span>
+                    <div className="flex items-center gap-3 mt-1">
+                      <span className="text-xs text-slate-500 font-semibold">
+                        {getFriendlySize(file.size)}
+                      </span>
+                      <span className="text-slate-700">&bull;</span>
+                      <span className="text-xs font-semibold">
+                        {uploading && <Badge variant="info">Uploading...</Badge>}
+                        {uploaded && <Badge variant="success">Uploaded</Badge>}
+                        {!uploading && !uploaded && <Badge variant="neutral">Ready to Upload</Badge>}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                {!analyzing && (
+
+                {!uploading && (
                   <button
                     onClick={handleRemoveFile}
                     className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/15 rounded-xl border border-transparent hover:border-rose-900/25 transition-all"
+                    title="Remove selected file"
                   >
                     <FaTimes size={14} />
                   </button>
@@ -204,7 +230,10 @@ export default function ResumeUpload() {
               {uploading && (
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-bold text-slate-400">
-                    <span>Uploading documents...</span>
+                    <span className="flex items-center gap-2">
+                      <FaSpinner className="animate-spin text-blue-400" />
+                      Uploading resume to secure server...
+                    </span>
                     <span>{uploadProgress}%</span>
                   </div>
                   <div className="h-2 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-850">
@@ -216,69 +245,58 @@ export default function ResumeUpload() {
                 </div>
               )}
 
-              {/* File Uploaded Ready State */}
-              {!uploading && !analyzing && (
+              {/* Uploaded Success Message */}
+              {uploaded && (
                 <div className="flex items-center gap-3 p-4 bg-emerald-950/10 border border-emerald-900/30 text-emerald-400 rounded-2xl text-xs font-semibold">
                   <FaCheckCircle size={16} />
-                  <span>Success! File uploaded and parsed ready for ATS analysis.</span>
-                </div>
-              )}
-
-              {/* Analyzing Processing Animation State */}
-              {analyzing && (
-                <div className="space-y-6 py-6 flex flex-col items-center justify-center">
-                  {/* Spinner */}
-                  <div className="relative">
-                    <div className="animate-spin rounded-full border-t-transparent border-slate-800 h-16 w-16 border-4"></div>
-                    <div className="absolute top-0 left-0 animate-spin rounded-full border-b-transparent border-l-transparent border-r-transparent border-t-blue-500 h-16 w-16 border-4" style={{ animationDuration: '0.8s' }}></div>
-                    <div className="absolute top-0 left-0 animate-spin rounded-full border-t-transparent border-l-transparent border-r-transparent border-b-purple-500 h-16 w-16 border-4" style={{ animationDuration: '1.2s' }}></div>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-bold text-white tracking-wide animate-pulse">Running AI ATS Diagnostics...</p>
-                    <p className="text-xs text-slate-500 font-semibold mt-1">Checking keywords matches, structural layouts, and credentials</p>
-                  </div>
+                  <span>Resume uploaded and saved securely to database!</span>
                 </div>
               )}
 
               {/* Actions */}
-              {!uploading && !analyzing && (
-                <div className="flex gap-4">
-                  <Button
-                    onClick={handleRemoveFile}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleAnalyze}
-                    icon={<FaPlay size={10} />}
-                    className="flex-1"
-                  >
-                    Analyze Resume
-                  </Button>
-                </div>
-              )}
+              <div className="flex gap-4">
+                {!uploaded ? (
+                  <>
+                    <Button
+                      onClick={handleRemoveFile}
+                      variant="outline"
+                      className="flex-1"
+                      disabled={uploading}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleUploadSubmit}
+                      className="flex-1"
+                      disabled={uploading}
+                      icon={uploading ? <FaSpinner className="animate-spin" size={14} /> : <FaCloudUploadAlt size={16} />}
+                    >
+                      {uploading ? 'Uploading...' : 'Upload Resume'}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={handleRemoveFile}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Upload Another
+                    </Button>
+                    <Button
+                      onClick={() => navigate('/dashboard/history')}
+                      icon={<FaHistory size={14} />}
+                      className="flex-1"
+                    >
+                      View History
+                    </Button>
+                  </>
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </Card>
-
-      {/* Guide Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <h4 className="text-sm font-bold text-white mb-2">Optimize Layout Parsing</h4>
-          <p className="text-xs text-slate-450 leading-relaxed font-semibold">
-            Ensure your file utilizes a single-column clean format. Multi-columns, custom tables, text boxes, and icons frequently confuse traditional ATS parsers.
-          </p>
-        </Card>
-        <Card>
-          <h4 className="text-sm font-bold text-white mb-2">Target High Keyword Counts</h4>
-          <p className="text-xs text-slate-450 leading-relaxed font-semibold">
-            Incorporate hard industry skills directly from targeted job descriptions. Match terms exactly as written in standard formats.
-          </p>
-        </Card>
-      </div>
     </div>
   );
 }

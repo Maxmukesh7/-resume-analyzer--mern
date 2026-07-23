@@ -29,6 +29,10 @@ const resumeSchema = new mongoose.Schema({
   uploadDate: {
     type: Date,
     default: Date.now
+  },
+  status: {
+    type: String,
+    default: 'Uploaded'
   }
 });
 

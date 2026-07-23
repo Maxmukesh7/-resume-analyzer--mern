@@ -58,3 +58,17 @@
 [2026-07-21T11:51:01.833Z] POST /api/auth/logout 200 - 1ms - IP: ::1
 [2026-07-21T11:52:45.728Z] OPTIONS /api/auth/login 204 - 0ms - IP: ::1
 [2026-07-21T11:52:45.859Z] POST /api/auth/login 200 - 129ms - IP: ::1
+[2026-07-23T03:35:45.881Z] OPTIONS /api/auth/login 204 - 8ms - IP: ::1
+[2026-07-23T03:35:55.950Z] POST /api/auth/login 500 - 10043ms - IP: ::1
+[2026-07-23T03:39:20.976Z] OPTIONS /api/auth/register 204 - 1ms - IP: ::1
+[2026-07-23T03:39:31.000Z] POST /api/auth/register 500 - 10019ms - IP: ::1
+[2026-07-23T03:39:45.851Z] OPTIONS /api/auth/register 204 - 1ms - IP: ::1
+[2026-07-23T04:20:03.782Z] OPTIONS /api/auth/register 204 - 10ms - IP: ::1
+[2026-07-23T04:20:13.861Z] POST /api/auth/register 500 - 10043ms - IP: ::1
+[2026-07-23T04:20:18.387Z] OPTIONS /api/auth/register 204 - 1ms - IP: ::1
+[2026-07-23T04:20:28.406Z] POST /api/auth/register 500 - 10016ms - IP: ::1
+[2026-07-23T04:20:46.513Z] OPTIONS /api/auth/register 204 - 2ms - IP: ::1
+[2026-07-23T04:20:56.540Z] POST /api/auth/register 500 - 10017ms - IP: ::1
+[2026-07-23T04:21:12.268Z] OPTIONS /api/auth/register 204 - 1ms - IP: ::1
+[2026-07-23T04:21:22.282Z] POST /api/auth/register 500 - 10008ms - IP: ::1
+[2026-07-23T05:16:10.416Z] GET /api/health 200 - 6ms - IP: ::1
