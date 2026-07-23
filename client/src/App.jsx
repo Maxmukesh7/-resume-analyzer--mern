@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { ToastProvider } from './components/Common/Toast';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Public Pages
 import LandingPage from './pages/LandingPage';
@@ -21,36 +22,75 @@ import ResumeHistory from './pages/Dashboard/ResumeHistory';
 import Profile from './pages/Dashboard/Profile';
 import Settings from './pages/Dashboard/Settings';
 
+/**
+ * Route guard to restrict access to authenticated users.
+ */
+function ProtectedRoute() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+}
+
+/**
+ * Route guard to prevent authenticated users from viewing auth pages (e.g. Login).
+ */
+function PublicRoute() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
+
+  return !isAuthenticated ? <Outlet /> : <Navigate to="/dashboard" replace />;
+}
+
 export default function App() {
   return (
     <ToastProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
 
-          {/* Auth Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+            {/* Auth Public Routes (guards authenticated users away from Login/Register) */}
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+            </Route>
 
-          {/* Dashboard Nested Routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<DashboardOverview />} />
-            <Route path="upload" element={<ResumeUpload />} />
-            <Route path="report" element={<ATSReport />} />
-            <Route path="history" element={<ResumeHistory />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
+            {/* Dashboard Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<DashboardOverview />} />
+                <Route path="upload" element={<ResumeUpload />} />
+                <Route path="report" element={<ATSReport />} />
+                <Route path="history" element={<ResumeHistory />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+            </Route>
 
-          {/* Wildcard 404 Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
+            {/* Wildcard 404 Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </ToastProvider>
   );
 }
-

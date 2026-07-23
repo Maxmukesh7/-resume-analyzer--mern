@@ -6,6 +6,7 @@ import Card from '../../components/Common/Card';
 import Input from '../../components/Common/Input';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Register() {
   const [fullName, setFullName] = useState('');
@@ -18,8 +19,9 @@ export default function Register() {
 
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { register } = useAuth();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -35,8 +37,8 @@ export default function Register() {
 
     if (!password) {
       newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
     }
 
     if (!confirmPassword) {
@@ -58,12 +60,12 @@ export default function Register() {
     setErrors({});
     setLoading(true);
 
-    // Simulate register loading delay
-    setTimeout(() => {
-      setLoading(false);
-      showToast('Registration successful! Welcome.', 'success');
+    const result = await register(fullName, email, password, confirmPassword);
+    setLoading(false);
+
+    if (result.success) {
       navigate('/dashboard');
-    }, 1200);
+    }
   };
 
   const handleGoogleLogin = () => {

@@ -1,17 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaUser, FaBriefcase, FaTimes, FaCamera } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Input from '../../components/Common/Input';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
 import { mockUser } from '../../utils/mockData';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Profile() {
-  const [profile, setProfile] = useState(mockUser);
+  const { user, updateProfile } = useAuth();
+  const [profile, setProfile] = useState({
+    name: user?.fullName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    college: mockUser.college,
+    skills: mockUser.skills,
+    experience: mockUser.experience,
+    avatar: user?.avatar || mockUser.avatar
+  });
   const [newSkill, setNewSkill] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { showToast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      setProfile((prev) => ({
+        ...prev,
+        name: user.fullName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        avatar: user.avatar || mockUser.avatar
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (field, value) => {
     setProfile((prev) => ({
@@ -44,15 +66,16 @@ export default function Profile() {
     }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate saving changes
-    setTimeout(() => {
-      setLoading(false);
-      showToast('Profile updated successfully!', 'success');
-    }, 1200);
+    await updateProfile({
+      fullName: profile.name,
+      phone: profile.phone,
+      avatar: profile.avatar
+    });
+    setLoading(false);
   };
 
   const handleAvatarChange = () => {

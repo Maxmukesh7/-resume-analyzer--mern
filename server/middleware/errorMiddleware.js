@@ -19,6 +19,13 @@ export const errorHandler = (err, req, res, next) => {
   let message = err.message || 'Internal Server Error';
   let errors = err.errors || [];
 
+  console.error('💥 [DEBUG] Error handled by global handler:', {
+    statusCode,
+    message,
+    errors,
+    stack: err.stack
+  });
+
   // Catch Mongoose invalid ObjectId CastError
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
     statusCode = 400;

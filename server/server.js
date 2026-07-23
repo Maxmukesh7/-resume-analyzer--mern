@@ -6,10 +6,11 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 
-// Import config (Bypassed for Phase 4)
-// import connectDB from './config/db.js';
+// Import config
+import connectDB from './config/db.js';
 
 // Import custom middleware
 import { loggerMiddleware } from './middleware/loggerMiddleware.js';
@@ -27,11 +28,11 @@ import adminRoutes from './routes/adminRoutes.js';
 // Load env variables
 dotenv.config();
 
-// Connect to MongoDB (Bypassed for Phase 4)
-// connectDB();
+// Connect to MongoDB
+connectDB();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT, 10) || 5000;
 
 // Security Middlewares
 app.use(helmet());
@@ -54,7 +55,29 @@ app.use(loggerMiddleware);
 
 // Configure CORS
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173', // Standard React dev port
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+    
+    // In development mode, allow any localhost origin
+    if (process.env.NODE_ENV === 'development') {
+      if (origin.startsWith('http://localhost:')) {
+        return callback(null, true);
+      }
+    }
+
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      'http://localhost:5176'
+    ];
+    if (allowedOrigins.indexOf(origin) !== -1 || origin === process.env.CORS_ORIGIN) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -74,9 +97,20 @@ app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const stateLabels = {
+    0: 'Disconnected',
+    1: 'Connected',
+    2: 'Connecting',
+    3: 'Disconnecting'
+  };
+
   res.status(200).json({
     status: 'OK',
     message: 'AI Resume Analyzer API is running smoothly',
+    database: stateLabels[dbState] || 'Unknown',
+    uptime: `${process.uptime().toFixed(1)}s`,
+    version: '1.0.0',
     timestamp: new Date()
   });
 });
@@ -90,7 +124,49 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+// Global startup handlers for uncaught issues
+process.on('uncaughtException', (err) => {
+  console.error('💥 UNCAUGHT EXCEPTION! Shutting down server...');
+  console.error(err.name, err.message);
+  console.error(err.stack);
+  process.exit(1);
 });
+
+process.on('unhandledRejection', (err) => {
+  console.error('💥 UNHANDLED PROMISE REJECTION! Shutting down server...');
+  console.error(err.name, err.message);
+  console.error(err.stack);
+  process.exit(1);
+});
+
+let portRetryAttempts = {};
+
+const startServer = (port) => {
+  const server = app.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}`);
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.warn(`⚠️ Port ${port} is already in use.`);
+      
+      const attempts = portRetryAttempts[port] || 0;
+      if (attempts < 1) {
+        portRetryAttempts[port] = attempts + 1;
+        console.log(`🔄 Retrying port ${port} in 1000ms...`);
+        setTimeout(() => startServer(port), 1000);
+        return;
+      }
+
+      const nextPort = Number(port) + 1;
+      console.log(`🔄 Retrying on next available port: ${nextPort}`);
+      startServer(nextPort);
+    } else {
+      console.error('💥 Server startup error:', err);
+    }
+  });
+};
+
+startServer(PORT);
+
 export default app;

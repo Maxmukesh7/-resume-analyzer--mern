@@ -6,6 +6,7 @@ import Card from '../../components/Common/Card';
 import Input from '../../components/Common/Input';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -16,8 +17,9 @@ export default function Login() {
 
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -29,8 +31,8 @@ export default function Login() {
 
     if (!password) {
       newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -42,12 +44,12 @@ export default function Login() {
     setErrors({});
     setLoading(true);
 
-    // Simulate login loading delay
-    setTimeout(() => {
-      setLoading(false);
-      showToast('Logged in successfully!', 'success');
+    const result = await login(email, password, rememberMe);
+    setLoading(false);
+    
+    if (result.success) {
       navigate('/dashboard');
-    }, 1200);
+    }
   };
 
   const handleGoogleLogin = () => {

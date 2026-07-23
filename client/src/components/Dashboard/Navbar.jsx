@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBars, FaSearch, FaBell, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
-import { mockUser, mockNotifications } from '../../utils/mockData';
+import { mockNotifications } from '../../utils/mockData';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar({ onToggleSidebar }) {
+  const { user, logout } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState(mockNotifications);
@@ -114,12 +116,12 @@ export default function Navbar({ onToggleSidebar }) {
             className="flex items-center gap-2.5 p-1.5 rounded-xl border border-slate-800/60 hover:bg-slate-900 transition-all"
           >
             <img
-              src={mockUser.avatar}
+              src={user?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200"}
               alt="User avatar"
               className="w-8 h-8 rounded-lg object-cover"
             />
             <span className="text-xs font-bold text-slate-300 hidden sm:block pr-1">
-              {mockUser.name}
+              {user?.fullName || "User"}
             </span>
           </button>
 
@@ -128,8 +130,8 @@ export default function Navbar({ onToggleSidebar }) {
             <div className="absolute right-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] overflow-hidden z-40">
               {/* Profile Overview */}
               <div className="px-5 py-4 border-b border-slate-800">
-                <p className="text-xs font-extrabold text-white truncate">{mockUser.name}</p>
-                <p className="text-[10px] text-slate-500 truncate mt-0.5">{mockUser.email}</p>
+                <p className="text-xs font-extrabold text-white truncate">{user?.fullName || "User"}</p>
+                <p className="text-[10px] text-slate-500 truncate mt-0.5">{user?.email}</p>
               </div>
 
               {/* Menu Links */}
@@ -154,14 +156,16 @@ export default function Navbar({ onToggleSidebar }) {
 
               {/* Logout */}
               <div className="border-t border-slate-800 py-1 bg-slate-900/50">
-                <Link
-                  to="/login"
-                  onClick={() => setShowProfileMenu(false)}
-                  className="flex items-center gap-3 px-5 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/10 transition-colors"
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    logout();
+                  }}
+                  className="w-full flex items-center gap-3 px-5 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/10 transition-colors cursor-pointer text-left"
                 >
                   <FaSignOutAlt size={13} />
                   <span>Logout</span>
-                </Link>
+                </button>
               </div>
             </div>
           )}

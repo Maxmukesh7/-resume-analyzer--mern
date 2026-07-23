@@ -12,6 +12,7 @@ export const validateRequest = (req, res, next) => {
       field: err.path || err.param,
       message: err.msg
     }));
+    console.warn('❌ [DEBUG] Request validation failed. Errors:', formattedErrors);
     return next(badRequestError('Request validation failed', formattedErrors));
   }
   next();

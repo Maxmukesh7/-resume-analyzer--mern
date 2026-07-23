@@ -3,9 +3,11 @@ import { FaBell, FaGlobe, FaPalette, FaLock, FaTrashAlt } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Settings() {
   const { showToast } = useToast();
+  const { changePassword } = useAuth();
 
   // Settings State
   const [darkMode, setDarkMode] = useState(true);
@@ -14,6 +16,12 @@ export default function Settings() {
   const [language, setLanguage] = useState('en');
   const [theme, setTheme] = useState('neon-glow');
   const [isPublic, setIsPublic] = useState(false);
+
+  // Change Password State
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   const handleSave = (sectionName) => {
     showToast(`${sectionName} configurations saved!`, 'success');
@@ -26,8 +34,37 @@ export default function Settings() {
     }
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      showToast('All password fields are required.', 'error');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      showToast('Confirm password does not match.', 'error');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      showToast('New password must be at least 8 characters long.', 'error');
+      return;
+    }
+
+    setPasswordLoading(true);
+    const res = await changePassword(currentPassword, newPassword, confirmPassword);
+    setPasswordLoading(false);
+
+    if (res.success) {
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    }
+  };
+
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto font-sans">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-white tracking-wide">Account Settings</h1>
@@ -135,34 +172,51 @@ export default function Settings() {
           </div>
         </Card>
 
-        {/* Localization & Privacy settings */}
+        {/* Security & Access / Change Password */}
         <Card className="p-8 space-y-6">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-900 pb-3">
-            <FaGlobe size={13} className="text-emerald-400" />
-            <span>Region & Locale</span>
+            <FaLock size={13} className="text-amber-400" />
+            <span>Change Password</span>
           </h3>
 
-          <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Primary Language</label>
-              <select
-                value={language}
-                onChange={(e) => {
-                  setLanguage(e.target.value);
-                  handleSave('Locale Lang');
-                }}
-                className="w-full bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-xs text-slate-350 focus:outline-none focus:border-blue-500/50 cursor-pointer"
-              >
-                <option value="en">English (US/UK)</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
-                <option value="de">Deutsch</option>
-              </select>
+          <form onSubmit={handlePasswordChange} className="space-y-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Current Password</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                placeholder="••••••••"
+              />
             </div>
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">New Password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                placeholder="••••••••"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Confirm New Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                placeholder="••••••••"
+              />
+            </div>
+            <Button type="submit" loading={passwordLoading} size="sm" className="w-full mt-2">
+              Update Password
+            </Button>
+          </form>
         </Card>
 
-        {/* Security & Access */}
+        {/* Privacy settings */}
         <Card className="p-8 space-y-6">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-900 pb-3">
             <FaLock size={13} className="text-amber-400" />
@@ -186,6 +240,23 @@ export default function Settings() {
                     ${isPublic ? 'translate-x-5' : 'translate-x-0'}`}
                 />
               </button>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-2">
+              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Primary Language</label>
+              <select
+                value={language}
+                onChange={(e) => {
+                  setLanguage(e.target.value);
+                  handleSave('Locale Lang');
+                }}
+                className="w-full bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-xs text-slate-350 focus:outline-none focus:border-blue-500/50 cursor-pointer"
+              >
+                <option value="en">English (US/UK)</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+              </select>
             </div>
           </div>
         </Card>

@@ -1,5 +1,17 @@
 import asyncHandler from '../middleware/asyncHandler.js';
+import User from '../models/User.js';
+import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtHelper.js';
+import { formatMongoDoc } from '../utils/dbFormatter.js';
+
+// Cookie options for token persistence
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+};
 
 /**
  * @desc    Register a new user account
@@ -7,9 +19,46 @@ import { successResponse } from '../utils/apiResponse.js';
  * @access  Public
  */
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-  // Placeholder database check & creation goes here in Phase 5
-  return successResponse(res, { name, email }, 'Registration working successfully. Account created.', 201);
+  console.log('📥 [DEBUG] Incoming Registration Request Body:', req.body);
+  const { fullName, email, password } = req.body;
+
+  // Prevent duplicate emails
+  console.log('🔍 [DEBUG] Checking if email already exists:', email);
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    console.warn('⚠️ [DEBUG] Duplicate email warning:', email);
+    throw new ApiError(409, 'A user with this email address already exists.');
+  }
+
+  // Create User (password gets hashed pre-save in User model)
+  console.log('💾 [DEBUG] Creating user in MongoDB...');
+  const user = await User.create({
+    fullName,
+    email,
+    password
+  });
+  console.log('✅ [DEBUG] User created & saved successfully in MongoDB:', user._id);
+
+  // Generate tokens
+  console.log('🔑 [DEBUG] Generating JWT access and refresh tokens...');
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+  console.log('🔑 [DEBUG] Tokens generated successfully.');
+
+  // Set HTTP-Only refresh cookie
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
+  console.log('📤 [DEBUG] Sending successful 201 response...');
+  return successResponse(
+    res,
+    {
+      user: formatMongoDoc(user),
+      token: accessToken,
+      expiresIn: 15 * 60 // 15 mins (in seconds)
+    },
+    'User registered successfully.',
+    201
+  );
 });
 
 /**
@@ -18,9 +67,112 @@ export const register = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const login = asyncHandler(async (req, res) => {
-  const { email } = req.body;
-  // Placeholder user validation & JWT creation goes here in Phase 5
-  return successResponse(res, { email, token: 'dummy-jwt-token' }, 'Authentication working successfully. Logged in.');
+  const { email, password } = req.body;
+
+  // Find user by email
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(401, 'Invalid email or password.');
+  }
+
+  // Check password match
+  const isMatch = await user.matchPassword(password);
+  if (!isMatch) {
+    throw new ApiError(401, 'Invalid email or password.');
+  }
+
+  // Generate tokens
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  // Set HTTP-Only refresh cookie
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
+  return successResponse(
+    res,
+    {
+      user: formatMongoDoc(user),
+      token: accessToken,
+      expiresIn: 15 * 60 // 15 mins
+    },
+    'Logged in successfully.'
+  );
+});
+
+/**
+ * @desc    Log out user and clear cookies
+ * @route   POST /api/auth/logout
+ * @access  Public
+ */
+export const logout = asyncHandler(async (req, res) => {
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
+  return successResponse(res, null, 'Logged out successfully.');
+});
+
+/**
+ * @desc    Get current user profile details
+ * @route   GET /api/auth/profile
+ * @access  Private
+ */
+export const getProfile = asyncHandler(async (req, res) => {
+  // User is attached to req by authenticateUser middleware (password already excluded)
+  return successResponse(res, formatMongoDoc(req.user), 'User profile fetched successfully.');
+});
+
+/**
+ * @desc    Update user profile credentials
+ * @route   PUT /api/auth/profile
+ * @access  Private
+ */
+export const updateProfile = asyncHandler(async (req, res) => {
+  const { fullName, phone, avatar } = req.body;
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(404, 'User not found.');
+  }
+
+  if (fullName !== undefined) user.fullName = fullName;
+  if (phone !== undefined) user.phone = phone;
+  if (avatar !== undefined) user.avatar = avatar;
+
+  const updatedUser = await user.save();
+
+  return successResponse(
+    res,
+    formatMongoDoc(updatedUser),
+    'Profile credentials updated successfully.'
+  );
+});
+
+/**
+ * @desc    Change user account password
+ * @route   PUT /api/auth/change-password
+ * @access  Private
+ */
+export const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(404, 'User not found.');
+  }
+
+  // Verify current password
+  const isMatch = await user.matchPassword(currentPassword);
+  if (!isMatch) {
+    throw new ApiError(400, 'Current password is incorrect.');
+  }
+
+  // Update password (triggers hashing in pre-save hook)
+  user.password = newPassword;
+  await user.save();
+
+  return successResponse(res, null, 'Password updated successfully.');
 });
 
 /**
@@ -44,4 +196,39 @@ export const resetPassword = asyncHandler(async (req, res) => {
   const { password } = req.body;
   // Placeholder reset token handler goes here in Phase 5
   return successResponse(res, null, `Password reset successfully using token: ${token}`);
+});
+
+/**
+ * @desc    Refresh access token using refresh token cookie
+ * @route   POST /api/auth/refresh
+ * @access  Public
+ */
+export const refresh = asyncHandler(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  
+  if (!refreshToken) {
+    throw new ApiError(401, 'Session expired. Authentication token is missing.');
+  }
+
+  try {
+    const decoded = verifyRefreshToken(refreshToken);
+    const user = await User.findById(decoded.id).select('-password');
+    
+    if (!user) {
+      throw new ApiError(401, 'User no longer exists.');
+    }
+
+    const accessToken = generateAccessToken(user);
+    
+    return successResponse(
+      res,
+      {
+        token: accessToken,
+        expiresIn: 15 * 60
+      },
+      'Access token refreshed successfully.'
+    );
+  } catch (error) {
+    throw new ApiError(401, 'Invalid or expired session. Please log in again.');
+  }
 });
