@@ -21,6 +21,7 @@ import ATSReport from './pages/Dashboard/ATSReport';
 import ResumeHistory from './pages/Dashboard/ResumeHistory';
 import ResumeDetails from './pages/Dashboard/ResumeDetails';
 import AIAnalysis from './pages/Dashboard/AIAnalysis';
+import ResumeImprovement from './pages/Dashboard/ResumeImprovement';
 import JobMatch from './pages/Dashboard/JobMatch';
 import Profile from './pages/Dashboard/Profile';
 import Settings from './pages/Dashboard/Settings';
@@ -84,6 +85,8 @@ export default function App() {
                 <Route path="upload" element={<ResumeUpload />} />
                 <Route path="report" element={<ATSReport />} />
                 <Route path="ai-analysis" element={<AIAnalysis />} />
+                <Route path="improve" element={<ResumeImprovement />} />
+                <Route path="improve/:id" element={<ResumeImprovement />} />
                 <Route path="job-match" element={<JobMatch />} />
                 <Route path="history" element={<ResumeHistory />} />
                 <Route path="resume/:id" element={<ResumeDetails />} />
