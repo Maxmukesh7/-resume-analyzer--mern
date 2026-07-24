@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import Resume from '../models/Resume.js';
 import ResumeImprovement from '../models/ResumeImprovement.js';
 import ApiError from '../utils/apiError.js';
+import { parseAndSaveResume } from './resumeParserService.js';
 
 dotenv.config();
 
@@ -116,7 +117,7 @@ function generateFallbackImprovement(parsed, options = {}) {
 export const improveFullResumeService = async (resumeId, userId, options = {}) => {
   const { targetJobDescription = '', experienceLevel = 'Experienced', industry = 'Software Engineering', force = false } = options;
 
-  const resume = await Resume.findById(resumeId);
+  let resume = await Resume.findById(resumeId);
   if (!resume) {
     throw new ApiError(404, 'Resume not found.');
   }
@@ -125,11 +126,23 @@ export const improveFullResumeService = async (resumeId, userId, options = {}) =
     throw new ApiError(403, 'Access denied. You do not have permission to modify this resume.');
   }
 
+  // Ensure candidate resume parsedData has summary field populated
+  if (resume.parsedData && typeof resume.parsedData.summary !== 'string') {
+    resume = await parseAndSaveResume(resumeId, false);
+  }
+
   // Check MongoDB cache unless force regenerate
   if (!force) {
     const existing = await ResumeImprovement.findOne({ resumeId, userId });
     if (existing) {
       console.log(`ℹ️ [DEBUG] Found cached ResumeImprovement for resume ${resumeId}`);
+      if (resume.parsedData?.summary && (!existing.originalResume?.summary || existing.originalResume.summary.length === 0)) {
+        existing.originalResume = {
+          ...(existing.originalResume || {}),
+          summary: resume.parsedData.summary
+        };
+        await existing.save();
+      }
       return existing;
     }
   }
@@ -451,7 +464,7 @@ Return ONLY valid JSON with this format:
  * Fetch saved ResumeImprovement document from MongoDB
  */
 export const getStoredImprovementsService = async (resumeId, userId) => {
-  const resume = await Resume.findById(resumeId);
+  let resume = await Resume.findById(resumeId);
   if (!resume) {
     throw new ApiError(404, 'Resume not found.');
   }
@@ -460,6 +473,19 @@ export const getStoredImprovementsService = async (resumeId, userId) => {
     throw new ApiError(403, 'Access denied. You do not have permission to view improvements for this resume.');
   }
 
+  // Ensure candidate resume parsedData has summary field populated
+  if (resume.parsedData && typeof resume.parsedData.summary !== 'string') {
+    resume = await parseAndSaveResume(resumeId, false);
+  }
+
   const improvement = await ResumeImprovement.findOne({ resumeId, userId });
+  if (improvement && resume.parsedData?.summary && (!improvement.originalResume?.summary || improvement.originalResume.summary.length === 0)) {
+    improvement.originalResume = {
+      ...(improvement.originalResume || {}),
+      summary: resume.parsedData.summary
+    };
+    await improvement.save();
+  }
+
   return improvement;
 };

@@ -45,6 +45,7 @@ const resumeSchema = new mongoose.Schema(
         fullName: '',
         email: '',
         phone: '',
+        summary: '',
         skills: [],
         education: [],
         experience: [],

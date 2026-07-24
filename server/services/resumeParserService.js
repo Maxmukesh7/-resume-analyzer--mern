@@ -100,6 +100,7 @@ export const parseCandidateDetails = (rawText) => {
       fullName: '',
       email: '',
       phone: '',
+      summary: '',
       skills: [],
       education: [],
       experience: [],
@@ -147,7 +148,6 @@ export const parseCandidateDetails = (rawText) => {
   const people = doc.people().out('array');
 
   if (people && people.length > 0) {
-    // Filter out common non-name terms
     const candidateName = people.find(
       (p) => p.length >= 3 && !p.toLowerCase().includes('resume') && !p.toLowerCase().includes('curriculum')
     );
@@ -155,7 +155,6 @@ export const parseCandidateDetails = (rawText) => {
   }
 
   if (!fullName && lines.length > 0) {
-    // Fallback: First non-contact text line
     const firstLine = lines[0];
     if (firstLine.length < 50 && !firstLine.includes('@') && !firstLine.includes('http')) {
       fullName = firstLine.replace(/[^a-zA-Z\s.]/g, '').trim();
@@ -164,7 +163,6 @@ export const parseCandidateDetails = (rawText) => {
 
   // 5. Skills (Match against dictionary)
   const skillsSet = new Set();
-  const lowerText = rawText.toLowerCase();
   SKILLS_DICT.forEach((skill) => {
     const escaped = skill.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
     const regex = new RegExp(`\\b${escaped}\\b`, 'i');
@@ -174,8 +172,10 @@ export const parseCandidateDetails = (rawText) => {
   });
   const skills = Array.from(skillsSet);
 
-  // 6. Section Parsing (Education, Experience, Projects, Certifications, Languages, Location)
+  // 6. Section Parsing (Summary, Education, Experience, Projects, Certifications, Languages)
   const sections = {
+    summary: [],
+    skills: [],
     education: [],
     experience: [],
     projects: [],
@@ -184,35 +184,111 @@ export const parseCandidateDetails = (rawText) => {
     location: ''
   };
 
-  let currentSection = null;
   const sectionKeywords = {
-    education: ['education', 'academic background', 'qualification', 'qualifications'],
-    experience: ['experience', 'work experience', 'employment history', 'work history'],
+    summary: [
+      'professional summary',
+      'summary',
+      'career summary',
+      'profile summary',
+      'objective',
+      'career objective',
+      'about me',
+      'profile',
+      'executive summary',
+      'personal summary',
+      'professional profile',
+      'career profile',
+      'personal statement'
+    ],
+    education: ['education', 'academic background', 'qualification', 'qualifications', 'academic history'],
+    experience: ['experience', 'work experience', 'employment history', 'work history', 'professional experience', 'employment'],
     projects: ['projects', 'personal projects', 'key projects', 'academic projects'],
+    skills: ['skills', 'technical skills', 'core competencies', 'technologies'],
     certifications: ['certifications', 'certificates', 'licenses', 'courses'],
     languages: ['languages', 'language skills', 'spoken languages']
   };
 
-  lines.forEach((line) => {
-    const cleanLine = line.toLowerCase().replace(/[^a-z\s]/g, '').trim();
+  let currentSection = null;
 
-    // Section Header Matching
+  lines.forEach((line) => {
+    const cleanLine = line.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+
+    // Check if line is a section header
+    let matchedHeader = null;
     for (const [secKey, keywords] of Object.entries(sectionKeywords)) {
-      if (keywords.includes(cleanLine)) {
-        currentSection = secKey;
-        return;
+      for (const kw of keywords) {
+        if (cleanLine === kw || (cleanLine.startsWith(kw) && line.length <= 45)) {
+          matchedHeader = secKey;
+          break;
+        }
       }
+      if (matchedHeader) break;
     }
 
-    if (currentSection && line.length > 2) {
-      if (currentSection !== 'location') {
-        // Collect line items for active section
-        if (sections[currentSection].length < 10) {
-          sections[currentSection].push(line);
+    if (matchedHeader) {
+      currentSection = matchedHeader;
+      // Handle inline content after colon/dash e.g. "Professional Summary: Experienced engineer..."
+      const inlineSplit = line.split(/:(.+)|-(.+)/);
+      if (inlineSplit && inlineSplit[1] && inlineSplit[1].trim().length > 10) {
+        sections[matchedHeader].push(inlineSplit[1].trim());
+      }
+      return;
+    }
+
+    if (currentSection) {
+      if (line.length > 2) {
+        if (currentSection === 'summary') {
+          // Limit summary section to first 6 lines or ~1500 chars
+          if (sections.summary.length < 6) {
+            sections.summary.push(line);
+          }
+        } else if (currentSection !== 'location' && Array.isArray(sections[currentSection])) {
+          if (sections[currentSection].length < 15) {
+            sections[currentSection].push(line);
+          }
         }
       }
     }
   });
+
+  // Extract Summary string
+  let extractedSummary = sections.summary.join(' ').replace(/\s+/g, ' ').trim();
+
+  // Fallback: If no explicit summary header was matched, inspect top lines (before any major section header)
+  if (!extractedSummary) {
+    const topLines = lines.slice(1, 8);
+    const candidateSummaryLines = [];
+    const allKeywords = Object.values(sectionKeywords).flat();
+
+    for (const line of topLines) {
+      const cleanLine = line.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+      
+      // Stop fallback if we hit any major section header (e.g. Skills, Experience, Education)
+      if (allKeywords.includes(cleanLine) || /^(skills|experience|education|projects|certifications|languages)$/i.test(cleanLine)) {
+        break;
+      }
+
+      const lower = line.toLowerCase();
+      // Skip contact details, links, locations, or short lines
+      if (
+        lower.includes('@') ||
+        lower.includes('http') ||
+        lower.includes('linkedin') ||
+        lower.includes('github') ||
+        phoneRegex.test(line) ||
+        line.length < 35
+      ) {
+        continue;
+      }
+      // Check if line looks like a descriptive professional summary paragraph
+      if (/developer|engineer|professional|experienced|proficient|passionate|seeking|building|graduated|architect|specialist/i.test(line)) {
+        candidateSummaryLines.push(line);
+      }
+    }
+    if (candidateSummaryLines.length > 0) {
+      extractedSummary = candidateSummaryLines.join(' ').replace(/\s+/g, ' ').trim();
+    }
+  }
 
   // Extract Location (Look for "City, Country" or Compromise NLP places)
   const places = doc.places().out('array');
@@ -237,6 +313,7 @@ export const parseCandidateDetails = (rawText) => {
     fullName: fullName || 'Candidate',
     email,
     phone,
+    summary: extractedSummary,
     skills,
     education: sections.education,
     experience: sections.experience,
@@ -252,7 +329,7 @@ export const parseCandidateDetails = (rawText) => {
 
 /**
  * Main service orchestrator: Extract text, parse candidate details, and update MongoDB document
- * Avoids re-parsing if resume has already been successfully parsed.
+ * Avoids re-parsing if resume has already been successfully parsed with summary.
  * @param {string} resumeId - Database record ID
  * @param {boolean} forceReparse - Force re-parsing even if already parsed
  * @returns {Promise<Object>} Updated resume document with parsedData & parsedText
@@ -264,9 +341,11 @@ export const parseAndSaveResume = async (resumeId, forceReparse = false) => {
     throw new ApiError(404, 'Resume record not found.');
   }
 
-  // Caching performance check: avoid re-parsing if already parsed
-  if (!forceReparse && resume.parseStatus === 'parsed' && resume.parsedData && resume.parsedData.fullName) {
-    console.log(`ℹ️ [DEBUG] Resume ${resumeId} is already parsed. Returning existing cached parsed data.`);
+  // Auto-upgrade legacy records: if parsedData is missing summary property, force re-parse from parsedText
+  const needsSummaryBackfill = resume.parseStatus === 'parsed' && resume.parsedData && typeof resume.parsedData.summary !== 'string';
+
+  if (!forceReparse && !needsSummaryBackfill && resume.parseStatus === 'parsed' && resume.parsedData && resume.parsedData.fullName) {
+    console.log(`ℹ️ [DEBUG] Resume ${resumeId} is already parsed with summary. Returning cached parsed data.`);
     return resume;
   }
 
@@ -276,12 +355,16 @@ export const parseAndSaveResume = async (resumeId, forceReparse = false) => {
   await resume.save();
 
   try {
-    const filePath = path.isAbsolute(resume.uploadPath)
-      ? resume.uploadPath
-      : path.join(process.cwd(), resume.uploadPath);
+    let rawText = resume.parsedText;
 
-    console.log(`⚙️ [DEBUG] Extracting raw text from file: ${filePath} (${resume.fileType})`);
-    const rawText = await extractRawText(filePath, resume.fileType, resume.originalName);
+    if (!rawText || forceReparse) {
+      const filePath = path.isAbsolute(resume.uploadPath)
+        ? resume.uploadPath
+        : path.join(process.cwd(), resume.uploadPath);
+
+      console.log(`⚙️ [DEBUG] Extracting raw text from file: ${filePath} (${resume.fileType})`);
+      rawText = await extractRawText(filePath, resume.fileType, resume.originalName);
+    }
 
     console.log(`⚙️ [DEBUG] Parsing candidate information from extracted text (${rawText.length} characters)...`);
     const parsedData = parseCandidateDetails(rawText);
@@ -293,7 +376,7 @@ export const parseAndSaveResume = async (resumeId, forceReparse = false) => {
     resume.parseError = '';
 
     await resume.save();
-    console.log(`✅ [DEBUG] Successfully parsed & updated Resume ID ${resume._id} in MongoDB!`);
+    console.log(`✅ [DEBUG] Successfully parsed & updated Resume ID ${resume._id} in MongoDB! Summary extracted: "${parsedData.summary ? parsedData.summary.slice(0, 60) + '...' : 'None'}"`);
 
     return resume;
   } catch (error) {

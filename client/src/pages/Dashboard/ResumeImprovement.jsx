@@ -545,7 +545,11 @@ export default function ResumeImprovement() {
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Professional Summary</h4>
                   <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl text-slate-300 text-sm leading-relaxed min-h-[140px]">
-                    {originalData.summary || 'No original summary detected in uploaded document.'}
+                    {(originalData.summary || improvementData?.originalResume?.summary) && (originalData.summary || improvementData?.originalResume?.summary).trim().length > 0 ? (
+                      (originalData.summary || improvementData?.originalResume?.summary)
+                    ) : (
+                      <p className="text-slate-500 text-xs italic">No professional summary found in the uploaded resume.</p>
+                    )}
                   </div>
                 </div>
               )}
