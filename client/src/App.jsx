@@ -23,9 +23,11 @@ import AdminLogin from './pages/Admin/AdminLogin';
 // Dashboard Pages (Lazy Loaded for optimized initial bundle)
 const DashboardOverview = lazy(() => import('./pages/Dashboard/DashboardOverview'));
 const ResumeUpload = lazy(() => import('./pages/Dashboard/ResumeUpload'));
+const ResumeAnalysisDashboard = lazy(() => import('./pages/Dashboard/ResumeAnalysisDashboard'));
 const ATSReport = lazy(() => import('./pages/Dashboard/ATSReport'));
 const ResumeHistory = lazy(() => import('./pages/Dashboard/ResumeHistory'));
 const ResumeDetails = lazy(() => import('./pages/Dashboard/ResumeDetails'));
+
 const AIAnalysis = lazy(() => import('./pages/Dashboard/AIAnalysis'));
 const ResumeImprovement = lazy(() => import('./pages/Dashboard/ResumeImprovement'));
 const JobMatch = lazy(() => import('./pages/Dashboard/JobMatch'));
@@ -109,7 +111,9 @@ export default function App() {
                 <Route path="/dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardOverview />} />
                   <Route path="upload" element={<ResumeUpload />} />
+                  <Route path="analysis/:id" element={<ResumeAnalysisDashboard />} />
                   <Route path="report" element={<ATSReport />} />
+
                   <Route path="ai-analysis" element={<AIAnalysis />} />
                   <Route path="improve" element={<ResumeImprovement />} />
                   <Route path="improve/:id" element={<ResumeImprovement />} />

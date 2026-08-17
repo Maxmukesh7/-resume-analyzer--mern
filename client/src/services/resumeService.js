@@ -100,3 +100,23 @@ export const getResumeAnalysis = async (id) => {
   const response = await api.get(`/resumes/${id}/analysis`);
   return response.data;
 };
+
+/**
+ * Get complete analysis (Resume + ATS + AI) in a single request
+ * @param {string} id 
+ */
+export const getCompleteResumeAnalysis = async (id) => {
+  const response = await api.get(`/resumes/${id}/complete-analysis`);
+  return response.data;
+};
+
+/**
+ * Trigger automated full pipeline analysis (Parsing -> ATS -> AI)
+ * @param {string} id 
+ * @param {boolean} [force]
+ */
+export const autoAnalyzeResume = async (id, force = false) => {
+  const response = await api.post(`/resumes/${id}/auto-analyze`, { force });
+  return response.data;
+};
+

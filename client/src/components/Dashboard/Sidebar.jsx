@@ -42,7 +42,7 @@ export default function Sidebar({ isOpen, onClose }) {
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 w-64 bg-slate-900 border-r border-slate-800/80 z-50 flex flex-col justify-between py-6 transition-transform duration-300 lg:translate-x-0 lg:static lg:h-screen
+        className={`fixed top-0 bottom-0 left-0 w-64 bg-slate-900 border-r border-slate-800/80 z-50 flex flex-col justify-between py-6 transition-transform duration-300 lg:translate-x-0 lg:static lg:h-full lg:overflow-y-auto
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div>

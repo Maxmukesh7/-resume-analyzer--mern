@@ -62,9 +62,9 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans">
+    <div className="h-screen h-[100dvh] bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans overflow-hidden">
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-50">
+      <div className="md:hidden flex-none flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-50">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">
             <FiShield className="w-5 h-5" />
@@ -81,7 +81,7 @@ export default function AdminLayout() {
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between z-40 transition-transform duration-300 ${
+        className={`fixed md:static inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between z-40 transition-transform duration-300 md:h-full md:overflow-y-auto ${
           mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
@@ -152,9 +152,9 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content Workspace */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Top Navbar Header */}
-        <header className="h-16 bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-6 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-16 flex-none bg-slate-900/60 backdrop-blur-md border-b border-slate-800/80 px-6 flex items-center justify-between z-30">
           <div className="flex items-center gap-3">
             <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>

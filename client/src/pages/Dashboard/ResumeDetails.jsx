@@ -145,6 +145,13 @@ export default function ResumeDetails() {
 
         <div className="flex items-center gap-3">
           <Button
+            onClick={() => navigate(`/dashboard/analysis/${id}`)}
+            variant="primary"
+            icon={<FaChartBar size={12} />}
+          >
+            Complete Analysis
+          </Button>
+          <Button
             onClick={handleReparse}
             variant="outline"
             disabled={parsing}

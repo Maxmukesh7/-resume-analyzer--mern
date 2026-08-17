@@ -329,7 +329,7 @@ export default function ResumeImprovement() {
   const originalData = selectedResume?.parsedData || {};
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-8">
       {/* Header Banner */}
       <div className="relative p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-blue-950/40 border border-slate-800 shadow-2xl overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />

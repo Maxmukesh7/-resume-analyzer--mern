@@ -349,7 +349,7 @@ export default function CandidateRanking() {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-16 font-sans">
+    <div className="space-y-8 max-w-7xl mx-auto font-sans">
       {/* Header Banner */}
       <div className="relative p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 shadow-2xl overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />

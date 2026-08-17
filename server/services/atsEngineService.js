@@ -180,18 +180,20 @@ export const evaluateResumeAts = async (resumeId, userId, force = false) => {
   if (textLength > 5000) formattingScore -= 15;
 
   // --- OVERALL ATS SCORE COMPUTATION ---
-  const overallScore = Math.round(
-    skillsScore * 0.20 +
-    experienceScore * 0.20 +
-    educationScore * 0.15 +
-    projectsScore * 0.10 +
-    structureScore * 0.10 +
-    keywordScore * 0.10 +
-    achievementsScore * 0.05 +
-    certificationsScore * 0.05 +
-    contactScore * 0.05 +
-    formattingScore * 0.10
+  const rawOverall = Math.round(
+    Math.min(100, Math.max(0, skillsScore)) * 0.20 +
+    Math.min(100, Math.max(0, experienceScore)) * 0.20 +
+    Math.min(100, Math.max(0, educationScore)) * 0.15 +
+    Math.min(100, Math.max(0, projectsScore)) * 0.10 +
+    Math.min(100, Math.max(0, structureScore)) * 0.10 +
+    Math.min(100, Math.max(0, keywordScore)) * 0.10 +
+    Math.min(100, Math.max(0, achievementsScore)) * 0.05 +
+    Math.min(100, Math.max(0, certificationsScore)) * 0.05 +
+    Math.min(100, Math.max(0, contactScore)) * 0.05 +
+    Math.min(100, Math.max(0, formattingScore)) * 0.10
   );
+  const overallScore = Math.min(100, Math.max(0, rawOverall));
+
 
   // Rating Label
   let ratingLabel = 'Needs Improvement';

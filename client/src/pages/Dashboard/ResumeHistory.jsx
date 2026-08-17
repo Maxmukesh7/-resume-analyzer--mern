@@ -201,6 +201,14 @@ export default function ResumeHistory() {
                       <td className="px-6 py-4.5 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
+                            onClick={() => navigate(`/dashboard/analysis/${itemId}`)}
+                            className="p-2 text-xs font-semibold rounded-lg text-emerald-400 hover:text-white hover:bg-emerald-600/10 border border-emerald-500/20 transition-all flex items-center gap-1.5"
+                            title="View Complete Resume Analysis Dashboard"
+                          >
+                            <FaInfoCircle size={12} />
+                            <span className="hidden sm:inline">Analysis</span>
+                          </button>
+                          <button
                             onClick={() => navigate(`/dashboard/report?id=${itemId}`)}
                             className="p-2 text-xs font-semibold rounded-lg text-purple-400 hover:text-white hover:bg-purple-600/10 border border-purple-500/20 transition-all flex items-center gap-1.5"
                             title="View ATS Evaluation Report"

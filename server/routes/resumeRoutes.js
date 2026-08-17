@@ -11,7 +11,9 @@ import {
   getParsedResume,
   getResumeText,
   analyzeResume,
-  getResumeAnalysis
+  getResumeAnalysis,
+  getCompleteResumeAnalysis,
+  autoAnalyzeResume
 } from '../controllers/resumeController.js';
 import ApiError from '../utils/apiError.js';
 
@@ -43,6 +45,12 @@ router.post('/upload', handleUpload, uploadResume);
 // Route: Get all resumes for authenticated user
 router.get('/', getResumes);
 
+// Route: Get Complete Resume Analysis (Resume + ATS + AI)
+router.get('/:id/complete-analysis', getCompleteResumeAnalysis);
+
+// Route: Automated end-to-end analysis pipeline trigger
+router.post('/:id/auto-analyze', autoAnalyzeResume);
+
 // Route: Get Resume details by ID
 router.get('/:id', getResumeDetails);
 
@@ -65,3 +73,4 @@ router.post('/:id/analyze', analyzeResume);
 router.get('/:id/analysis', getResumeAnalysis);
 
 export default router;
+

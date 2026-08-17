@@ -1,11 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import Resume from '../models/Resume.js';
+import ResumeAnalysis from '../models/ResumeAnalysis.js';
+import AIAnalysis from '../models/AIAnalysis.js';
 import asyncHandler from '../middleware/asyncHandler.js';
 import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { parseAndSaveResume } from '../services/resumeParserService.js';
 import { evaluateResumeAts } from '../services/atsEngineService.js';
+import { generateGeminiResumeAnalysis } from '../services/geminiService.js';
 
 /**
  * @desc    Upload a resume file (PDF/DOC/DOCX) and automatically parse text & candidate details
@@ -253,3 +256,160 @@ export const getResumeAnalysis = asyncHandler(async (req, res) => {
     'ATS evaluation report retrieved successfully.'
   );
 });
+
+/**
+ * @desc    Get complete analysis (Resume details, ATS Analysis, AI Analysis) for a resume
+ * @route   GET /api/resumes/:id/complete-analysis
+ * @access  Private
+ */
+export const getCompleteResumeAnalysis = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const resume = await Resume.findById(id);
+  if (!resume) {
+    throw new ApiError(404, 'Resume not found.');
+  }
+
+  if (resume.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'Access denied. You do not have permission to view this analysis.');
+  }
+
+  // Fetch ATS & AI analysis documents in parallel
+  const [atsAnalysis, aiAnalysis] = await Promise.all([
+    ResumeAnalysis.findOne({ resume: id }),
+    AIAnalysis.findOne({ resumeId: id })
+  ]);
+
+  const isParsed = resume.parseStatus === 'parsed' && Boolean(resume.parsedData?.fullName);
+  const hasAts = Boolean(atsAnalysis && typeof atsAnalysis.overallScore === 'number');
+  const hasAi = Boolean(aiAnalysis && aiAnalysis.summary);
+
+  let state = 'COMPLETED';
+  if (!isParsed) {
+    state = resume.parseStatus === 'failed' ? 'FAILED' : 'PARSING';
+  } else if (!hasAts) {
+    state = 'ATS_ANALYSIS';
+  } else if (!hasAi) {
+    state = 'AI_ANALYSIS';
+  }
+
+  return successResponse(
+    res,
+    {
+      resume,
+      atsAnalysis: atsAnalysis || null,
+      aiAnalysis: aiAnalysis || null,
+      status: {
+        state,
+        isParsed,
+        hasAts,
+        hasAi,
+        parseStatus: resume.parseStatus || 'pending',
+        parseError: resume.parseError || ''
+      }
+    },
+    'Complete resume analysis retrieved successfully.'
+  );
+});
+
+/**
+ * @desc    Trigger automated end-to-end resume analysis pipeline (Parsing -> ATS -> AI)
+ * @route   POST /api/resumes/:id/auto-analyze
+ * @access  Private
+ */
+export const autoAnalyzeResume = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { force } = req.body || {};
+
+  let resume = await Resume.findById(id);
+  if (!resume) {
+    throw new ApiError(404, 'Resume not found.');
+  }
+
+  if (resume.user.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, 'Access denied.');
+  }
+
+  const stageStatuses = {
+    upload: 'completed',
+    parsing: 'pending',
+    ats: 'pending',
+    ai: 'pending',
+    errors: {}
+  };
+
+  // Step 1: Parsing
+  try {
+    if (resume.parseStatus !== 'parsed' || !resume.parsedData?.fullName || force) {
+      resume = await parseAndSaveResume(id, force === true);
+    }
+    stageStatuses.parsing = 'completed';
+  } catch (parseErr) {
+    stageStatuses.parsing = 'failed';
+    stageStatuses.errors.parsing = parseErr.message;
+    return successResponse(
+      res,
+      {
+        resume,
+        atsAnalysis: null,
+        aiAnalysis: null,
+        stageStatuses,
+        state: 'FAILED',
+        message: `Parsing failed: ${parseErr.message}`
+      },
+      'Parsing failed.',
+      200
+    );
+  }
+
+  // Step 2: ATS Evaluation
+  let atsAnalysis = null;
+  try {
+    atsAnalysis = await evaluateResumeAts(id, req.user._id, force === true);
+    stageStatuses.ats = 'completed';
+  } catch (atsErr) {
+    stageStatuses.ats = 'failed';
+    stageStatuses.errors.ats = atsErr.message;
+    return successResponse(
+      res,
+      {
+        resume,
+        atsAnalysis: null,
+        aiAnalysis: null,
+        stageStatuses,
+        state: 'FAILED',
+        message: `ATS Evaluation failed: ${atsErr.message}`
+      },
+      'ATS Evaluation failed.',
+      200
+    );
+  }
+
+  // Step 3: AI Analysis (Gemini)
+  let aiAnalysis = null;
+  try {
+    aiAnalysis = await generateGeminiResumeAnalysis(id, req.user._id, force === true);
+    stageStatuses.ai = 'completed';
+  } catch (aiErr) {
+    console.warn(`⚠️ [AutoAnalyze] AI analysis encountered error for resume ${id}:`, aiErr.message);
+    stageStatuses.ai = 'failed';
+    stageStatuses.errors.ai = aiErr.message || 'AI analysis could not be completed.';
+  }
+
+  const overallState = stageStatuses.ai === 'completed' ? 'COMPLETED' : 'ATS_COMPLETED_AI_FAILED';
+
+  return successResponse(
+    res,
+    {
+      resume,
+      atsAnalysis,
+      aiAnalysis,
+      stageStatuses,
+      state: overallState
+    },
+    overallState === 'COMPLETED'
+      ? 'Resume analysis completed successfully.'
+      : 'ATS analysis completed. AI analysis could not be completed.'
+  );
+});
+

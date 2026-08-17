@@ -1269,8 +1269,14 @@ export const parseAndSaveResume = async (resumeId, forceReparse = false) => {
         ? resume.uploadPath
         : path.join(process.cwd(), resume.uploadPath);
 
-      console.log(`⚙️ [Parser] Extracting text — ${filePath} (${resume.fileType})`);
-      rawText = await extractRawText(filePath, resume.fileType, resume.originalName);
+      if (fs.existsSync(filePath)) {
+        console.log(`⚙️ [Parser] Extracting text — ${filePath} (${resume.fileType})`);
+        rawText = await extractRawText(filePath, resume.fileType, resume.originalName);
+      } else if (!rawText) {
+        throw new Error(`Resume file not found: ${filePath}`);
+      } else {
+        console.log(`ℹ️ [Parser] Physical file not found at ${filePath}, using stored parsedText.`);
+      }
     }
 
     console.log(`⚙️ [Parser] Analysing ${rawText.length} chars…`);
