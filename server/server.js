@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 
 // Import config
 import connectDB from './config/db.js';
+import seedInitialAdmin from './utils/seedAdmin.js';
 
 // Import custom middleware
 import { loggerMiddleware } from './middleware/loggerMiddleware.js';
@@ -26,8 +27,13 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import jobMatchRoutes from './routes/jobMatch.routes.js';
+import recruiterRoutes from './routes/recruiterRoutes.js';
 
-// Load env variables
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load env variables (from server/.env and root .env)
+dotenv.config({ path: path.join(__dirname, '.env') });
 dotenv.config();
 
 const app = express();
@@ -58,9 +64,9 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps, curl, postman)
     if (!origin) return callback(null, true);
     
-    // In development mode, allow any localhost origin
+    // In development mode, allow any localhost or 127.0.0.1 origin
     if (process.env.NODE_ENV === 'development') {
-      if (origin.startsWith('http://localhost:')) {
+      if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
         return callback(null, true);
       }
     }
@@ -81,8 +87,6 @@ app.use(cors({
 }));
 
 // Setup static uploads folder directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mount API routes
@@ -96,6 +100,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/job-match', jobMatchRoutes);
+app.use('/api/recruiter', recruiterRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -147,6 +152,8 @@ const startServer = async (port) => {
   try {
     // 1. Connect to database before listening to requests
     await connectDB();
+    // 2. Ensure initial administrator exists
+    await seedInitialAdmin();
   } catch (err) {
     console.error('💥 Server startup aborted due to database connection error:', err.message);
     process.exit(1);

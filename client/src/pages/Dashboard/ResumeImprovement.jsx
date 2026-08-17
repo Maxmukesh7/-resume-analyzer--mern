@@ -545,11 +545,14 @@ export default function ResumeImprovement() {
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Professional Summary</h4>
                   <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl text-slate-300 text-sm leading-relaxed min-h-[140px]">
-                    {(originalData.summary || improvementData?.originalResume?.summary) && (originalData.summary || improvementData?.originalResume?.summary).trim().length > 0 ? (
-                      (originalData.summary || improvementData?.originalResume?.summary)
-                    ) : (
-                      <p className="text-slate-500 text-xs italic">No professional summary found in the uploaded resume.</p>
-                    )}
+                    {(() => {
+                      const sum = (originalData.summary || improvementData?.originalResume?.summary || '').trim();
+                      return sum.length > 0 ? (
+                        sum
+                      ) : (
+                        <p className="text-slate-500 text-xs italic">No professional summary found in the uploaded resume.</p>
+                      );
+                    })()}
                   </div>
                 </div>
               )}
@@ -557,47 +560,85 @@ export default function ResumeImprovement() {
               {activeTab === 'experience' && (
                 <div className="space-y-4">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Work Experience Entries</h4>
-                  {(!originalData.experience || originalData.experience.length === 0) ? (
-                    <p className="text-slate-500 text-xs italic">No experience entries found in original resume.</p>
-                  ) : (
-                    originalData.experience.map((exp, idx) => (
+                  {(() => {
+                    const expList = originalData.experience?.length
+                      ? originalData.experience
+                      : improvementData?.originalResume?.experience || [];
+                    if (!expList || expList.length === 0) {
+                      return <p className="text-slate-500 text-xs italic">No experience entries found in uploaded resume.</p>;
+                    }
+                    return expList.map((exp, idx) => (
                       <div key={idx} className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-2">
-                        <div className="flex justify-between items-start">
-                          <span className="font-bold text-white text-sm">{exp.role || 'Role'}</span>
-                          <span className="text-xs text-slate-400">{exp.period}</span>
-                        </div>
-                        <p className="text-xs text-blue-400 font-medium">{exp.company}</p>
-                        <ul className="list-disc list-inside text-slate-300 text-xs space-y-1 pt-1">
-                          {(exp.bulletPoints?.length ? exp.bulletPoints : [exp.description]).map((bp, bIdx) => (
-                            <li key={bIdx} className="leading-relaxed">{bp}</li>
-                          ))}
-                        </ul>
+                        {typeof exp === 'object' && exp !== null ? (
+                          <>
+                            <div className="flex justify-between items-start gap-2">
+                              <div>
+                                <span className="font-bold text-white text-sm block">{exp.role || 'Role'}</span>
+                                <span className="text-xs text-amber-400 font-medium">{exp.company}</span>
+                              </div>
+                              {exp.period && (
+                                <span className="text-xs text-slate-400 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800 whitespace-nowrap">
+                                  {exp.period}
+                                </span>
+                              )}
+                            </div>
+                            {(exp.bulletPoints?.length > 0 || exp.description) && (
+                              <ul className="list-disc list-inside text-slate-300 text-xs space-y-1 pt-1">
+                                {(exp.bulletPoints?.length > 0 ? exp.bulletPoints : [exp.description]).map((bp, bIdx) => (
+                                  <li key={bIdx} className="leading-relaxed">{bp}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </>
+                        ) : (
+                          <p className="text-slate-300 text-xs">{exp}</p>
+                        )}
                       </div>
-                    ))
-                  )}
+                    ));
+                  })()}
                 </div>
               )}
 
               {activeTab === 'projects' && (
                 <div className="space-y-4">
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Key Projects</h4>
-                  {(!originalData.projects || originalData.projects.length === 0) ? (
-                    <p className="text-slate-500 text-xs italic">No project entries found in original resume.</p>
-                  ) : (
-                    originalData.projects.map((proj, idx) => (
+                  {(() => {
+                    const projList = originalData.projects?.length
+                      ? originalData.projects
+                      : improvementData?.originalResume?.projects || [];
+                    if (!projList || projList.length === 0) {
+                      return <p className="text-slate-500 text-xs italic">No project entries found in uploaded resume.</p>;
+                    }
+                    return projList.map((proj, idx) => (
                       <div key={idx} className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-2">
-                        <h5 className="font-bold text-white text-sm">{proj.title || 'Project'}</h5>
-                        <p className="text-xs text-slate-300">{proj.description}</p>
-                        {proj.technologies?.length > 0 && (
-                          <div className="flex flex-wrap gap-1 pt-1">
-                            {proj.technologies.map((t, tIdx) => (
-                              <span key={tIdx} className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[10px]">{t}</span>
-                            ))}
-                          </div>
+                        {typeof proj === 'object' && proj !== null ? (
+                          <>
+                            <h5 className="font-bold text-white text-sm">{proj.title || 'Project'}</h5>
+                            {proj.description && <p className="text-xs text-slate-300">{proj.description}</p>}
+                            {proj.technologies?.length > 0 && (
+                              <div className="flex flex-wrap gap-1 pt-1">
+                                {proj.technologies.map((t, tIdx) => (
+                                  <span key={tIdx} className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[10px]">{t}</span>
+                                ))}
+                              </div>
+                            )}
+                            {proj.bulletPoints?.length > 0 && (
+                              <ul className="list-disc list-inside text-slate-300 text-xs space-y-1 pt-1">
+                                {proj.bulletPoints.map((bp, bIdx) => (
+                                  <li key={bIdx} className="leading-relaxed">{bp}</li>
+                                ))}
+                              </ul>
+                            )}
+                            {proj.duration && (
+                              <p className="text-slate-500 text-[10px] pt-0.5">📅 {proj.duration}</p>
+                            )}
+                          </>
+                        ) : (
+                          <p className="text-slate-300 text-xs">• {proj}</p>
                         )}
                       </div>
-                    ))
-                  )}
+                    ));
+                  })()}
                 </div>
               )}
 

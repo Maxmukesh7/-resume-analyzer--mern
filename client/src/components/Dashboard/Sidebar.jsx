@@ -11,7 +11,8 @@ import {
   FaRobot,
   FaTimes,
   FaBriefcase,
-  FaMagic
+  FaMagic,
+  FaTrophy
 } from 'react-icons/fa';
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -25,6 +26,7 @@ export default function Sidebar({ isOpen, onClose }) {
     { name: 'AI Insights', path: '/dashboard/ai-analysis', icon: <FaRobot size={18} /> },
     { name: 'AI Improvement', path: '/dashboard/improve', icon: <FaMagic size={18} /> },
     { name: 'Job Match', path: '/dashboard/job-match', icon: <FaBriefcase size={18} /> },
+    { name: 'Candidate Ranking', path: '/dashboard/rankings', icon: <FaTrophy size={18} /> },
     { name: 'Profile', path: '/dashboard/profile', icon: <FaUser size={18} /> },
     { name: 'Settings', path: '/dashboard/settings', icon: <FaCog size={18} /> },
   ];

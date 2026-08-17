@@ -4,18 +4,22 @@ const activityLogSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    default: null // Can be null for guest requests (e.g. failed login actions)
+    default: null
   },
   action: {
     type: String,
     required: [true, 'Activity log action description is required.'],
     trim: true
   },
+  description: {
+    type: String,
+    default: ''
+  },
   ipAddress: {
     type: String,
     default: ''
   },
-  browser: {
+  device: {
     type: String,
     default: ''
   },

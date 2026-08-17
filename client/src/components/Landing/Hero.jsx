@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaPlay, FaArrowRight, FaSpinner } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import Spline from '@splinetool/react-spline';
 
 export default function Hero() {
   const [splineLoaded, setSplineLoaded] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <section id="home" className="relative min-h-screen pt-32 pb-20 flex items-center overflow-hidden bg-slate-950">
@@ -41,12 +43,18 @@ export default function Hero() {
 
           {/* Buttons */}
           <div className="flex flex-wrap gap-4 pt-2">
-            <button className="flex items-center gap-2 px-7 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg hover:shadow-[0_8px_30px_rgba(79,70,229,0.4)] transition-all duration-300 hover:-translate-y-1">
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 px-7 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg hover:shadow-[0_8px_30px_rgba(79,70,229,0.4)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            >
               Analyze Resume <FaArrowRight size={14} />
             </button>
-            <button className="flex items-center gap-2 px-7 py-4 bg-slate-900/60 border border-slate-800 hover:bg-slate-850 hover:border-slate-700 text-slate-200 font-bold rounded-xl transition-all duration-300 hover:-translate-y-1">
+            <a 
+              href="#how-it-works"
+              className="flex items-center gap-2 px-7 py-4 bg-slate-900/60 border border-slate-800 hover:bg-slate-850 hover:border-slate-700 text-slate-200 font-bold rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            >
               <FaPlay size={12} className="text-blue-400" /> Watch Demo
-            </button>
+            </a>
           </div>
 
           {/* Micro stats banner */}

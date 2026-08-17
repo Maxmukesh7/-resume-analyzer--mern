@@ -176,7 +176,7 @@ export const evaluateResumeAts = async (resumeId, userId, force = false) => {
 
   // --- CATEGORY 10: Formatting Score (10%) ---
   let formattingScore = 90;
-  if (rawText.includes('') || rawText.includes('??')) formattingScore -= 20;
+  if (/\uFFFD/.test(rawText) || rawText.includes('??')) formattingScore -= 20;
   if (textLength > 5000) formattingScore -= 15;
 
   // --- OVERALL ATS SCORE COMPUTATION ---

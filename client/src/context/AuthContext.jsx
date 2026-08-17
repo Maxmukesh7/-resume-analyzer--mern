@@ -43,11 +43,8 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setToken(accessToken);
       
-      if (rememberMe) {
-        localStorage.setItem('token', accessToken);
-      } else {
-        localStorage.removeItem('token');
-      }
+      // Always store token in localStorage so API interceptors and page refreshes work smoothly
+      localStorage.setItem('token', accessToken);
 
       showToast(res.data.message || 'Logged in successfully!', 'success');
       return { success: true };

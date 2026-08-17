@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: {
-        values: ['user', 'admin'],
+        values: ['user', 'admin', 'recruiter'],
         message: '{VALUE} is not a supported role.'
       },
       default: 'user'
@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema(
     isVerified: {
       type: Boolean,
       default: false
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   {

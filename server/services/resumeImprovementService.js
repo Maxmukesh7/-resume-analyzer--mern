@@ -11,12 +11,11 @@ dotenv.config();
  */
 function generateFallbackImprovement(parsed, options = {}) {
   const { targetJobDescription = '', experienceLevel = 'Experienced' } = options;
-  const fullName = parsed.fullName || 'Candidate';
   const rawSkills = parsed.skills || [];
 
   // Summary improvement fallback logic
   const isFresher = (experienceLevel || '').toLowerCase() === 'fresher' || (parsed.experience?.length || 0) === 0;
-  
+
   let improvedSummary = isFresher
     ? `Highly motivated and detail-oriented Computer Science professional with a strong foundation in modern software engineering principles, full-stack application development, and problem solving. Demonstrated hands-on expertise in building responsive web applications using ${rawSkills.slice(0, 4).join(', ') || 'React, Node.js, and modern JavaScript'}. Eager to leverage technical skills, quick learning capabilities, and collaborative mindset to contribute effectively to high-impact development projects.`
     : `Results-driven Software Engineer with extensive experience in designing, building, and deploying scalable web applications and distributed systems. Proficient across the full software lifecycle with specialized expertise in ${rawSkills.slice(0, 5).join(', ') || 'JavaScript, MERN Stack, and Cloud Architectures'}. Proven track record of optimizing application performance, implementing robust API endpoints, and delivering business value through clean, maintainable code.`;
@@ -26,13 +25,19 @@ function generateFallbackImprovement(parsed, options = {}) {
   }
 
   // Experience bullet points enhancer fallback
+  // New parser outputs: { company, role, period, bulletPoints[] }
   const improvedExperience = (parsed.experience || []).map((exp) => {
-    const rawBullets = exp.bulletPoints || (exp.description ? [exp.description] : []);
+    const rawBullets = Array.isArray(exp.bulletPoints) && exp.bulletPoints.length > 0
+      ? exp.bulletPoints
+      : exp.description
+        ? [exp.description]
+        : typeof exp === 'string'
+          ? [exp]
+          : ['Contributed to core product features and engineering excellence.'];
+
     const enhancedBullets = rawBullets.map((b) => {
-      let trimmed = b.trim().replace(/^\s*[-•*]\s*/, '');
+      let trimmed = (b || '').trim().replace(/^\s*[-•*]\s*/, '');
       if (!trimmed) return 'Engineered scalable features using industry standard design patterns, improving system throughput and reliability.';
-      
-      // If short bullet, enhance with metrics & verbs
       if (!/developed|engineered|designed|architected|optimized|implemented|spearheaded/i.test(trimmed)) {
         trimmed = `Engineered and optimized ${trimmed.toLowerCase()}, enhancing system performance and user satisfaction across production workloads.`;
       }
@@ -44,24 +49,32 @@ function generateFallbackImprovement(parsed, options = {}) {
 
     if (enhancedBullets.length === 0) {
       enhancedBullets.push(
-        `Architected and deployed responsive modules for ${exp.company || 'production environment'} utilizing ${rawSkills.slice(0, 3).join(', ') || 'modern frameworks'}, driving a 30% speed improvement in data processing.`
+        `Architected and deployed responsive modules for ${typeof exp === 'object' ? (exp.company || 'production environment') : 'production environment'} utilizing ${rawSkills.slice(0, 3).join(', ') || 'modern frameworks'}, driving a 30% speed improvement in data processing.`
       );
     }
 
     return {
-      company: exp.company || 'Technology Organization',
-      role: exp.role || 'Software Engineer',
-      description: exp.description || 'Full stack development and feature delivery.',
+      company: (typeof exp === 'object' ? exp.company : '') || 'Technology Organization',
+      role: (typeof exp === 'object' ? exp.role : '') || 'Software Engineer',
+      description: (typeof exp === 'object' ? exp.description : exp) || 'Full stack development and feature delivery.',
       bulletPoints: enhancedBullets,
-      period: exp.period || '2022 - Present'
+      period: (typeof exp === 'object' ? exp.period : '') || '2022 - Present'
     };
   });
 
   // Projects improvement fallback
+  // New parser outputs: { title, description, technologies[], bulletPoints[], duration }
   const improvedProjects = (parsed.projects || []).map((proj) => {
-    const rawBullets = proj.bulletPoints || (proj.description ? [proj.description] : []);
+    const rawBullets = Array.isArray(proj.bulletPoints) && proj.bulletPoints.length > 0
+      ? proj.bulletPoints
+      : proj.description
+        ? [proj.description]
+        : typeof proj === 'string'
+          ? [proj]
+          : [];
+
     const enhancedBullets = rawBullets.map((b) => {
-      let trimmed = b.trim().replace(/^\s*[-•*]\s*/, '');
+      let trimmed = (b || '').trim().replace(/^\s*[-•*]\s*/, '');
       if (!trimmed) return 'Developed and deployed high-performance application modules using modern state management and clean REST API endpoints.';
       if (!/deployed|built|designed|implemented|integrated/i.test(trimmed)) {
         trimmed = `Designed and built ${trimmed.toLowerCase()} with focus on maintainable clean code architecture and seamless user interface responsiveness.`;
@@ -73,16 +86,18 @@ function generateFallbackImprovement(parsed, options = {}) {
     });
 
     if (enhancedBullets.length === 0) {
+      const projTitle = typeof proj === 'object' ? (proj.title || 'Full Stack Application') : 'Full Stack Application';
+      const projTech = typeof proj === 'object' ? (proj.technologies?.join(', ') || 'React, Node.js, and MongoDB') : 'React, Node.js, and MongoDB';
       enhancedBullets.push(
-        `Built and published ${proj.title || 'Full Stack Application'} using ${proj.technologies?.join(', ') || 'React, Node.js, and MongoDB'}, supporting real-time data synchronization and responsive UI design.`
+        `Built and published ${projTitle} using ${projTech}, supporting real-time data synchronization and responsive UI design.`
       );
     }
 
     return {
-      title: proj.title || 'MERN Stack Web Application',
-      description: proj.description || 'Full stack web application with real-time capabilities.',
+      title: (typeof proj === 'object' ? proj.title : proj) || 'MERN Stack Web Application',
+      description: (typeof proj === 'object' ? proj.description : '') || 'Full stack web application with real-time capabilities.',
       bulletPoints: enhancedBullets,
-      technologies: proj.technologies?.length ? proj.technologies : ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS']
+      technologies: (typeof proj === 'object' && proj.technologies?.length) ? proj.technologies : ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS']
     };
   });
 
@@ -252,11 +267,37 @@ Return ONLY a valid JSON object matching this EXACT structure with no markdown b
   }
 
   // Construct final MongoDB document payload
+  // Handle both new structured objects and legacy flat string arrays
+  const normalizeExperienceForStorage = (expArr) =>
+    (expArr || []).map((exp) =>
+      typeof exp === 'object' && exp !== null
+        ? {
+            company: exp.company || '',
+            role: exp.role || '',
+            period: exp.period || '',
+            description: exp.description || '',
+            bulletPoints: Array.isArray(exp.bulletPoints) ? exp.bulletPoints : []
+          }
+        : { company: '', role: '', period: '', description: String(exp), bulletPoints: [] }
+    );
+
+  const normalizeProjectsForStorage = (projArr) =>
+    (projArr || []).map((proj) =>
+      typeof proj === 'object' && proj !== null
+        ? {
+            title: proj.title || '',
+            description: proj.description || '',
+            technologies: Array.isArray(proj.technologies) ? proj.technologies : [],
+            bulletPoints: Array.isArray(proj.bulletPoints) ? proj.bulletPoints : []
+          }
+        : { title: String(proj), description: '', technologies: [], bulletPoints: [] }
+    );
+
   const originalResumePayload = {
     summary: parsed.summary || '',
     skills: parsed.skills || [],
-    experience: parsed.experience || [],
-    projects: parsed.projects || []
+    experience: normalizeExperienceForStorage(parsed.experience),
+    projects: normalizeProjectsForStorage(parsed.projects)
   };
 
   const improvedResumePayload = {

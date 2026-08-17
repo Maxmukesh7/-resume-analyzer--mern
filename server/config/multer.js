@@ -30,15 +30,17 @@ const fileFilter = (req, file, cb) => {
   const allowedExtensions = ['.pdf', '.doc', '.docx'];
   const allowedMimeTypes = [
     'application/pdf',
+    'application/x-pdf',
     'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/octet-stream'
   ];
 
   const ext = path.extname(file.originalname).toLowerCase();
   const isValidExt = allowedExtensions.includes(ext);
-  const isValidMime = allowedMimeTypes.includes(file.mimetype);
+  const isValidMime = allowedMimeTypes.includes(file.mimetype) || file.mimetype.startsWith('application/');
 
-  if (isValidExt && isValidMime) {
+  if (isValidExt && (isValidMime || !file.mimetype)) {
     cb(null, true);
   } else {
     cb(new ApiError(400, 'Unsupported file format. Only PDF (.pdf), DOC (.doc), and DOCX (.docx) files are allowed!'), false);

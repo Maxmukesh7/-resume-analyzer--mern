@@ -301,26 +301,69 @@ export default function ResumeDetails() {
           </Card>
 
           {/* Skills Card */}
-          <Card className="p-6 space-y-4">
-            <div className="flex items-center gap-3">
-              <FaCode className="text-blue-400" size={16} />
+          <Card className="p-6 space-y-5">
+            <div className="flex items-center gap-3 border-b border-slate-850 pb-3">
+              <FaCode className="text-blue-400" size={18} />
               <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
-                Technical Skills ({parsed.skills?.length || 0})
+                Skills Profile ({parsed.skills?.length || 0})
               </h3>
             </div>
-            {parsed.skills && parsed.skills.length > 0 ? (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {parsed.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-blue-950/40 border border-blue-800/40 text-blue-300 rounded-xl text-xs font-semibold"
-                  >
-                    {skill}
-                  </span>
-                ))}
+
+            {/* Technical Skills Sub-Section */}
+            {parsed.technicalSkills && parsed.technicalSkills.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[11px] text-blue-400 font-bold uppercase tracking-wider block">
+                  Technical Stack & Technologies ({parsed.technicalSkills.length})
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {parsed.technicalSkills.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-blue-950/40 border border-blue-800/40 text-blue-300 rounded-xl text-xs font-semibold"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
-            ) : (
-              <p className="text-xs text-slate-500">No explicit technical skills identified in document.</p>
+            )}
+
+            {/* Soft Skills Sub-Section */}
+            {parsed.softSkills && parsed.softSkills.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-slate-850/50">
+                <span className="text-[11px] text-purple-400 font-bold uppercase tracking-wider block">
+                  Soft Skills & Professional Competencies ({parsed.softSkills.length})
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {parsed.softSkills.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-purple-950/40 border border-purple-800/40 text-purple-300 rounded-xl text-xs font-semibold"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Fallback All Skills if categorized arrays not populated */}
+            {(!parsed.technicalSkills || parsed.technicalSkills.length === 0) &&
+             (!parsed.softSkills || parsed.softSkills.length === 0) && (
+              parsed.skills && parsed.skills.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {parsed.skills.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-blue-950/40 border border-blue-800/40 text-blue-300 rounded-xl text-xs font-semibold"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500">No explicit technical or soft skills identified in document.</p>
+              )
             )}
           </Card>
 
@@ -335,10 +378,25 @@ export default function ResumeDetails() {
                 </h3>
               </div>
               {parsed.education && parsed.education.length > 0 ? (
-                <ul className="space-y-2 text-xs divide-y divide-slate-850/50">
+                <ul className="space-y-3 text-xs">
                   {parsed.education.map((edu, idx) => (
-                    <li key={idx} className="pt-2 text-slate-300 font-medium">
-                      {edu}
+                    <li key={idx} className="pt-2 border-t border-slate-850/50 first:border-t-0 first:pt-0">
+                      {typeof edu === 'object' && edu !== null ? (
+                        <div className="space-y-0.5">
+                          {edu.degree && (
+                            <p className="text-white font-bold">{edu.degree}</p>
+                          )}
+                          {edu.institution && (
+                            <p className="text-blue-400 font-medium">{edu.institution}</p>
+                          )}
+                          <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-slate-400">
+                            {edu.year && <span>📅 {edu.year}</span>}
+                            {edu.grade && <span>🎯 {edu.grade}</span>}
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-slate-300 font-medium">{edu}</p>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -356,10 +414,33 @@ export default function ResumeDetails() {
                 </h3>
               </div>
               {parsed.experience && parsed.experience.length > 0 ? (
-                <ul className="space-y-2 text-xs divide-y divide-slate-850/50">
+                <ul className="space-y-4 text-xs divide-y divide-slate-850/50">
                   {parsed.experience.map((exp, idx) => (
-                    <li key={idx} className="pt-2 text-slate-300 font-medium">
-                      {exp}
+                    <li key={idx} className="pt-3 first:pt-0">
+                      {typeof exp === 'object' && exp !== null ? (
+                        <div className="space-y-1.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="text-white font-bold">{exp.role || 'Role'}</p>
+                              <p className="text-purple-400 font-medium">{exp.company}</p>
+                            </div>
+                            {exp.period && (
+                              <span className="text-slate-400 text-[10px] whitespace-nowrap mt-0.5 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800">
+                                {exp.period}
+                              </span>
+                            )}
+                          </div>
+                          {(exp.bulletPoints?.length > 0) && (
+                            <ul className="list-disc list-inside space-y-0.5 pl-1">
+                              {exp.bulletPoints.slice(0, 4).map((bp, bIdx) => (
+                                <li key={bIdx} className="text-slate-300 leading-relaxed">{bp}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-slate-300 font-medium">{exp}</p>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -380,9 +461,30 @@ export default function ResumeDetails() {
                 </h3>
               </div>
               {parsed.projects && parsed.projects.length > 0 ? (
-                <ul className="space-y-1.5 text-xs text-slate-300">
+                <ul className="space-y-3 text-xs">
                   {parsed.projects.map((proj, idx) => (
-                    <li key={idx} className="truncate" title={proj}>&bull; {proj}</li>
+                    <li key={idx} className="border-t border-slate-850/50 pt-2.5 first:border-t-0 first:pt-0">
+                      {typeof proj === 'object' && proj !== null ? (
+                        <div className="space-y-1">
+                          <p className="text-white font-bold truncate" title={proj.title}>{proj.title || 'Project'}</p>
+                          {proj.description && (
+                            <p className="text-slate-400 leading-relaxed line-clamp-2">{proj.description}</p>
+                          )}
+                          {proj.technologies?.length > 0 && (
+                            <div className="flex flex-wrap gap-1 pt-0.5">
+                              {proj.technologies.slice(0, 4).map((t, tIdx) => (
+                                <span key={tIdx} className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">{t}</span>
+                              ))}
+                            </div>
+                          )}
+                          {proj.duration && (
+                            <p className="text-slate-500 text-[10px]">📅 {proj.duration}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-slate-300 truncate" title={proj}>• {proj}</p>
+                      )}
+                    </li>
                   ))}
                 </ul>
               ) : (

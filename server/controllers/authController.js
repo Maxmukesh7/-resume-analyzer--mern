@@ -6,6 +6,8 @@ import { successResponse } from '../utils/apiResponse.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtHelper.js';
 import { formatMongoDoc } from '../utils/dbFormatter.js';
 
+import logActivity from '../utils/activityLogger.js';
+
 // Cookie options for token persistence
 const cookieOptions = {
   httpOnly: true,
@@ -48,6 +50,13 @@ export const register = asyncHandler(async (req, res) => {
     password
   });
   console.log('✅ [DEBUG] User created & saved successfully in MongoDB:', user._id);
+
+  await logActivity({
+    userId: user._id,
+    action: 'New User Registered',
+    description: `User ${user.fullName} (${user.email}) registered an account.`,
+    req
+  });
 
   // Generate tokens
   console.log('🔑 [DEBUG] Generating JWT access and refresh tokens...');
@@ -94,6 +103,10 @@ export const login = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Invalid email or password.');
   }
 
+  if (user.isActive === false) {
+    throw new ApiError(403, 'Your account has been deactivated. Please contact support.');
+  }
+
   // Check password match
   const isMatch = await user.matchPassword(password);
   if (!isMatch) {
@@ -106,6 +119,13 @@ export const login = asyncHandler(async (req, res) => {
 
   // Set HTTP-Only refresh cookie
   res.cookie('refreshToken', refreshToken, cookieOptions);
+
+  await logActivity({
+    userId: user._id,
+    action: 'User Logged In',
+    description: `User ${user.fullName} logged in.`,
+    req
+  });
 
   return successResponse(
     res,
