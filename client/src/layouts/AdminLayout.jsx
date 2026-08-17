@@ -62,7 +62,7 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="h-screen h-[100dvh] bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans overflow-hidden">
+    <div className="relative h-screen h-[100dvh] bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans overflow-hidden">
       {/* Mobile Header Bar */}
       <div className="md:hidden flex-none flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 z-50">
         <div className="flex items-center gap-2">

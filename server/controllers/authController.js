@@ -5,6 +5,7 @@ import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtHelper.js';
 import { formatMongoDoc } from '../utils/dbFormatter.js';
+import { verifyGoogleIdToken } from '../services/googleAuthService.js';
 
 import logActivity from '../utils/activityLogger.js';
 
@@ -135,6 +136,108 @@ export const login = asyncHandler(async (req, res) => {
       expiresIn: 15 * 60 // 15 mins
     },
     'Logged in successfully.'
+  );
+});
+
+/**
+ * @desc    Authenticate with Google OAuth ID Token
+ * @route   POST /api/auth/google
+ * @access  Public
+ */
+export const googleLogin = asyncHandler(async (req, res) => {
+  const { credential, idToken } = req.body;
+  const tokenToVerify = credential || idToken;
+
+  if (!tokenToVerify) {
+    throw new ApiError(400, 'Google authentication credential is required.');
+  }
+
+  // 1. Cryptographically verify Google ID token server-side
+  let googlePayload;
+  try {
+    googlePayload = await verifyGoogleIdToken(tokenToVerify);
+  } catch (verifyError) {
+    console.error('💥 [GoogleAuth] Verification Error:', verifyError.message);
+    throw new ApiError(401, verifyError.message || 'Invalid or expired Google authentication credential.');
+  }
+
+  const { email, fullName, avatar, googleId, isEmailVerified } = googlePayload;
+
+  // 2. Check Database Connection
+  const dbState = mongoose.connection.readyState;
+  if (dbState !== 1) {
+    throw new ApiError(503, 'Database connection is not ready. Please try again.');
+  }
+
+  // 3. Find or Create User (Safe Account Linking)
+  let user = await User.findOne({ email });
+
+  if (user) {
+    console.log(`👤 [GoogleAuth] Existing user found: ${user.email} (Provider: ${user.authenticationProvider || 'local'})`);
+
+    if (user.isActive === false) {
+      throw new ApiError(403, 'Your account has been deactivated. Please contact support.');
+    }
+
+    // Link Google ID if not yet linked
+    let updated = false;
+    if (!user.googleId) {
+      user.googleId = googleId;
+      updated = true;
+    }
+    if (avatar && (!user.avatar || user.avatar === '')) {
+      user.avatar = avatar;
+      updated = true;
+    }
+    if (!user.isVerified && isEmailVerified) {
+      user.isVerified = true;
+      updated = true;
+    }
+    if (updated) {
+      await user.save();
+    }
+  } else {
+    console.log(`✨ [GoogleAuth] Creating new Google account for: ${email}`);
+    user = await User.create({
+      fullName: fullName || email.split('@')[0],
+      email,
+      avatar: avatar || '',
+      role: 'user',
+      isVerified: Boolean(isEmailVerified),
+      authenticationProvider: 'google',
+      googleId
+    });
+
+    await logActivity({
+      userId: user._id,
+      action: 'Google User Registered',
+      description: `New user registered via Google OAuth: ${user.fullName} (${user.email})`,
+      req
+    });
+  }
+
+  await logActivity({
+    userId: user._id,
+    action: 'User Logged In via Google',
+    description: `User ${user.fullName} authenticated via Google OAuth.`,
+    req
+  });
+
+  // 4. Generate Application JWT Tokens
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  // Set HTTP-Only refresh cookie
+  res.cookie('refreshToken', refreshToken, cookieOptions);
+
+  return successResponse(
+    res,
+    {
+      user: formatMongoDoc(user),
+      token: accessToken,
+      expiresIn: 15 * 60 // 15 mins
+    },
+    'Authenticated with Google successfully.'
   );
 });
 

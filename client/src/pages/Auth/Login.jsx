@@ -8,16 +8,19 @@ import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
 import { useAuth } from '../../context/AuthContext';
 
+import { triggerGoogleSignIn } from '../../utils/googleAuth';
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -52,12 +55,23 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    showToast('Redirecting to Google authentication...', 'info');
-    setTimeout(() => {
-      showToast('Logged in via Google!', 'success');
-      navigate('/dashboard');
-    }, 1000);
+  const handleGoogleLogin = async () => {
+    triggerGoogleSignIn({
+      onStart: () => {
+        setGoogleLoading(true);
+      },
+      onSuccess: async (credential) => {
+        const result = await loginWithGoogle(credential);
+        setGoogleLoading(false);
+        if (result.success) {
+          navigate('/dashboard');
+        }
+      },
+      onError: (errorMsg) => {
+        setGoogleLoading(false);
+        showToast(errorMsg, 'error');
+      }
+    });
   };
 
   return (
@@ -151,9 +165,11 @@ export default function Login() {
             variant="secondary"
             className="w-full flex items-center justify-center gap-3"
             onClick={handleGoogleLogin}
+            loading={googleLoading}
+            disabled={googleLoading || loading}
           >
-            <FaGoogle className="text-red-400" />
-            <span>Google Account</span>
+            {!googleLoading && <FaGoogle className="text-red-400" />}
+            <span>{googleLoading ? 'Connecting to Google...' : 'Google Account'}</span>
           </Button>
 
           {/* Footnotes */}

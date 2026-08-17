@@ -7,6 +7,7 @@ import Input from '../../components/Common/Input';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
 import { useAuth } from '../../context/AuthContext';
+import { triggerGoogleSignIn } from '../../utils/googleAuth';
 
 export default function Register() {
   const [fullName, setFullName] = useState('');
@@ -16,10 +17,11 @@ export default function Register() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -68,12 +70,23 @@ export default function Register() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    showToast('Redirecting to Google registration...', 'info');
-    setTimeout(() => {
-      showToast('Account created via Google!', 'success');
-      navigate('/dashboard');
-    }, 1000);
+  const handleGoogleLogin = async () => {
+    triggerGoogleSignIn({
+      onStart: () => {
+        setGoogleLoading(true);
+      },
+      onSuccess: async (credential) => {
+        const result = await loginWithGoogle(credential);
+        setGoogleLoading(false);
+        if (result.success) {
+          navigate('/dashboard');
+        }
+      },
+      onError: (errorMsg) => {
+        setGoogleLoading(false);
+        showToast(errorMsg, 'error');
+      }
+    });
   };
 
   return (
@@ -187,9 +200,11 @@ export default function Register() {
             variant="secondary"
             className="w-full flex items-center justify-center gap-3"
             onClick={handleGoogleLogin}
+            loading={googleLoading}
+            disabled={googleLoading || loading}
           >
-            <FaGoogle className="text-red-400" />
-            <span>Google Account</span>
+            {!googleLoading && <FaGoogle className="text-red-400" />}
+            <span>{googleLoading ? 'Connecting to Google...' : 'Google Account'}</span>
           </Button>
 
           {/* Footnotes */}

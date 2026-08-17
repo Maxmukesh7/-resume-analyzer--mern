@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaBars, FaSearch, FaBell, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
-import { mockNotifications } from '../../utils/mockData';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar({ onToggleSidebar }) {
   const { user, logout } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: 'Welcome to AI Resume Analyzer. Upload a resume to get full ATS & Gemini insights.', time: 'Just now', read: false }
+  ]);
 
   const profileRef = useRef(null);
   const notifRef = useRef(null);
@@ -27,10 +28,10 @@ export default function Navbar({ onToggleSidebar }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
   return (
@@ -62,7 +63,7 @@ export default function Navbar({ onToggleSidebar }) {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800/60 rounded-xl transition-all relative"
+            className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800/60 rounded-xl transition-all relative cursor-pointer"
             aria-label="Notifications"
           >
             <FaBell size={16} />
@@ -79,7 +80,7 @@ export default function Navbar({ onToggleSidebar }) {
                 {unreadCount > 0 && (
                   <button 
                     onClick={markAllAsRead}
-                    className="text-[10px] text-blue-400 hover:text-blue-300 font-bold uppercase tracking-wider transition-colors"
+                    className="text-[10px] text-blue-400 hover:text-blue-300 font-bold uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     Mark all read
                   </button>
@@ -113,7 +114,7 @@ export default function Navbar({ onToggleSidebar }) {
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-2.5 p-1.5 rounded-xl border border-slate-800/60 hover:bg-slate-900 transition-all"
+            className="flex items-center gap-2.5 p-1.5 rounded-xl border border-slate-800/60 hover:bg-slate-900 transition-all cursor-pointer"
           >
             <img
               src={user?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200"}

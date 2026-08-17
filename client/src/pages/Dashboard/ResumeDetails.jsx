@@ -20,7 +20,8 @@ import {
   FaSync,
   FaCheckCircle,
   FaExclamationTriangle,
-  FaCopy
+  FaCopy,
+  FaChartBar
 } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Button from '../../components/Common/Button';

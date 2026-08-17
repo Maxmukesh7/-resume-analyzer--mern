@@ -4,24 +4,27 @@ import Card from '../../components/Common/Card';
 import Input from '../../components/Common/Input';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
-import { mockUser } from '../../utils/mockData';
 import { useAuth } from '../../context/AuthContext';
+import { getResumes } from '../../services/resumeService';
+
+const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
 
 export default function Profile() {
   const { user, updateProfile } = useAuth();
+  const { showToast } = useToast();
+
   const [profile, setProfile] = useState({
     name: user?.fullName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    college: mockUser.college,
-    skills: mockUser.skills,
-    experience: mockUser.experience,
-    avatar: user?.avatar || mockUser.avatar
+    college: user?.college || '',
+    skills: user?.skills || ['JavaScript', 'React', 'Node.js'],
+    experience: user?.experience || '',
+    avatar: user?.avatar || DEFAULT_AVATAR
   });
+  const [resumesCount, setResumesCount] = useState(0);
   const [newSkill, setNewSkill] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const { showToast } = useToast();
 
   useEffect(() => {
     if (user) {
@@ -30,9 +33,16 @@ export default function Profile() {
         name: user.fullName || '',
         email: user.email || '',
         phone: user.phone || '',
-        avatar: user.avatar || mockUser.avatar
+        avatar: user.avatar || DEFAULT_AVATAR
       }));
     }
+    // Fetch user resumes count
+    getResumes()
+      .then((res) => {
+        const list = res.data || res || [];
+        setResumesCount(Array.isArray(list) ? list.length : 0);
+      })
+      .catch(() => {});
   }, [user]);
 
   const handleInputChange = (field, value) => {
@@ -79,7 +89,7 @@ export default function Profile() {
   };
 
   const handleAvatarChange = () => {
-    showToast('Profile image uploads are disabled in demo mode.', 'info');
+    showToast('To update profile picture, enter an image URL or connect Google account.', 'info');
   };
 
   return (
@@ -110,17 +120,17 @@ export default function Profile() {
               <FaCamera size={14} />
             </button>
           </div>
-          <h3 className="text-base font-bold text-white mt-5">{profile.name}</h3>
+          <h3 className="text-base font-bold text-white mt-5">{profile.name || 'User Profile'}</h3>
           <p className="text-xs text-slate-500 font-semibold mt-1">{profile.email}</p>
           <div className="w-full border-t border-slate-850 mt-6 pt-5 flex flex-col gap-2 text-left">
-            <span className="text-[10px] text-slate-500 uppercase font-extrabold">Statistics Summary</span>
+            <span className="text-[10px] text-slate-500 uppercase font-extrabold">Account Summary</span>
             <div className="flex justify-between text-xs font-semibold py-1">
-              <span className="text-slate-400">Target Role Fit:</span>
-              <span className="text-blue-400">Fullstack Engineer</span>
+              <span className="text-slate-400">Account Role:</span>
+              <span className="text-blue-400 capitalize">{user?.role || 'User'}</span>
             </div>
             <div className="flex justify-between text-xs font-semibold py-1">
-              <span className="text-slate-400">Resumes Analyzed:</span>
-              <span className="text-blue-400">14 Files</span>
+              <span className="text-slate-400">Resumes Uploaded:</span>
+              <span className="text-blue-400">{resumesCount} Documents</span>
             </div>
           </div>
         </Card>
@@ -148,28 +158,32 @@ export default function Profile() {
                 value={profile.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
                 required
+                disabled
               />
               <Input
                 id="prof-phone"
                 label="Phone Number"
                 value={profile.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="+1 234 567 8900"
               />
               <Input
                 id="prof-college"
                 label="College / University"
                 value={profile.college}
                 onChange={(e) => handleInputChange('college', e.target.value)}
+                placeholder="e.g. Stanford University"
               />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                Work Experience Summary
+                Work Experience / Professional Summary
               </label>
               <textarea
                 value={profile.experience}
                 onChange={(e) => handleInputChange('experience', e.target.value)}
+                placeholder="Brief summary of your professional background and core expertise..."
                 className="w-full px-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500/80 focus:ring-1 focus:ring-blue-500/30 transition-all text-sm h-24"
               />
             </div>

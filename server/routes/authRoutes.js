@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import { 
   register, 
   login, 
+  googleLogin,
   logout, 
   getProfile, 
   updateProfile, 
@@ -52,6 +53,9 @@ router.post(
   validateRequest,
   login
 );
+
+// Route: Google OAuth Login / Register
+router.post('/google', googleLogin);
 
 // Route: Logout User
 router.post('/logout', logout);

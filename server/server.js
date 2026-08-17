@@ -19,10 +19,7 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
 import resumeRoutes from './routes/resumeRoutes.js';
-import uploadRoutes from './routes/uploadRoutes.js';
-import analysisRoutes from './routes/analysisRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
@@ -91,11 +88,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Mount API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/resumes', resumeRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/analysis', analysisRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);

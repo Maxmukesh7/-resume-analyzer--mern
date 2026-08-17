@@ -18,7 +18,12 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required.'],
+      required: [
+        function () {
+          return this.authenticationProvider === 'local' || (!this.authenticationProvider && !this.googleId);
+        },
+        'Password is required.'
+      ],
       minlength: [8, 'Password must be at least 8 characters.']
     },
     avatar: {
@@ -38,6 +43,16 @@ const userSchema = new mongoose.Schema(
       },
       default: 'user'
     },
+    authenticationProvider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local'
+    },
+    googleId: {
+      type: String,
+      sparse: true,
+      default: null
+    },
     isVerified: {
       type: Boolean,
       default: false
@@ -54,7 +69,7 @@ const userSchema = new mongoose.Schema(
 
 // Pre-save hook to hash password before storing in MongoDB
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  if (!this.password || !this.isModified('password')) {
     next();
     return;
   }
@@ -72,6 +87,7 @@ userSchema.pre('save', async function (next) {
 
 // Compare password instance method
 userSchema.methods.matchPassword = async function (enteredPassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

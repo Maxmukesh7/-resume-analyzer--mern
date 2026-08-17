@@ -7,7 +7,7 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-blue-600/35 selection:text-white">
+    <div className="relative flex h-screen h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-blue-600/35 selection:text-white">
       {/* Background ambient glowing shapes */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
