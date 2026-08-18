@@ -1,18 +1,62 @@
 @import "tailwindcss";
 
-/* Custom theme styles and global defaults can be added below */
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLOBAL THEME CONFIGURATION & CUSTOM PROPERTIES
+   ───────────────────────────────────────────────────────────────────────────── */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
+
+  /* Accent Tone Defaults (Neon Glow: Blue + Purple) */
+  --accent-primary: #3b82f6;
+  --accent-secondary: #a855f7;
+  --accent-orb-1: rgba(59, 130, 246, 0.16);
+  --accent-orb-2: rgba(168, 85, 247, 0.16);
+  --accent-gradient: linear-gradient(135deg, #3b82f6, #a855f7);
+  --accent-glow: 0 0 25px rgba(59, 130, 246, 0.35);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACCENT TONE OVERRIDES
+   ───────────────────────────────────────────────────────────────────────────── */
+[data-accent="cyberpunk"] {
+  --accent-primary: #f59e0b;
+  --accent-secondary: #f43f5e;
+  --accent-orb-1: rgba(245, 158, 11, 0.18);
+  --accent-orb-2: rgba(244, 63, 94, 0.18);
+  --accent-gradient: linear-gradient(135deg, #f59e0b, #f43f5e);
+  --accent-glow: 0 0 25px rgba(245, 158, 11, 0.4);
+}
+
+[data-accent="midnight"] {
+  --accent-primary: #10b981;
+  --accent-secondary: #06b6d4;
+  --accent-orb-1: rgba(16, 185, 129, 0.18);
+  --accent-orb-2: rgba(6, 182, 212, 0.18);
+  --accent-gradient: linear-gradient(135deg, #10b981, #06b6d4);
+  --accent-glow: 0 0 25px rgba(16, 185, 129, 0.4);
+}
+
+[data-accent="classic-dark"] {
+  --accent-primary: #6366f1;
+  --accent-secondary: #64748b;
+  --accent-orb-1: rgba(99, 102, 241, 0.16);
+  --accent-orb-2: rgba(100, 116, 139, 0.14);
+  --accent-gradient: linear-gradient(135deg, #6366f1, #64748b);
+  --accent-glow: 0 0 25px rgba(99, 102, 241, 0.35);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BASE BODY & ROOT LAYOUT
+   ───────────────────────────────────────────────────────────────────────────── */
 html, body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
   min-height: 100dvh;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 body {
@@ -27,3 +71,125 @@ body {
   flex-direction: column;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DYNAMIC ACCENT GLOW HELPERS
+   ───────────────────────────────────────────────────────────────────────────── */
+.ambient-glow-1 {
+  background-color: var(--accent-orb-1) !important;
+  transition: background-color 0.4s ease;
+}
+
+.ambient-glow-2 {
+  background-color: var(--accent-orb-2) !important;
+  transition: background-color 0.4s ease;
+}
+
+.accent-theme-btn {
+  background: var(--accent-gradient) !important;
+  box-shadow: var(--accent-glow) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIGHT MODE STYLING & COMPONENT OVERRIDES
+   ───────────────────────────────────────────────────────────────────────────── */
+html.light,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Light Mode Layout Overrides */
+html.light .bg-slate-950 {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light .bg-slate-900 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+html.light .bg-slate-900\/45,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/80,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-900\/40,
+html.light .bg-slate-900\/10,
+html.light .bg-slate-900\/20 {
+  background-color: #ffffff !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+}
+
+html.light .bg-slate-950\/75,
+html.light .bg-slate-950\/60 {
+  background-color: rgba(248, 250, 252, 0.85) !important;
+}
+
+/* Light Mode Border Overrides */
+html.light .border-slate-800,
+html.light .border-slate-850,
+html.light .border-slate-900,
+html.light .border-slate-800\/85,
+html.light .border-slate-800\/60,
+html.light .border-slate-800\/80,
+html.light .border-slate-850\/50,
+html.light .border-slate-700\/80,
+html.light .border-slate-700\/60 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Light Mode Text Hierarchy Overrides */
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100,
+html.light .text-slate-200,
+html.light .text-slate-250 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-300,
+html.light .text-slate-350,
+html.light .text-slate-400,
+html.light .text-slate-455 {
+  color: #475569 !important;
+}
+
+html.light .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Light Mode Inputs, Selects, and Form Elements */
+html.light input:not([type="checkbox"]):not([type="radio"]),
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Light Mode Card & Panel Shadows */
+html.light .shadow-\[0_8px_32px_rgba\(0\,0\,0\,0\.4\)\] {
+  shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Light Mode Sidebar Link Hover */
+html.light aside {
+  background-color: #ffffff !important;
+  border-right-color: #e2e8f0 !important;
+}
+
+html.light nav a:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}

@@ -1,21 +1,22 @@
 import { useState } from 'react';
-import { FaBell, FaGlobe, FaPalette, FaLock, FaTrashAlt } from 'react-icons/fa';
+import { FaBell, FaPalette, FaLock, FaTrashAlt, FaCheck, FaMoon, FaSun } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme, ACCENT_THEMES } from '../../context/ThemeContext';
 
 export default function Settings() {
   const { showToast } = useToast();
   const { changePassword } = useAuth();
-
-  // Settings State
-  const [darkMode, setDarkMode] = useState(true);
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [pushAlerts, setPushAlerts] = useState(false);
-  const [language, setLanguage] = useState('en');
-  const [theme, setTheme] = useState('neon-glow');
-  const [isPublic, setIsPublic] = useState(false);
+  const { 
+    darkMode, 
+    toggleDarkMode, 
+    accent, 
+    setAccent, 
+    settings, 
+    updateSettings 
+  } = useTheme();
 
   // Change Password State
   const [currentPassword, setCurrentPassword] = useState('');
@@ -23,8 +24,15 @@ export default function Settings() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  const handleSave = (sectionName) => {
-    showToast(`${sectionName} configurations saved!`, 'success');
+  const handleToggleDarkMode = () => {
+    toggleDarkMode();
+    showToast(`Theme switched to ${darkMode ? 'Light Mode' : 'Dark Mode'}!`, 'info');
+  };
+
+  const handleAccentChange = (accentKey) => {
+    setAccent(accentKey);
+    const themeName = ACCENT_THEMES[accentKey]?.name || accentKey;
+    showToast(`Accent glow set to ${themeName}!`, 'success');
   };
 
   const handleDeleteAccount = () => {
@@ -60,6 +68,7 @@ export default function Settings() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      showToast('Password updated successfully!', 'success');
     }
   };
 
@@ -68,7 +77,7 @@ export default function Settings() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-white tracking-wide">Account Settings</h1>
-        <p className="text-slate-455 text-xs mt-1.5 font-semibold">
+        <p className="text-slate-400 text-xs mt-1.5 font-semibold">
           Configure security settings, layout preferences, and notifications endpoints.
         </p>
       </div>
@@ -76,57 +85,96 @@ export default function Settings() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Appearance Settings */}
         <Card className="p-8 space-y-6">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-900 pb-3">
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-800 pb-3">
             <FaPalette size={13} className="text-blue-400" />
             <span>Theme & Display</span>
           </h3>
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             {/* Dark Mode Switch */}
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-200 block">Dark Mode Theme</span>
-                <span className="text-[10px] text-slate-500 font-semibold mt-0.5">Use low-contrast dark system backgrounds</span>
+                <span className="text-xs font-bold text-slate-200 flex items-center gap-2">
+                  {darkMode ? <FaMoon size={12} className="text-blue-400" /> : <FaSun size={12} className="text-amber-400" />}
+                  Dark Mode Theme
+                </span>
+                <span className="text-[10px] text-slate-500 font-semibold mt-0.5 block">
+                  {darkMode ? 'Use low-contrast dark system backgrounds' : 'Use high-contrast clean light backgrounds'}
+                </span>
               </div>
               <button
                 type="button"
-                onClick={() => {
-                  setDarkMode(!darkMode);
-                  showToast(`Dark Mode ${!darkMode ? 'enabled' : 'disabled'}!`, 'info');
-                }}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none
-                  ${darkMode ? 'bg-blue-600' : 'bg-slate-800'}`}
+                role="switch"
+                aria-checked={darkMode}
+                onClick={handleToggleDarkMode}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none shadow-sm
+                  ${darkMode ? 'bg-blue-600' : 'bg-slate-300'}`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out
                     ${darkMode ? 'translate-x-5' : 'translate-x-0'}`}
                 />
               </button>
             </div>
 
             {/* Theme Selector */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Accent Tone Glow</label>
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">
+                  Accent Tone Glow
+                </label>
+                <span className="text-[10px] text-blue-400 font-semibold">
+                  {ACCENT_THEMES[accent]?.name?.split(' ')[0] || 'Active'}
+                </span>
+              </div>
+
+              {/* Select Dropdown */}
               <select
-                value={theme}
-                onChange={(e) => {
-                  setTheme(e.target.value);
-                  handleSave('Accent Tone');
-                }}
-                className="w-full bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-xs text-slate-350 focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                value={accent}
+                onChange={(e) => handleAccentChange(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500/50 cursor-pointer font-medium"
               >
-                <option value="classic-dark">Classic Slate Dark</option>
                 <option value="neon-glow">Blue + Purple Neon (Recommended)</option>
                 <option value="cyberpunk">Cyberpunk Amber</option>
                 <option value="midnight">Deep Midnight Forest</option>
+                <option value="classic-dark">Classic Slate Dark</option>
               </select>
+
+              {/* Visual Palette Swatches */}
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                {Object.values(ACCENT_THEMES).map((th) => {
+                  const isSelected = accent === th.id;
+                  return (
+                    <button
+                      key={th.id}
+                      type="button"
+                      onClick={() => handleAccentChange(th.id)}
+                      className={`p-2.5 rounded-xl border text-left transition-all flex items-center justify-between cursor-pointer
+                        ${isSelected 
+                          ? 'border-blue-500 bg-slate-850/80 shadow-[0_0_12px_rgba(59,130,246,0.25)]' 
+                          : 'border-slate-800 bg-slate-900/50 hover:bg-slate-800/60'}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-1">
+                          <span className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: th.primary }} />
+                          <span className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: th.secondary }} />
+                        </div>
+                        <span className="text-[11px] font-semibold text-slate-200 truncate max-w-[95px]">
+                          {th.name.split(' ')[0]}
+                        </span>
+                      </div>
+                      {isSelected && <FaCheck size={10} className="text-blue-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </Card>
 
         {/* Notifications Settings */}
         <Card className="p-8 space-y-6">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-900 pb-3">
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-800 pb-3">
             <FaBell size={13} className="text-purple-400" />
             <span>Alerts & Logs</span>
           </h3>
@@ -140,13 +188,18 @@ export default function Settings() {
               </div>
               <button
                 type="button"
-                onClick={() => setEmailAlerts(!emailAlerts)}
+                role="switch"
+                aria-checked={settings.emailAlerts}
+                onClick={() => {
+                  updateSettings({ emailAlerts: !settings.emailAlerts });
+                  showToast(`Email reports ${!settings.emailAlerts ? 'enabled' : 'disabled'}!`, 'info');
+                }}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none
-                  ${emailAlerts ? 'bg-blue-600' : 'bg-slate-800'}`}
+                  ${settings.emailAlerts ? 'bg-blue-600' : 'bg-slate-800'}`}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
-                    ${emailAlerts ? 'translate-x-5' : 'translate-x-0'}`}
+                    ${settings.emailAlerts ? 'translate-x-5' : 'translate-x-0'}`}
                 />
               </button>
             </div>
@@ -159,13 +212,18 @@ export default function Settings() {
               </div>
               <button
                 type="button"
-                onClick={() => setPushAlerts(!pushAlerts)}
+                role="switch"
+                aria-checked={settings.pushAlerts}
+                onClick={() => {
+                  updateSettings({ pushAlerts: !settings.pushAlerts });
+                  showToast(`Browser alerts ${!settings.pushAlerts ? 'enabled' : 'disabled'}!`, 'info');
+                }}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none
-                  ${pushAlerts ? 'bg-blue-600' : 'bg-slate-800'}`}
+                  ${settings.pushAlerts ? 'bg-blue-600' : 'bg-slate-800'}`}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
-                    ${pushAlerts ? 'translate-x-5' : 'translate-x-0'}`}
+                    ${settings.pushAlerts ? 'translate-x-5' : 'translate-x-0'}`}
                 />
               </button>
             </div>
@@ -174,7 +232,7 @@ export default function Settings() {
 
         {/* Security & Access / Change Password */}
         <Card className="p-8 space-y-6">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-900 pb-3">
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-800 pb-3">
             <FaLock size={13} className="text-amber-400" />
             <span>Change Password</span>
           </h3>
@@ -186,7 +244,7 @@ export default function Settings() {
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
                 placeholder="••••••••"
               />
             </div>
@@ -196,7 +254,7 @@ export default function Settings() {
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
                 placeholder="••••••••"
               />
             </div>
@@ -206,7 +264,7 @@ export default function Settings() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
                 placeholder="••••••••"
               />
             </div>
@@ -218,7 +276,7 @@ export default function Settings() {
 
         {/* Privacy settings */}
         <Card className="p-8 space-y-6">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-900 pb-3">
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-800 pb-3">
             <FaLock size={13} className="text-amber-400" />
             <span>Privacy Controls</span>
           </h3>
@@ -231,13 +289,18 @@ export default function Settings() {
               </div>
               <button
                 type="button"
-                onClick={() => setIsPublic(!isPublic)}
+                role="switch"
+                aria-checked={settings.isPublic}
+                onClick={() => {
+                  updateSettings({ isPublic: !settings.isPublic });
+                  showToast(`Public profile ${!settings.isPublic ? 'enabled' : 'disabled'}!`, 'info');
+                }}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none
-                  ${isPublic ? 'bg-blue-600' : 'bg-slate-800'}`}
+                  ${settings.isPublic ? 'bg-blue-600' : 'bg-slate-800'}`}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
-                    ${isPublic ? 'translate-x-5' : 'translate-x-0'}`}
+                    ${settings.isPublic ? 'translate-x-5' : 'translate-x-0'}`}
                 />
               </button>
             </div>
@@ -245,12 +308,12 @@ export default function Settings() {
             <div className="flex flex-col gap-2 pt-2">
               <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Primary Language</label>
               <select
-                value={language}
+                value={settings.language || 'en'}
                 onChange={(e) => {
-                  setLanguage(e.target.value);
-                  handleSave('Locale Lang');
+                  updateSettings({ language: e.target.value });
+                  showToast(`Language set to ${e.target.selectedOptions[0]?.text || e.target.value}!`, 'success');
                 }}
-                className="w-full bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-xs text-slate-350 focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500/50 cursor-pointer"
               >
                 <option value="en">English (US/UK)</option>
                 <option value="es">Español</option>
@@ -270,7 +333,7 @@ export default function Settings() {
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-bold text-slate-250 block">Deactivate & Remove Account</span>
+              <span className="text-xs font-bold text-slate-200 block">Deactivate & Remove Account</span>
               <span className="text-[10px] text-slate-500 font-semibold mt-0.5">Permanently deletes all history logs, reports, and credential metadata files</span>
             </div>
             <Button

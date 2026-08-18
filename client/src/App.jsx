@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { ToastProvider } from './components/Common/Toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Public Pages (Eagerly loaded for instant landing experience)
 import LandingPage from './pages/LandingPage';
@@ -81,70 +82,72 @@ export default function App() {
   return (
     <ToastProvider>
       <AuthProvider>
-        <Router>
-          <Suspense
-            fallback={
-              <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500 mb-3"></div>
-                <p className="text-slate-400 text-xs font-medium">Loading AI Resume Analyzer...</p>
-              </div>
-            }
-          >
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
+        <ThemeProvider>
+          <Router>
+            <Suspense
+              fallback={
+                <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white">
+                  <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500 mb-3"></div>
+                  <p className="text-slate-400 text-xs font-medium">Loading AI Resume Analyzer...</p>
+                </div>
+              }
+            >
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
 
-              {/* Auth Public Routes (guards authenticated users away from Login/Register) */}
-              <Route element={<PublicRoute />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-              </Route>
-
-              {/* Admin Login Route */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-
-              {/* User Dashboard Protected Routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/dashboard" element={<DashboardLayout />}>
-                  <Route index element={<DashboardOverview />} />
-                  <Route path="upload" element={<ResumeUpload />} />
-                  <Route path="analysis/:id" element={<ResumeAnalysisDashboard />} />
-                  <Route path="report" element={<ATSReport />} />
-
-                  <Route path="ai-analysis" element={<AIAnalysis />} />
-                  <Route path="improve" element={<ResumeImprovement />} />
-                  <Route path="improve/:id" element={<ResumeImprovement />} />
-                  <Route path="job-match" element={<JobMatch />} />
-                  <Route path="rankings" element={<CandidateRanking />} />
-                  <Route path="history" element={<ResumeHistory />} />
-                  <Route path="resume/:id" element={<ResumeDetails />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="settings" element={<Settings />} />
+                {/* Auth Public Routes (guards authenticated users away from Login/Register) */}
+                <Route element={<PublicRoute />}>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
                 </Route>
-              </Route>
 
-              {/* Admin Dashboard Protected Routes */}
-              <Route element={<AdminProtectedRoute />}>
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                  <Route path="dashboard" element={<AdminDashboard />} />
-                  <Route path="users" element={<AdminUsers />} />
-                  <Route path="resumes" element={<AdminResumes />} />
-                  <Route path="rankings" element={<CandidateRanking />} />
-                  <Route path="analytics" element={<AdminAnalytics />} />
-                  <Route path="activity" element={<AdminActivity />} />
-                  <Route path="settings" element={<AdminSettings />} />
+                {/* Admin Login Route */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+
+                {/* User Dashboard Protected Routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/dashboard" element={<DashboardLayout />}>
+                    <Route index element={<DashboardOverview />} />
+                    <Route path="upload" element={<ResumeUpload />} />
+                    <Route path="analysis/:id" element={<ResumeAnalysisDashboard />} />
+                    <Route path="report" element={<ATSReport />} />
+                    <Route path="report/:id" element={<ATSReport />} />
+                    <Route path="history" element={<ResumeHistory />} />
+                    <Route path="resume/:id" element={<ResumeDetails />} />
+                    <Route path="ai-analysis" element={<AIAnalysis />} />
+                    <Route path="ai-analysis/:id" element={<AIAnalysis />} />
+                    <Route path="improve" element={<ResumeImprovement />} />
+                    <Route path="improve/:id" element={<ResumeImprovement />} />
+                    <Route path="job-match" element={<JobMatch />} />
+                    <Route path="rankings" element={<CandidateRanking />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="settings" element={<Settings />} />
+                  </Route>
                 </Route>
-              </Route>
 
-              {/* Wildcard 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </Router>
+                {/* Admin Protected Routes */}
+                <Route element={<AdminProtectedRoute />}>
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="users" element={<AdminUsers />} />
+                    <Route path="resumes" element={<AdminResumes />} />
+                    <Route path="analytics" element={<AdminAnalytics />} />
+                    <Route path="activity" element={<AdminActivity />} />
+                    <Route path="settings" element={<AdminSettings />} />
+                  </Route>
+                </Route>
+
+                {/* Wildcard 404 Route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </Router>
+        </ThemeProvider>
       </AuthProvider>
     </ToastProvider>
   );

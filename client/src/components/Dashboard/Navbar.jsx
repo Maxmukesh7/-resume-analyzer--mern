@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBars, FaSearch, FaBell, FaUser, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { FaBars, FaSearch, FaBell, FaUser, FaSignOutAlt, FaCog, FaMoon, FaSun } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function Navbar({ onToggleSidebar }) {
   const { user, logout } = useAuth();
+  const { darkMode, toggleDarkMode } = useTheme();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([
@@ -57,8 +59,22 @@ export default function Navbar({ onToggleSidebar }) {
         </div>
       </div>
 
-      {/* Right side: Notifications & Profile */}
-      <div className="flex items-center gap-4">
+      {/* Right side: Theme Toggle, Notifications & Profile */}
+      <div className="flex items-center gap-3">
+        {/* Quick Theme Toggle */}
+        <button
+          onClick={toggleDarkMode}
+          title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800/60 rounded-xl transition-all cursor-pointer"
+          aria-label="Toggle Dark/Light Mode"
+        >
+          {darkMode ? (
+            <FaSun size={15} className="text-amber-400 hover:rotate-45 transition-transform duration-300" />
+          ) : (
+            <FaMoon size={15} className="text-blue-500 hover:-rotate-12 transition-transform duration-300" />
+          )}
+        </button>
+
         {/* Notification Bell */}
         <div className="relative" ref={notifRef}>
           <button

@@ -150,7 +150,7 @@ const SECTION_MAP = {
   ],
   softSkills: [
     'soft skills','interpersonal skills','professional skills','leadership skills',
-    'personal skills','core strengths','strengths',
+    'personal skills','core strengths','strengths','key strengths',
   ],
   certifications: [
     'certifications','certificates','certification','certificate','licenses',
@@ -158,7 +158,8 @@ const SECTION_MAP = {
     'training and certifications','professional development','credentials',
     'courses & credentials','credentials & courses','certifications & licenses',
     'certifications & training','license & certifications','courses and credentials',
-    'certifications and licenses',
+    'certifications and licenses','workshops & training','workshops and training',
+    'workshops','trainings & workshops','workshops & certifications',
   ],
   achievements: [
     'achievements','awards','accomplishments','honors','recognition',
@@ -189,6 +190,7 @@ function cleanText(raw) {
     .replace(/\r/g, '\n')
     .replace(/\f/g, '\n')                           // form-feed → newline
     .replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ')  // zero-width & nbsp
+    .replace(/--\s*\d+\s+of\s+\d+\s*--/gi, '')     // e.g. -- 1 of 1 --
     .replace(/Page\s+\d+\s+of\s+\d+/gi, '')        // page numbers
     .replace(/Page\s+\d+/gi, '')
     .replace(/[ \t]{2,}/g, ' ')                    // collapse horizontal space
@@ -307,7 +309,7 @@ function segmentSections(cleanedText) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const RE_EMAIL   = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/;
-const RE_PHONE   = /(?:\+?\d{1,4}[\s.\-]?)?(?:\(?\d{2,5}\)?[\s.\-]?)?\d{3,5}[\s.\-]?\d{3,5}/;
+const RE_PHONE   = /(?:(?:\+?\d{1,4}[\s.\-]?)?\(?\d{2,5}\)?[\s.\-]\d{3,5}[\s.\-]?\d{3,5}|\+\d{1,4}[\s.\-]?\d{3,5}[\s.\-]?\d{3,5}|\b[6-9]\d{9}\b|\b\d{10,12}\b)/;
 const RE_LINKEDIN= /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_\-]+\/?/i;
 const RE_GITHUB  = /(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_\-]+\/?/i;
 const RE_DATE_RANGE = /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)?\s*['''`]?\d{2,4}\s*[-–—to]+\s*(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)?\s*['''`]?(?:\d{2,4}|present|current|now)\b/i;
@@ -342,6 +344,8 @@ function looksLikeTitle(line) {
  *   - Have at least 2 words  (single words like "usage.", "API", "features." are fragments)
  *   - OR be a single word that is clearly a proper noun (all-caps abbreviation, capitalised >= 5 chars)
  *   - NOT end with sentence-terminator punctuation  (., !, ?)
+ *   - NOT start with a lowercase letter (wrapped sentence continuation)
+ *   - NOT start with a preposition/conjunction/continuation word (and, or, with, to, for, etc.)
  *   - NOT be a common stop/filler word
  *   - NOT be a generic descriptor word ("description", "features", "details", etc.)
  *   - Word count must be 2–10 (not a sprawling sentence)
@@ -362,6 +366,12 @@ function looksLikeProjectTitle(line) {
   // Sentence fragments: ends with period, exclamation, question mark
   if (/[.!?]$/.test(t)) return false;
 
+  // Reject lines that start with a lowercase letter (continuation of previous line)
+  if (/^[a-z]/.test(t)) return false;
+
+  // Reject lines starting with continuation words / prepositions / conjunctions
+  if (/^(?:and|or|with|to|for|in|on|at|of|by|from|including|enabling|ensuring|using|supporting|allowing|enhancing)\b/i.test(t)) return false;
+
   // Must not contain a comma mid-sentence (indicates a sentence, not a title)
   // Allow commas only if they appear after ≥3 words (e.g. "Search, Sort & Filter App")
   const words = t.split(/\s+/);
@@ -370,9 +380,6 @@ function looksLikeProjectTitle(line) {
   // Reject if every word is a stop word
   const meaningfulWords = words.filter(w => !PROJECT_TITLE_STOP_WORDS.has(w.toLowerCase()));
   if (meaningfulWords.length === 0) return false;
-
-  // Reject pure lowercase lines that look like sentence continuations
-  if (/^[a-z]/.test(t) && words.length <= 3) return false;
 
   return true;
 }
@@ -393,14 +400,16 @@ const GEO_LOCATIONS = [
   'Sydney','Melbourne','Singapore','Tokyo','Seoul','Beijing','Shanghai',
   'Mumbai','Delhi','New Delhi','Bengaluru','Bangalore','Hyderabad','Chennai',
   'Pune','Kolkata','Noida','Gurugram','Gurgaon','Ahmedabad','Jaipur','Indore',
+  'Coimbatore','Tiruchirappalli','Madurai','Salem','Kochi','Trivandrum',
   // States / Regions
   'California','Texas','Washington','New York','Massachusetts','Illinois',
   'Florida','Georgia','North Carolina','Pennsylvania','Ohio','Michigan','Karnataka',
+  'Tamil Nadu','Maharashtra','Telangana','Kerala','Andhra Pradesh','Gujarat',
   // Countries
   'USA','United States','UK','United Kingdom','India','Canada','Germany','France',
   'Australia','Japan','Singapore','Netherlands','Spain','Italy','New Zealand',
   // State abbreviations (only matched inside header lines, paired with city)
-  'CA','NY','TX','WA','MA','IL','FL','PA','GA','NC','OH','MI',
+  'CA','NY','TX','WA','MA','IL','FL','PA','GA','NC','OH','MI','TN',
 ];
 
 /** Terms that disqualify a string from being a location */
@@ -463,18 +472,64 @@ function extractLocation(headerLines) {
   return null;  // strict: return null when no location found
 }
 
+function extractPhone(headerLines) {
+  const text = headerLines.join('\n');
+
+  // Strip out emails, URLs, and date ranges before searching for phone numbers
+  // This prevents digits in email addresses (e.g. mukesh2004777@gmail.com)
+  // or URL handles from being falsely extracted as a phone number.
+  const sanitizedText = text
+    .replace(RE_EMAIL, ' ')
+    .replace(RE_LINKEDIN, ' ')
+    .replace(RE_GITHUB, ' ')
+    .replace(/https?:\/\/\S+/gi, ' ')
+    .replace(/www\.\S+/gi, ' ')
+    .replace(/\b(?:19|20)\d{2}\s*[-–—to]+\s*(?:(?:19|20)\d{2}|present|current|now)\b/gi, ' ')
+    .replace(/\b(?:19|20)\d{2}\b/g, ' ');
+
+  // 1. Check for explicitly labelled phone number
+  const labeledMatch = sanitizedText.match(/(?:phone|tel|mobile|cell|mob|contact|ph|call)[:\s#]+([+]?[\d\s().-]{7,25})/i);
+  if (labeledMatch) {
+    const raw = labeledMatch[1].trim().replace(/^[,;|•·\s]+|[,;|•·\s]+$/g, '');
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length >= 7 && digits.length <= 15) {
+      if (digits.length >= 10 || /[\s().\-]/.test(raw) || raw.startsWith('+')) {
+        return raw;
+      }
+    }
+  }
+
+  // 2. Strict phone regexes requiring proper boundaries (without consuming parentheses)
+  const RE_PHONE_INTL = /(?:^|[\s,;|•·])(\+\d{1,4}[\s.\-]?(?:\(\d{1,5}\)|\d{1,5})[\s.\-]?\d{2,5}[\s.\-]?\d{2,5}(?:[\s.\-]?\d{1,5})?)(?=[\s,;|•·]|$)/;
+  const RE_PHONE_PARENS = /(?:^|[\s,;|•·])(\(\d{2,5}\)[\s.\-]?\d{3,5}[\s.\-]?\d{3,5})(?=[\s,;|•·]|$)/;
+  const RE_PHONE_FORMATTED = /(?:^|[\s,;|•·])(\d{2,5}[\s.\-]\d{3,5}(?:[\s.\-]\d{3,5})?)(?=[\s,;|•·]|$)/;
+  const RE_PHONE_STANDALONE = /(?:^|[\s,;|•·])([6-9]\d{9}|\d{10,12})(?=[\s,;|•·]|$)/;
+
+  const match = sanitizedText.match(RE_PHONE_INTL) ||
+                sanitizedText.match(RE_PHONE_PARENS) ||
+                sanitizedText.match(RE_PHONE_FORMATTED) ||
+                sanitizedText.match(RE_PHONE_STANDALONE);
+
+  if (match) {
+    const raw = (match[1] || match[0]).trim().replace(/^[,;|•·\s]+|[,;|•·\s]+$/g, '');
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length >= 7 && digits.length <= 15) {
+      if (digits.length >= 10 || /[\s().\-]/.test(raw) || raw.startsWith('+')) {
+        return raw;
+      }
+    }
+  }
+
+  return '';
+}
+
 function extractContact(headerLines) {
   const text = headerLines.join('\n');
 
   const emailMatch = text.match(RE_EMAIL);
   const email = emailMatch ? emailMatch[0].toLowerCase() : '';
 
-  const phoneMatch = text.match(RE_PHONE);
-  let phone = '';
-  if (phoneMatch) {
-    const raw = phoneMatch[0].trim();
-    if (raw.replace(/\D/g, '').length >= 7) phone = raw;
-  }
+  const phone = extractPhone(headerLines);
 
   const liMatch = text.match(RE_LINKEDIN);
   const linkedin = liMatch
@@ -903,10 +958,17 @@ function extractEducation(lines) {
     const gradeMatch = trimmed.match(RE_GRADE);
     const bullet = isBullet(trimmed);
 
+    // Filter out grade/result/percentage lines from becoming institutions
+    const isResultOrGrade = /^(?:result|percentage|marks|grade|cgpa|gpa|status|division)[:\s]/i.test(trimmed) || /^(?:pass|failed?|first class|distinction)\b/i.test(trimmed);
+    if (isResultOrGrade) {
+      if (current && !current.grade) current.grade = trimmed;
+      continue;
+    }
+
     if (hasDegree) {
       flush();
       current = {
-        degree: trimmed.replace(RE_GRADE, '').replace(RE_YEAR, '').replace(/[\s,|]+$/, '').trim(),
+        degree: trimmed.replace(RE_GRADE, '').replace(RE_YEAR, '').replace(/[\s,|–—\-]+$/, '').trim(),
         institution: '',
         year: years.length ? years[years.length - 1] : '',
         grade: gradeMatch ? gradeMatch[0].trim() : '',
@@ -924,7 +986,7 @@ function extractEducation(lines) {
         current.degree = trimmed;
       } else if (!current.institution) {
         // Strip year/grade noise from institution name
-        current.institution = trimmed.replace(RE_YEAR, '').replace(RE_GRADE, '').replace(/[\s,|]+$/, '').trim();
+        current.institution = trimmed.replace(RE_YEAR, '').replace(RE_GRADE, '').replace(/[\s,|–—\-]+$/, '').trim();
       }
     }
   }
@@ -1065,8 +1127,13 @@ function validateOutput(result, projectTitles) {
   // 5. Validate email format
   if (result.email && !RE_EMAIL.test(result.email)) result.email = '';
 
-  // 6. Validate phone (at least 7 digits)
-  if (result.phone && result.phone.replace(/\D/g, '').length < 7) result.phone = '';
+  // 6. Validate phone (valid digit count and structure)
+  if (result.phone) {
+    const digits = result.phone.replace(/\D/g, '');
+    if (digits.length < 7 || digits.length > 15 || (digits.length < 10 && !/[\s().\-]/.test(result.phone) && !result.phone.startsWith('+'))) {
+      result.phone = '';
+    }
+  }
 
   return result;
 }
