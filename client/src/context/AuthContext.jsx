@@ -56,27 +56,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Authenticates with Google ID token credential.
-   */
-  const loginWithGoogle = async (credential) => {
-    try {
-      const res = await api.post('/auth/google', { credential });
-      const { user: userData, token: accessToken } = res.data.data;
-
-      setUser(userData);
-      setToken(accessToken);
-      localStorage.setItem('token', accessToken);
-
-      showToast(res.data.message || 'Logged in via Google successfully!', 'success');
-      return { success: true };
-    } catch (error) {
-      const msg = error.response?.data?.message || 'Google authentication failed. Please try again.';
-      showToast(msg, 'error');
-      return { success: false, error: msg };
-    }
-  };
-
-  /**
    * Registers a new user.
    */
   const register = async (fullName, email, password, confirmPassword) => {
@@ -168,7 +147,6 @@ export const AuthProvider = ({ children }) => {
         token,
         loading,
         login,
-        loginWithGoogle,
         register,
         logout,
         updateProfile,

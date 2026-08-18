@@ -41,7 +41,6 @@ An industry-grade, full-stack **MERN** (MongoDB, Express, React, Node.js) web ap
 - **Node.js** & **Express.js** (REST API architecture)
 - **MongoDB & Mongoose** (Schema validation, relational indexing, and lean aggregations)
 - **JWT & bcryptjs** (Secure authentication, access + refresh tokens, bcrypt password hashing)
-- **Google OAuth 2.0** (`google-auth-library` ID token verification)
 - **@google/genai & Google Gemini AI** (LLM analysis with rule-based fallback)
 - **pdf-parse & mammoth** (Robust binary text extraction for PDF and Word documents)
 - **Multer** (Disk storage file uploads with size and MIME type validation)
@@ -62,7 +61,7 @@ mern-resume-analyzer/
 │   │   ├── layouts/            # DashboardLayout & AdminLayout
 │   │   ├── pages/              # Admin, Auth, Dashboard, and Public pages
 │   │   ├── services/           # Axios API services (auth, resume, ai, jobMatch, recruiter, admin)
-│   │   └── utils/              # Export utilities and Google auth helpers
+│   │   └── utils/              # Export utilities
 │   ├── package.json
 │   └── vite.config.js
 │
@@ -111,16 +110,13 @@ REFRESH_SECRET=your_jwt_refresh_secret_key_here
 JWT_EXPIRE=15m
 REFRESH_EXPIRE=7d
 
-# Optional Integrations
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
+# Google Gemini AI API Key
 GEMINI_API_KEY=
 ```
 
 #### Client Configuration (`client/.env`)
 ```env
 VITE_API_URL=http://localhost:5000/api
-VITE_GOOGLE_CLIENT_ID=
 ```
 
 ### 3. Install Dependencies
@@ -158,7 +154,6 @@ Vite Dev Server runs on `http://localhost:5173`.
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/auth/register` | Register a new user | No |
 | `POST` | `/api/auth/login` | Authenticate user & get JWT tokens | No |
-| `POST` | `/api/auth/google` | Google OAuth token authentication | No |
 | `POST` | `/api/auth/refresh` | Refresh expired access token | No (Cookie/Header) |
 | `GET` | `/api/auth/profile` | Get current user profile | Yes (User) |
 | `PUT` | `/api/auth/profile` | Update profile information | Yes (User) |
@@ -203,9 +198,6 @@ node server/test_skill_matching_accuracy.js
 
 # Run Auto-Analysis Pipeline Tests
 node server/test_auto_analysis_workflow.js
-
-# Run Google OAuth Authentication Tests
-node server/test_google_oauth_workflow.js
 
 # Run Live HTTP API Integration Tests (Requires server running on port 5000)
 node server/test_live_http_api.js

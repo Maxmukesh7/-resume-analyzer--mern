@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
@@ -35,9 +36,15 @@ dotenv.config();
 
 const app = express();
 const PORT = parseInt(process.env.PORT, 10) || 5000;
+const HOST = '0.0.0.0';
 
-// Security Middlewares
-app.use(helmet());
+// Security Middlewares (relax CSP/COEP so Vite assets, Google Fonts, and charts load cleanly)
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 
 // Performance Compression (gzip)
 app.use(compression());
@@ -55,30 +62,38 @@ if (process.env.NODE_ENV === 'development') {
 // Custom request file logger middleware (appends to logs/access.log)
 app.use(loggerMiddleware);
 
-// Configure CORS
+// Configure CORS for single-origin production and local development
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  process.env.CORS_ORIGIN,
+  process.env.RENDER_EXTERNAL_URL
+].filter(Boolean);
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, postman)
+    // Allow requests with no origin (same-origin browser requests, mobile apps, curl, postman)
     if (!origin) return callback(null, true);
     
-    // In development mode, allow any localhost or 127.0.0.1 origin
-    if (process.env.NODE_ENV === 'development') {
+    // In development mode or local testing, allow localhost/127.0.0.1
+    if (process.env.NODE_ENV !== 'production') {
       if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
         return callback(null, true);
       }
     }
 
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:5175',
-      'http://localhost:5176'
-    ];
-    if (allowedOrigins.indexOf(origin) !== -1 || origin === process.env.CORS_ORIGIN) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    // In single-service production, allow explicitly configured origins, Render URLs, or fallback
+    if (
+      allowedOrigins.includes(origin) ||
+      (process.env.RENDER_EXTERNAL_URL && origin === process.env.RENDER_EXTERNAL_URL) ||
+      !process.env.CORS_ORIGIN
+    ) {
+      return callback(null, true);
     }
+
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
@@ -116,10 +131,27 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Root route
-app.get('/', (req, res) => {
-  res.send('API is running...');
-});
+// Serve client static assets and configure React SPA fallback
+const clientDistPath = path.resolve(__dirname, '../client/dist');
+
+if (fs.existsSync(clientDistPath)) {
+  // Serve static assets from Vite build
+  app.use(express.static(clientDistPath));
+
+  // Catch-all route to serve React's index.html for client-side SPA routing (page refresh)
+  app.get('*', (req, res, next) => {
+    // If request is for an unhandled /api or /uploads path, pass to 404 handler
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+} else {
+  // Fallback root message when frontend is not yet built
+  app.get('/', (req, res) => {
+    res.send('AI Resume Analyzer API is running. (Build client to serve frontend from root)');
+  });
+}
 
 // Error handling middleware
 app.use(notFound);
@@ -153,9 +185,9 @@ const startServer = async (port) => {
     process.exit(1);
   }
 
-  // 2. Start Express app server after DB is ready
-  const server = app.listen(port, () => {
-    console.log(`🚀 Server running on port ${port}`);
+  // 2. Start Express app server after DB is ready, listening on 0.0.0.0
+  const server = app.listen(port, HOST, () => {
+    console.log(`🚀 Server running on http://${HOST}:${port}`);
   });
 
   server.on('error', (err) => {

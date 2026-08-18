@@ -142,6 +142,16 @@ export default function App() {
                   </Route>
                 </Route>
 
+                {/* Convenience Direct Navigation Aliases */}
+                <Route path="/upload" element={<Navigate to="/dashboard/upload" replace />} />
+                <Route path="/ats" element={<Navigate to="/dashboard/report" replace />} />
+                <Route path="/ai-insights" element={<Navigate to="/dashboard/ai-analysis" replace />} />
+                <Route path="/ai-improvement" element={<Navigate to="/dashboard/improve" replace />} />
+                <Route path="/job-match" element={<Navigate to="/dashboard/job-match" replace />} />
+                <Route path="/candidate-ranking" element={<Navigate to="/dashboard/rankings" replace />} />
+                <Route path="/profile" element={<Navigate to="/dashboard/profile" replace />} />
+                <Route path="/settings" element={<Navigate to="/dashboard/settings" replace />} />
+
                 {/* Wildcard 404 Route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

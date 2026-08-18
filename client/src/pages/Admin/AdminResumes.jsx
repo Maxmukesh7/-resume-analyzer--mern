@@ -264,7 +264,7 @@ export default function AdminResumes() {
 
                       {r.uploadPath && (
                         <a
-                          href={`http://localhost:5000/${r.uploadPath}`}
+                          href={r.uploadPath.startsWith('http') ? r.uploadPath : `/${r.uploadPath}`}
                           target="_blank"
                           rel="noreferrer"
                           download
