@@ -24,6 +24,7 @@ html, body {
 body {
   overflow-x: hidden;
   background-color: #020617;
+  color: #f8fafc;
 }
 
 #root {
@@ -34,7 +35,7 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   LIGHT MODE STYLING & COMPONENT OVERRIDES
+   LIGHT MODE STYLING & HIGH-CONTRAST COMPONENT OVERRIDES
    ───────────────────────────────────────────────────────────────────────────── */
 html.light,
 [data-theme="light"] {
@@ -42,38 +43,54 @@ html.light,
 }
 
 html.light body {
-  background-color: #f8fafc;
-  color: #0f172a;
-}
-
-/* Light Mode Layout Overrides */
-html.light .bg-slate-950 {
-  background-color: #f1f5f9 !important;
+  background-color: #f8fafc !important;
   color: #0f172a !important;
 }
 
-html.light .bg-slate-900 {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-}
-
+/* 1. Main Cards, Surfaces & Panels */
+html.light .bg-slate-900,
 html.light .bg-slate-900\/45,
+html.light .bg-slate-900\/40,
 html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/70,
 html.light .bg-slate-900\/80,
 html.light .bg-slate-900\/90,
-html.light .bg-slate-900\/40,
-html.light .bg-slate-900\/10,
-html.light .bg-slate-900\/20 {
-  background-color: #ffffff !important;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
-}
-
+html.light .bg-slate-950,
+html.light .bg-slate-950\/60,
 html.light .bg-slate-950\/75,
-html.light .bg-slate-950\/60 {
-  background-color: rgba(248, 250, 252, 0.85) !important;
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90 {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
 }
 
-/* Light Mode Border Overrides */
+/* 2. Nested Sub-Cards, Category Items, & Recommendation Bars */
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/30,
+html.light .bg-slate-900\/20,
+html.light .bg-slate-900\/10,
+html.light .bg-slate-800,
+html.light .bg-slate-800\/80,
+html.light .bg-slate-800\/70,
+html.light .bg-slate-800\/60,
+html.light .bg-slate-800\/50,
+html.light .bg-slate-800\/40,
+html.light .bg-slate-800\/30,
+html.light .bg-slate-800\/20,
+html.light .bg-slate-850,
+html.light .bg-slate-850\/80,
+html.light .bg-slate-850\/60,
+html.light .bg-slate-850\/50,
+html.light .bg-slate-950\/50,
+html.light .bg-slate-950\/40,
+html.light .bg-slate-950\/30 {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+/* 3. Borders & Dividers */
 html.light .border-slate-800,
 html.light .border-slate-850,
 html.light .border-slate-900,
@@ -81,12 +98,14 @@ html.light .border-slate-800\/85,
 html.light .border-slate-800\/60,
 html.light .border-slate-800\/80,
 html.light .border-slate-850\/50,
+html.light .border-slate-700,
 html.light .border-slate-700\/80,
-html.light .border-slate-700\/60 {
+html.light .border-slate-700\/60,
+html.light .border-slate-700\/50 {
   border-color: #e2e8f0 !important;
 }
 
-/* Light Mode Text Hierarchy Overrides */
+/* 4. Text Contrast Hierarchy */
 html.light .text-white {
   color: #0f172a !important;
 }
@@ -94,21 +113,190 @@ html.light .text-white {
 html.light .text-slate-100,
 html.light .text-slate-200,
 html.light .text-slate-250 {
-  color: #1e293b !important;
+  color: #0f172a !important;
 }
 
 html.light .text-slate-300,
 html.light .text-slate-350,
 html.light .text-slate-400,
-html.light .text-slate-455 {
+html.light .text-slate-450,
+html.light .text-slate-455,
+html.light .text-gray-300,
+html.light .text-gray-400 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-500,
+html.light .text-gray-500 {
   color: #475569 !important;
+  font-weight: 500 !important;
 }
 
-html.light .text-slate-500 {
-  color: #64748b !important;
+html.light .text-slate-600,
+html.light .text-gray-600 {
+  color: #334155 !important;
 }
 
-/* Light Mode Inputs, Selects, and Form Elements */
+/* Gradient text adjustments for light mode */
+html.light .bg-clip-text.text-transparent.from-white {
+  color: #0f172a !important;
+  background: none !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* 5. Detected Keywords (Emerald / Green) */
+html.light .bg-emerald-950\/30,
+html.light .bg-emerald-950\/40,
+html.light .bg-emerald-950,
+html.light .bg-emerald-900\/20,
+html.light .bg-emerald-900\/30,
+html.light .bg-emerald-500\/10,
+html.light .bg-green-950\/30,
+html.light .bg-green-500\/10 {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+}
+
+html.light .text-emerald-300,
+html.light .text-emerald-400,
+html.light .text-green-300,
+html.light .text-green-400 {
+  color: #065f46 !important;
+  font-weight: 600 !important;
+}
+
+html.light .border-emerald-800\/40,
+html.light .border-emerald-500\/30,
+html.light .border-emerald-900\/30 {
+  border-color: #a7f3d0 !important;
+}
+
+/* 6. Missing Target Keywords (Rose / Red) */
+html.light .bg-rose-950\/30,
+html.light .bg-rose-950\/40,
+html.light .bg-rose-950,
+html.light .bg-rose-900\/20,
+html.light .bg-rose-900\/30,
+html.light .bg-rose-500\/10,
+html.light .bg-red-950\/30,
+html.light .bg-red-500\/10 {
+  background-color: #fff1f2 !important;
+  border-color: #fecdd3 !important;
+}
+
+html.light .text-rose-300,
+html.light .text-rose-400,
+html.light .text-red-300,
+html.light .text-red-400 {
+  color: #9f1239 !important;
+  font-weight: 600 !important;
+}
+
+html.light .border-rose-800\/40,
+html.light .border-rose-500\/30,
+html.light .border-rose-900\/30 {
+  border-color: #fecdd3 !important;
+}
+
+/* 7. Recommendations & Alerts (Amber / Yellow) */
+html.light .bg-amber-950\/30,
+html.light .bg-amber-950\/40,
+html.light .bg-amber-950,
+html.light .bg-amber-900\/20,
+html.light .bg-amber-900\/30,
+html.light .bg-amber-500\/10,
+html.light .bg-yellow-950\/30 {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+
+html.light .text-amber-300,
+html.light .text-amber-400,
+html.light .text-yellow-300,
+html.light .text-yellow-400 {
+  color: #92400e !important;
+  font-weight: 600 !important;
+}
+
+html.light .border-amber-800\/40,
+html.light .border-amber-500\/30,
+html.light .border-amber-900\/30 {
+  border-color: #fde68a !important;
+}
+
+/* 8. Blue / Sky / Cyan Accents & Badges */
+html.light .bg-blue-950\/40,
+html.light .bg-blue-950\/30,
+html.light .bg-blue-950\/20,
+html.light .bg-blue-950,
+html.light .bg-blue-900\/30,
+html.light .bg-blue-900\/20,
+html.light .bg-blue-900\/10,
+html.light .bg-blue-900\/5,
+html.light .bg-blue-500\/10,
+html.light .bg-sky-950\/30,
+html.light .bg-cyan-950\/30 {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+
+html.light .text-blue-300,
+html.light .text-blue-400,
+html.light .text-sky-300,
+html.light .text-sky-400,
+html.light .text-cyan-300 {
+  color: #1e40af !important;
+  font-weight: 600 !important;
+}
+
+html.light .border-blue-800\/40,
+html.light .border-blue-500\/30,
+html.light .border-blue-900\/30 {
+  border-color: #bfdbfe !important;
+}
+
+/* 9. Purple & Indigo (AI Insights & Badges) */
+html.light .bg-purple-950\/40,
+html.light .bg-purple-950\/30,
+html.light .bg-purple-950\/20,
+html.light .bg-purple-950,
+html.light .bg-purple-900\/30,
+html.light .bg-purple-900\/20,
+html.light .bg-purple-500\/10,
+html.light .bg-indigo-950\/40,
+html.light .bg-indigo-950\/30,
+html.light .bg-indigo-950 {
+  background-color: #f5f3ff !important;
+  border-color: #ddd6fe !important;
+}
+
+html.light .text-purple-300,
+html.light .text-purple-400,
+html.light .text-indigo-300,
+html.light .text-indigo-400,
+html.light .text-violet-400 {
+  color: #5b21b6 !important;
+  font-weight: 600 !important;
+}
+
+html.light .border-purple-800\/40,
+html.light .border-purple-500\/30,
+html.light .border-purple-900\/30,
+html.light .border-indigo-800 {
+  border-color: #ddd6fe !important;
+}
+
+/* 10. Progress Bar Background Tracks */
+html.light .h-1\.5.w-full.bg-slate-950,
+html.light .h-2.w-full.bg-slate-950,
+html.light div[class*="bg-slate-950"][class*="rounded-full"],
+html.light div[class*="bg-slate-900"][class*="rounded-full"],
+html.light div[class*="bg-slate-800"][class*="rounded-full"] {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* 11. Inputs, Selects, and Form Elements */
 html.light input:not([type="checkbox"]):not([type="radio"]),
 html.light select,
 html.light textarea {
@@ -119,21 +307,87 @@ html.light textarea {
 
 html.light input::placeholder,
 html.light textarea::placeholder {
-  color: #94a3b8 !important;
+  color: #64748b !important;
 }
 
-/* Light Mode Card & Panel Shadows */
-html.light .shadow-\[0_8px_32px_rgba\(0\,0\,0\,0\.4\)\] {
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08) !important;
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
 }
 
-/* Light Mode Sidebar Link Hover */
+/* 12. Navbar & Header */
+html.light header {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+html.light header input {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* 13. Sidebar & Navigation */
 html.light aside {
   background-color: #ffffff !important;
   border-right-color: #e2e8f0 !important;
 }
 
-html.light nav a:hover {
+html.light aside nav a {
+  color: #334155 !important;
+}
+
+html.light aside nav a:hover {
   background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light aside nav a span.text-slate-500 {
+  color: #64748b !important;
+}
+
+html.light aside nav a:hover span.text-slate-500 {
+  color: #1e293b !important;
+}
+
+/* 14. Dropdown Menus & Popovers */
+html.light .shadow-\[0_10px_30px_rgba\(0\,0\,0\,0\.5\)\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1) !important;
+  color: #0f172a !important;
+}
+
+html.light div[class*="bg-slate-900"][class*="rounded-2xl"][class*="z-40"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* 15. Tables */
+html.light table th {
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+  font-weight: 700 !important;
+}
+
+html.light table td {
+  color: #0f172a !important;
+  border-color: #f1f5f9 !important;
+}
+
+html.light table tr:hover td {
+  background-color: #f8fafc !important;
+}
+
+/* 16. Tabs Navigation */
+html.light button.border-transparent.text-slate-500 {
+  color: #64748b !important;
+}
+
+html.light button.border-transparent.text-slate-500:hover {
   color: #0f172a !important;
 }
