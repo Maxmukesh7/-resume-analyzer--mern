@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -27,10 +27,8 @@ import {
   FaTrophy,
   FaDownload,
   FaPrint,
-  FaShareAlt,
   FaCopy,
   FaExternalLinkAlt,
-  FaSearch,
   FaAward
 } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
@@ -48,7 +46,6 @@ export default function ResumeAnalysisDashboard() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const printableRef = useRef(null);
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
 import { 
   FaThLarge, 
   FaCloudUploadAlt, 
@@ -17,6 +18,14 @@ import {
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    if (onClose) onClose();
+    await logout();
+    navigate('/login');
+  };
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <FaThLarge size={18} /> },
@@ -107,14 +116,14 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Logout Section */}
         <div className="px-4">
-          <Link
-            to="/login"
-            onClick={onClose}
-            className="flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:text-rose-300 border border-transparent hover:bg-rose-950/10 hover:border-rose-900/25 transition-all"
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:text-rose-300 border border-transparent hover:bg-rose-950/10 hover:border-rose-900/25 transition-all cursor-pointer text-left"
           >
             <FaSignOutAlt size={18} />
             <span>Logout</span>
-          </Link>
+          </button>
         </div>
       </aside>
     </>

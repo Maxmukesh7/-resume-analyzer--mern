@@ -39,8 +39,7 @@ import { getResumes } from '../../services/resumeService';
 import { 
   analyzeJobMatch, 
   getJobMatchHistory, 
-  deleteJobMatch, 
-  getJobMatchById 
+  deleteJobMatch 
 } from '../../services/jobMatchService';
 
 ChartJS.register(

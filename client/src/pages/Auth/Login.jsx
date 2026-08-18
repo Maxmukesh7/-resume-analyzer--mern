@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaGoogle, FaRobot } from 'react-icons/fa';
+import { FaRobot } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Input from '../../components/Common/Input';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
 import { useAuth } from '../../context/AuthContext';
-
-import { triggerGoogleSignIn } from '../../utils/googleAuth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -16,11 +14,10 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
 
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const { login, loginWithGoogle } = useAuth();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -53,25 +50,6 @@ export default function Login() {
     if (result.success) {
       navigate('/dashboard');
     }
-  };
-
-  const handleGoogleLogin = async () => {
-    triggerGoogleSignIn({
-      onStart: () => {
-        setGoogleLoading(true);
-      },
-      onSuccess: async (credential) => {
-        const result = await loginWithGoogle(credential);
-        setGoogleLoading(false);
-        if (result.success) {
-          navigate('/dashboard');
-        }
-      },
-      onError: (errorMsg) => {
-        setGoogleLoading(false);
-        showToast(errorMsg, 'error');
-      }
-    });
   };
 
   return (
@@ -149,28 +127,6 @@ export default function Login() {
               Sign In
             </Button>
           </form>
-
-          {/* Social Sign In Separator */}
-          <div className="relative my-8 flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-800/80"></div>
-            </div>
-            <span className="relative px-4 text-xs font-bold text-slate-500 bg-slate-900/10 uppercase tracking-wider">
-              Or continue with
-            </span>
-          </div>
-
-          <Button
-            type="button"
-            variant="secondary"
-            className="w-full flex items-center justify-center gap-3"
-            onClick={handleGoogleLogin}
-            loading={googleLoading}
-            disabled={googleLoading || loading}
-          >
-            {!googleLoading && <FaGoogle className="text-red-400" />}
-            <span>{googleLoading ? 'Connecting to Google...' : 'Google Account'}</span>
-          </Button>
 
           {/* Footnotes */}
           <p className="text-slate-400 text-xs text-center mt-8 font-medium">

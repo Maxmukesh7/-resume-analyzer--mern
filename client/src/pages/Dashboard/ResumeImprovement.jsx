@@ -1,16 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation, useParams } from 'react-router-dom';
 import html2pdf from 'html2pdf.js';
 import {
   FaMagic,
-  FaRobot,
   FaCopy,
-  FaDownload,
   FaSync,
   FaCheck,
-  FaExchangeAlt,
-  FaFileAlt,
   FaFilePdf,
   FaGraduationCap,
   FaBriefcase,
@@ -18,12 +13,9 @@ import {
   FaCloud,
   FaTools,
   FaLightbulb,
-  FaArrowRight,
   FaChevronDown,
-  FaEdit,
   FaSpinner,
-  FaLayerGroup,
-  FaTerminal
+  FaLayerGroup
 } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Badge from '../../components/Common/Badge';
@@ -33,9 +25,7 @@ import { getResumes } from '../../services/resumeService';
 import {
   improveFullResume,
   getResumeImprovements,
-  rewriteSummary,
-  rewriteProject,
-  rewriteExperience
+  rewriteSummary
 } from '../../services/aiService';
 
 // Custom typing animation component for AI text generation
@@ -94,7 +84,6 @@ function SkeletonCard() {
 
 export default function ResumeImprovement() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { id: urlResumeId } = useParams();
   const { showToast } = useToast();
   const pdfExportRef = useRef(null);

@@ -1,51 +1,13 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   GLOBAL THEME CONFIGURATION & CUSTOM PROPERTIES
+   GLOBAL THEME CONFIGURATION
    ───────────────────────────────────────────────────────────────────────────── */
 :root {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
-
-  /* Accent Tone Defaults (Neon Glow: Blue + Purple) */
-  --accent-primary: #3b82f6;
-  --accent-secondary: #a855f7;
-  --accent-orb-1: rgba(59, 130, 246, 0.16);
-  --accent-orb-2: rgba(168, 85, 247, 0.16);
-  --accent-gradient: linear-gradient(135deg, #3b82f6, #a855f7);
-  --accent-glow: 0 0 25px rgba(59, 130, 246, 0.35);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   ACCENT TONE OVERRIDES
-   ───────────────────────────────────────────────────────────────────────────── */
-[data-accent="cyberpunk"] {
-  --accent-primary: #f59e0b;
-  --accent-secondary: #f43f5e;
-  --accent-orb-1: rgba(245, 158, 11, 0.18);
-  --accent-orb-2: rgba(244, 63, 94, 0.18);
-  --accent-gradient: linear-gradient(135deg, #f59e0b, #f43f5e);
-  --accent-glow: 0 0 25px rgba(245, 158, 11, 0.4);
-}
-
-[data-accent="midnight"] {
-  --accent-primary: #10b981;
-  --accent-secondary: #06b6d4;
-  --accent-orb-1: rgba(16, 185, 129, 0.18);
-  --accent-orb-2: rgba(6, 182, 212, 0.18);
-  --accent-gradient: linear-gradient(135deg, #10b981, #06b6d4);
-  --accent-glow: 0 0 25px rgba(16, 185, 129, 0.4);
-}
-
-[data-accent="classic-dark"] {
-  --accent-primary: #6366f1;
-  --accent-secondary: #64748b;
-  --accent-orb-1: rgba(99, 102, 241, 0.16);
-  --accent-orb-2: rgba(100, 116, 139, 0.14);
-  --accent-gradient: linear-gradient(135deg, #6366f1, #64748b);
-  --accent-glow: 0 0 25px rgba(99, 102, 241, 0.35);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -69,24 +31,6 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   DYNAMIC ACCENT GLOW HELPERS
-   ───────────────────────────────────────────────────────────────────────────── */
-.ambient-glow-1 {
-  background-color: var(--accent-orb-1) !important;
-  transition: background-color 0.4s ease;
-}
-
-.ambient-glow-2 {
-  background-color: var(--accent-orb-2) !important;
-  transition: background-color 0.4s ease;
-}
-
-.accent-theme-btn {
-  background: var(--accent-gradient) !important;
-  box-shadow: var(--accent-glow) !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -180,7 +124,7 @@ html.light textarea::placeholder {
 
 /* Light Mode Card & Panel Shadows */
 html.light .shadow-\[0_8px_32px_rgba\(0\,0\,0\,0\.4\)\] {
-  shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08) !important;
 }
 
 /* Light Mode Sidebar Link Hover */

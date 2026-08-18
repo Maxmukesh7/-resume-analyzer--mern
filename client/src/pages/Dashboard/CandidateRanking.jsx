@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   FaUsers,
   FaTrophy,
@@ -7,20 +7,12 @@ import {
   FaCloudUploadAlt,
   FaSearch,
   FaSlidersH,
-  FaDownload,
   FaFilePdf,
   FaSpinner,
   FaTimes,
-  FaCheckCircle,
-  FaExclamationTriangle,
   FaEye,
   FaTrash,
   FaBriefcase,
-  FaGraduationCap,
-  FaCode,
-  FaCertificate,
-  FaStar,
-  FaChevronRight,
   FaSync,
   FaHistory
 } from 'react-icons/fa';
@@ -44,7 +36,6 @@ export default function CandidateRanking() {
   const [companyName, setCompanyName] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [showWeightsConfig, setShowWeightsConfig] = useState(false);
 
   // Scoring Weights (Percentages)
   const [weights, setWeights] = useState({
@@ -63,8 +54,6 @@ export default function CandidateRanking() {
   // Search & Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [minOverallScore, setMinOverallScore] = useState(0);
-  const [minAtsScore, setMinAtsScore] = useState(0);
-  const [minJobMatchScore, setMinJobMatchScore] = useState(0);
   const [experienceFilter, setExperienceFilter] = useState('all');
 
   // Candidate Detail Modal
@@ -73,8 +62,7 @@ export default function CandidateRanking() {
   // History State
   const [historyList, setHistoryList] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [historyPage, setHistoryPage] = useState(1);
-  const [historyTotalPages, setHistoryTotalPages] = useState(1);
+  const [historyPage] = useState(1);
   const [deletingSessionId, setDeletingSessionId] = useState(null);
 
   // Fetch History on Tab Switch
@@ -90,7 +78,6 @@ export default function CandidateRanking() {
       const res = await recruiterService.getRankings({ page, limit: 10 });
       if (res.success && res.data) {
         setHistoryList(res.data.rankings || []);
-        setHistoryTotalPages(res.data.pagination?.totalPages || 1);
       }
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to fetch ranking history.', 'error');
@@ -270,8 +257,6 @@ export default function CandidateRanking() {
 
     // Score thresholds
     const matchesOverall = c.overallScore >= minOverallScore;
-    const matchesAts = c.atsScore >= minAtsScore;
-    const matchesJobMatch = c.jobMatchScore >= minJobMatchScore;
 
     // Experience filter
     const expCount = c.parsedData?.experience?.length || 0;
@@ -280,7 +265,7 @@ export default function CandidateRanking() {
     else if (experienceFilter === 'mid') matchesExp = expCount === 1;
     else if (experienceFilter === 'fresher') matchesExp = expCount === 0;
 
-    return matchesSearch && matchesOverall && matchesAts && matchesJobMatch && matchesExp;
+    return matchesSearch && matchesOverall && matchesExp;
   });
 
   // Top 3 Podium Candidates

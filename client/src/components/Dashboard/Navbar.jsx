@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaSearch, FaBell, FaUser, FaSignOutAlt, FaCog, FaMoon, FaSun } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Navbar({ onToggleSidebar }) {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -174,9 +175,10 @@ export default function Navbar({ onToggleSidebar }) {
               {/* Logout */}
               <div className="border-t border-slate-800 py-1 bg-slate-900/50">
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setShowProfileMenu(false);
-                    logout();
+                    await logout();
+                    navigate('/login');
                   }}
                   className="w-full flex items-center gap-3 px-5 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/10 transition-colors cursor-pointer text-left"
                 >
