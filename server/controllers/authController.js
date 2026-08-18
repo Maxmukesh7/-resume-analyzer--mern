@@ -8,11 +8,11 @@ import { formatMongoDoc } from '../utils/dbFormatter.js';
 
 import logActivity from '../utils/activityLogger.js';
 
-// Cookie options for token persistence
+// Cookie options for token persistence (sameSite: 'none' in production ensures cross-origin cookies work)
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
 
@@ -147,7 +147,7 @@ export const logout = asyncHandler(async (req, res) => {
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   });
   return successResponse(res, null, 'Logged out successfully.');
 });

@@ -38,6 +38,9 @@ const app = express();
 const PORT = parseInt(process.env.PORT, 10) || 5000;
 const HOST = '0.0.0.0';
 
+// Trust reverse proxy (Render, AWS, Nginx) so secure cookies & HTTPS headers work
+app.set('trust proxy', 1);
+
 // Security Middlewares (relax CSP/COEP so Vite assets, Google Fonts, and charts load cleanly)
 app.use(
   helmet({
@@ -62,41 +65,89 @@ if (process.env.NODE_ENV === 'development') {
 // Custom request file logger middleware (appends to logs/access.log)
 app.use(loggerMiddleware);
 
-// Configure CORS for single-origin production and local development
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175',
-  'http://localhost:5176',
-  process.env.CORS_ORIGIN,
-  process.env.RENDER_EXTERNAL_URL
-].filter(Boolean);
+// Helper to parse allowed origins list
+const parseAllowedOrigins = () => {
+  const origins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://localhost:5176',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    'http://127.0.0.1:5175',
+    'http://127.0.0.1:3000',
+  ];
 
-app.use(cors({
+  if (process.env.CORS_ORIGIN) {
+    const custom = process.env.CORS_ORIGIN.split(',')
+      .map((o) => o.trim().replace(/\/+$/, ''))
+      .filter(Boolean);
+    origins.push(...custom);
+  }
+
+  if (process.env.RENDER_EXTERNAL_URL) {
+    origins.push(process.env.RENDER_EXTERNAL_URL.trim().replace(/\/+$/, ''));
+  }
+
+  return [...new Set(origins)];
+};
+
+const allowedOrigins = parseAllowedOrigins();
+
+// Configure CORS for single-origin production, separate frontend static sites, and local development
+const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (same-origin browser requests, mobile apps, curl, postman)
+    // Allow requests with no origin (same-origin browser requests, curl, mobile apps, postman)
     if (!origin) return callback(null, true);
-    
-    // In development mode or local testing, allow localhost/127.0.0.1
-    if (process.env.NODE_ENV !== 'production') {
-      if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
-        return callback(null, true);
-      }
-    }
 
-    // In single-service production, allow explicitly configured origins, Render URLs, or fallback
+    const cleanOrigin = origin.trim().replace(/\/+$/, '');
+
+    // Allow localhost/127.0.0.1 in non-production or for local development
     if (
-      allowedOrigins.includes(origin) ||
-      (process.env.RENDER_EXTERNAL_URL && origin === process.env.RENDER_EXTERNAL_URL) ||
-      !process.env.CORS_ORIGIN
+      cleanOrigin.startsWith('http://localhost:') ||
+      cleanOrigin.startsWith('http://127.0.0.1:')
     ) {
       return callback(null, true);
     }
 
-    callback(new Error('Not allowed by CORS'));
+    // Allow explicitly listed origins (from CORS_ORIGIN or RENDER_EXTERNAL_URL)
+    if (allowedOrigins.includes(cleanOrigin)) {
+      return callback(null, true);
+    }
+
+    // Allow deployed Render domains (*.onrender.com)
+    if (/^https:\/\/[a-zA-Z0-9-]+\.onrender\.com$/.test(cleanOrigin)) {
+      return callback(null, true);
+    }
+
+    // If no CORS_ORIGIN is explicitly set, allow the requesting origin safely
+    if (!process.env.CORS_ORIGIN) {
+      return callback(null, true);
+    }
+
+    return callback(null, false);
   },
-  credentials: true
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers',
+    'Cache-Control',
+    'Pragma'
+  ],
+  exposedHeaders: ['Set-Cookie'],
+  optionsSuccessStatus: 204
+};
+
+// Apply CORS to all routes and handle preflight OPTIONS
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Setup static uploads folder directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -111,8 +162,8 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/job-match', jobMatchRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
+// Health check endpoints (both /api/health and /health)
+app.get(['/api/health', '/health'], (req, res) => {
   const dbState = mongoose.connection.readyState;
   const stateLabels = {
     0: 'Disconnected',

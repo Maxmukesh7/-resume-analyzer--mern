@@ -723,3 +723,9 @@
 [2026-08-18T10:09:28.201Z] GET /api/recruiter/rankings 200 - 916ms - IP: 127.0.0.1
 [2026-08-18T10:09:29.170Z] GET /api/recruiter/rankings/6a842f50d7c8b27881cf9d40 200 - 968ms - IP: 127.0.0.1
 [2026-08-18T10:09:29.860Z] DELETE /api/recruiter/rankings/6a842f50d7c8b27881cf9d40 200 - 689ms - IP: 127.0.0.1
+[2026-08-18T10:22:56.454Z] GET /api/health 200 - 4ms - IP: 127.0.0.1
+[2026-08-18T10:22:56.465Z] GET /health 200 - 0ms - IP: 127.0.0.1
+[2026-08-18T10:22:56.468Z] OPTIONS /api/auth/register 204 - 0ms - IP: 127.0.0.1
+[2026-08-18T10:22:56.483Z] OPTIONS /api/auth/login 204 - 1ms - IP: 127.0.0.1
+[2026-08-18T10:22:56.767Z] POST /api/auth/register 201 - 270ms - IP: 127.0.0.1
+[2026-08-18T10:22:56.985Z] POST /api/auth/login 200 - 209ms - IP: 127.0.0.1

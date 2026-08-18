@@ -1,7 +1,30 @@
 import axios from 'axios';
 
+/**
+ * Dynamically resolves and normalizes the backend API base URL:
+ * - If VITE_API_URL is configured (e.g. 'https://backend.onrender.com' or 'https://backend.onrender.com/api'):
+ *   Normalizes it to ensure '/api' suffix without trailing slashes.
+ * - In single-service Render deployments or when omitted:
+ *   Defaults to relative '/api' so requests route directly to the serving backend.
+ */
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (!envUrl || typeof envUrl !== 'string' || envUrl.trim() === '') {
+    return '/api';
+  }
+
+  const trimmed = envUrl.trim().replace(/\/+$/, '');
+  
+  // If an absolute URL was provided without the /api prefix, automatically append it
+  if (/^https?:\/\//i.test(trimmed) && !trimmed.endsWith('/api')) {
+    return `${trimmed}/api`;
+  }
+
+  return trimmed;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: getBaseURL(),
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -39,8 +62,9 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
+        const base = (api.defaults.baseURL || '/api').replace(/\/+$/, '');
         const response = await axios.post(
-          `${api.defaults.baseURL}/auth/refresh`,
+          `${base}/auth/refresh`,
           {},
           { withCredentials: true }
         );
