@@ -57,15 +57,62 @@ html.light .bg-slate-900\/80,
 html.light .bg-slate-900\/90,
 html.light .bg-slate-950,
 html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/70,
 html.light .bg-slate-950\/75,
 html.light .bg-slate-950\/80,
 html.light .bg-slate-950\/90 {
+  background-image: none !important;
   background-color: #ffffff !important;
   color: #0f172a !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02) !important;
+}
+
+/* 2. Remove Dark Gradients on Panels/Cards in Light Mode */
+html.light [class*="bg-gradient-to-"][class*="from-slate-900"],
+html.light [class*="bg-gradient-to-"][class*="from-slate-950"],
+html.light [class*="bg-gradient-to-"][class*="via-slate-900"],
+html.light [class*="bg-gradient-to-"][class*="via-slate-950"],
+html.light [class*="bg-gradient-to-"][class*="to-slate-900"],
+html.light [class*="bg-gradient-to-"][class*="to-slate-950"],
+html.light [class*="bg-gradient-to-"][class*="to-purple-950"],
+html.light [class*="bg-gradient-to-"][class*="to-blue-950"],
+html.light [class*="bg-gradient-to-"][class*="to-indigo-950"],
+html.light [class*="bg-gradient-to-"][class*="via-indigo-950"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
 }
 
-/* 2. Nested Sub-Cards, Category Items, & Recommendation Bars */
+/* Specific luminous light-tinted cards for special features */
+html.light .border-purple-500\/30.bg-gradient-to-br,
+html.light .border-purple-500\/30 {
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 60%, #f3e8ff 100%) !important;
+  border-color: #d8b4fe !important;
+}
+
+html.light .bg-gradient-to-r.from-slate-900.to-blue-950\/40,
+html.light .bg-gradient-to-r.from-slate-900.via-slate-900\/90 {
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 60%, #e0e7ff 100%) !important;
+  border-color: #bfdbfe !important;
+}
+
+html.light .bg-gradient-to-r.from-slate-900.via-indigo-950\/40 {
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 60%, #e0f2fe 100%) !important;
+  border-color: #99f6e4 !important;
+}
+
+html.light .bg-gradient-to-r.from-indigo-900\/40 {
+  background-color: #f5f3ff !important;
+  border-color: #c7d2fe !important;
+}
+
+html.light .bg-gradient-to-r.from-emerald-900\/40 {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+}
+
+/* 3. Nested Sub-Cards, Category Items, & Recommendation Bars */
 html.light .bg-slate-900\/50,
 html.light .bg-slate-900\/30,
 html.light .bg-slate-900\/20,
@@ -90,13 +137,13 @@ html.light .bg-slate-950\/30 {
   color: #1e293b !important;
 }
 
-/* 3. Borders & Dividers */
+/* 4. Borders & Dividers */
 html.light .border-slate-800,
 html.light .border-slate-850,
 html.light .border-slate-900,
 html.light .border-slate-800\/85,
-html.light .border-slate-800\/60,
 html.light .border-slate-800\/80,
+html.light .border-slate-800\/60,
 html.light .border-slate-850\/50,
 html.light .border-slate-700,
 html.light .border-slate-700\/80,
@@ -105,8 +152,25 @@ html.light .border-slate-700\/50 {
   border-color: #e2e8f0 !important;
 }
 
-/* 4. Text Contrast Hierarchy */
-html.light .text-white {
+/* 5. Headings & Text Contrast Hierarchy */
+html.light h1:not(button *):not([class*="text-white"]),
+html.light h2:not(button *):not([class*="text-white"]),
+html.light h3:not(button *):not([class*="text-white"]),
+html.light h4:not(button *):not([class*="text-white"]),
+html.light h5:not(button *):not([class*="text-white"]),
+html.light h6:not(button *):not([class*="text-white"]) {
+  color: #0f172a !important;
+}
+
+html.light div:not(button):not(button *) > .text-white,
+html.light p:not(button *) > .text-white,
+html.light span:not(button):not(button *):not([class*="bg-gradient-to-"]):not([class*="from-"]):not([class*="bg-blue-"]):not([class*="bg-purple-"]):not([class*="bg-indigo-"]).text-white,
+html.light h1.text-white,
+html.light h2.text-white,
+html.light h3.text-white,
+html.light h4.text-white,
+html.light h5.text-white,
+html.light h6.text-white {
   color: #0f172a !important;
 }
 
@@ -123,33 +187,52 @@ html.light .text-slate-450,
 html.light .text-slate-455,
 html.light .text-gray-300,
 html.light .text-gray-400 {
-  color: #1e293b !important;
+  color: #334155 !important;
 }
 
 html.light .text-slate-500,
 html.light .text-gray-500 {
-  color: #475569 !important;
+  color: #64748b !important;
   font-weight: 500 !important;
 }
 
 html.light .text-slate-600,
 html.light .text-gray-600 {
-  color: #334155 !important;
+  color: #475569 !important;
+}
+
+/* 6. CRITICAL: Preserve Pure White Text on Buttons & Colored Badges */
+html.light button.text-white,
+html.light button .text-white,
+html.light button span.text-white,
+html.light button svg.text-white,
+html.light a[class*="bg-gradient-to-"] .text-white,
+html.light a[class*="bg-gradient-to-"] span,
+html.light div[class*="bg-gradient-to-tr"][class*="from-blue-600"],
+html.light div[class*="bg-gradient-to-tr"][class*="from-blue-600"] svg,
+html.light div[class*="bg-gradient-to-tr"][class*="from-indigo-600"],
+html.light div[class*="bg-gradient-to-tr"][class*="from-indigo-600"] svg,
+html.light div[class*="bg-gradient-to-br"][class*="from-indigo-500"],
+html.light div[class*="bg-gradient-to-br"][class*="from-indigo-500"] svg,
+html.light span[class*="bg-gradient-to-r"][class*="from-amber-600"],
+html.light button[class*="bg-gradient-to-r"] {
+  color: #ffffff !important;
 }
 
 /* Gradient text adjustments for light mode */
-html.light .bg-clip-text.text-transparent.from-white {
+html.light .bg-clip-text.text-transparent[class*="from-white"] {
   color: #0f172a !important;
   background: none !important;
   -webkit-text-fill-color: #0f172a !important;
 }
 
-/* 5. Detected Keywords (Emerald / Green) */
-html.light .bg-emerald-950\/30,
+/* 7. Detected Keywords & Strengths (Emerald / Green) */
 html.light .bg-emerald-950\/40,
+html.light .bg-emerald-950\/30,
+html.light .bg-emerald-950\/20,
 html.light .bg-emerald-950,
-html.light .bg-emerald-900\/20,
 html.light .bg-emerald-900\/30,
+html.light .bg-emerald-900\/20,
 html.light .bg-emerald-500\/10,
 html.light .bg-green-950\/30,
 html.light .bg-green-500\/10 {
@@ -157,8 +240,11 @@ html.light .bg-green-500\/10 {
   border-color: #a7f3d0 !important;
 }
 
+html.light .text-emerald-100,
+html.light .text-emerald-200,
 html.light .text-emerald-300,
 html.light .text-emerald-400,
+html.light .text-green-200,
 html.light .text-green-300,
 html.light .text-green-400 {
   color: #065f46 !important;
@@ -167,16 +253,19 @@ html.light .text-green-400 {
 
 html.light .border-emerald-800\/40,
 html.light .border-emerald-500\/30,
-html.light .border-emerald-900\/30 {
+html.light .border-emerald-500\/20,
+html.light .border-emerald-900\/30,
+html.light .border-emerald-950\/30 {
   border-color: #a7f3d0 !important;
 }
 
-/* 6. Missing Target Keywords (Rose / Red) */
-html.light .bg-rose-950\/30,
+/* 8. Missing Target Keywords & Errors (Rose / Red) */
 html.light .bg-rose-950\/40,
+html.light .bg-rose-950\/30,
+html.light .bg-rose-950\/20,
 html.light .bg-rose-950,
-html.light .bg-rose-900\/20,
 html.light .bg-rose-900\/30,
+html.light .bg-rose-900\/20,
 html.light .bg-rose-500\/10,
 html.light .bg-red-950\/30,
 html.light .bg-red-500\/10 {
@@ -184,8 +273,12 @@ html.light .bg-red-500\/10 {
   border-color: #fecdd3 !important;
 }
 
+html.light .text-rose-100,
+html.light .text-rose-200,
 html.light .text-rose-300,
 html.light .text-rose-400,
+html.light .text-red-100,
+html.light .text-red-200,
 html.light .text-red-300,
 html.light .text-red-400 {
   color: #9f1239 !important;
@@ -194,24 +287,30 @@ html.light .text-red-400 {
 
 html.light .border-rose-800\/40,
 html.light .border-rose-500\/30,
-html.light .border-rose-900\/30 {
+html.light .border-rose-500\/20,
+html.light .border-rose-900\/30,
+html.light .border-rose-950\/30 {
   border-color: #fecdd3 !important;
 }
 
-/* 7. Recommendations & Alerts (Amber / Yellow) */
-html.light .bg-amber-950\/30,
+/* 9. Recommendations, Warnings & Growth Areas (Amber / Yellow) */
 html.light .bg-amber-950\/40,
+html.light .bg-amber-950\/30,
+html.light .bg-amber-950\/20,
 html.light .bg-amber-950,
-html.light .bg-amber-900\/20,
 html.light .bg-amber-900\/30,
+html.light .bg-amber-900\/20,
 html.light .bg-amber-500\/10,
 html.light .bg-yellow-950\/30 {
   background-color: #fffbeb !important;
   border-color: #fde68a !important;
 }
 
+html.light .text-amber-100,
+html.light .text-amber-200,
 html.light .text-amber-300,
 html.light .text-amber-400,
+html.light .text-yellow-200,
 html.light .text-yellow-300,
 html.light .text-yellow-400 {
   color: #92400e !important;
@@ -224,7 +323,7 @@ html.light .border-amber-900\/30 {
   border-color: #fde68a !important;
 }
 
-/* 8. Blue / Sky / Cyan Accents & Badges */
+/* 10. Blue / Sky / Cyan Accents & Badges */
 html.light .bg-blue-950\/40,
 html.light .bg-blue-950\/30,
 html.light .bg-blue-950\/20,
@@ -240,6 +339,8 @@ html.light .bg-cyan-950\/30 {
   border-color: #bfdbfe !important;
 }
 
+html.light .text-blue-100,
+html.light .text-blue-200,
 html.light .text-blue-300,
 html.light .text-blue-400,
 html.light .text-sky-300,
@@ -251,11 +352,12 @@ html.light .text-cyan-300 {
 
 html.light .border-blue-800\/40,
 html.light .border-blue-500\/30,
+html.light .border-blue-500\/20,
 html.light .border-blue-900\/30 {
   border-color: #bfdbfe !important;
 }
 
-/* 9. Purple & Indigo (AI Insights & Badges) */
+/* 11. Purple & Indigo (AI Insights & Skills) */
 html.light .bg-purple-950\/40,
 html.light .bg-purple-950\/30,
 html.light .bg-purple-950\/20,
@@ -263,6 +365,7 @@ html.light .bg-purple-950,
 html.light .bg-purple-900\/30,
 html.light .bg-purple-900\/20,
 html.light .bg-purple-500\/10,
+html.light .bg-purple-600\/20,
 html.light .bg-indigo-950\/40,
 html.light .bg-indigo-950\/30,
 html.light .bg-indigo-950 {
@@ -270,8 +373,12 @@ html.light .bg-indigo-950 {
   border-color: #ddd6fe !important;
 }
 
+html.light .text-purple-100,
+html.light .text-purple-200,
 html.light .text-purple-300,
 html.light .text-purple-400,
+html.light .text-indigo-100,
+html.light .text-indigo-200,
 html.light .text-indigo-300,
 html.light .text-indigo-400,
 html.light .text-violet-400 {
@@ -286,7 +393,21 @@ html.light .border-indigo-800 {
   border-color: #ddd6fe !important;
 }
 
-/* 10. Progress Bar Background Tracks */
+/* 12. Teal (Career Growth) */
+html.light .bg-teal-950\/30,
+html.light .bg-teal-500\/10 {
+  background-color: #f0fdfa !important;
+  border-color: #99f6e4 !important;
+}
+
+html.light .text-teal-200,
+html.light .text-teal-300,
+html.light .text-teal-400 {
+  color: #115e59 !important;
+  font-weight: 600 !important;
+}
+
+/* 13. Progress Bar Background Tracks */
 html.light .h-1\.5.w-full.bg-slate-950,
 html.light .h-2.w-full.bg-slate-950,
 html.light div[class*="bg-slate-950"][class*="rounded-full"],
@@ -296,7 +417,7 @@ html.light div[class*="bg-slate-800"][class*="rounded-full"] {
   border-color: #cbd5e1 !important;
 }
 
-/* 11. Inputs, Selects, and Form Elements */
+/* 14. Inputs, Selects, and Form Elements */
 html.light input:not([type="checkbox"]):not([type="radio"]),
 html.light select,
 html.light textarea {
@@ -317,9 +438,9 @@ html.light textarea:focus {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
 }
 
-/* 12. Navbar & Header */
+/* 15. Navbar & Header */
 html.light header {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.94) !important;
   border-bottom-color: #e2e8f0 !important;
 }
 
@@ -329,7 +450,7 @@ html.light header input {
   color: #0f172a !important;
 }
 
-/* 13. Sidebar & Navigation */
+/* 16. Sidebar & Navigation */
 html.light aside {
   background-color: #ffffff !important;
   border-right-color: #e2e8f0 !important;
@@ -352,23 +473,23 @@ html.light aside nav a:hover span.text-slate-500 {
   color: #1e293b !important;
 }
 
-/* 14. Dropdown Menus & Popovers */
+/* 17. Dropdown Menus & Popovers */
 html.light .shadow-\[0_10px_30px_rgba\(0\,0\,0\,0\.5\)\] {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12) !important;
   color: #0f172a !important;
 }
 
 html.light div[class*="bg-slate-900"][class*="rounded-2xl"][class*="z-40"] {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12) !important;
 }
 
-/* 15. Tables */
+/* 18. Tables */
 html.light table th {
-  background-color: #f8fafc !important;
+  background-color: #f1f5f9 !important;
   color: #1e293b !important;
   border-color: #e2e8f0 !important;
   font-weight: 700 !important;
@@ -383,7 +504,7 @@ html.light table tr:hover td {
   background-color: #f8fafc !important;
 }
 
-/* 16. Tabs Navigation */
+/* 19. Tabs Navigation */
 html.light button.border-transparent.text-slate-500 {
   color: #64748b !important;
 }
