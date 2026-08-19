@@ -49,7 +49,16 @@ export const AuthProvider = ({ children }) => {
       showToast(res.data.message || 'Logged in successfully!', 'success');
       return { success: true };
     } catch (error) {
-      const msg = error.response?.data?.message || 'Login failed. Please check credentials.';
+      let msg = 'Login failed. Please check credentials.';
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        msg = error.response.data.errors.map((e) => e.message || e.msg).join(', ');
+      } else if (error.response?.data?.message) {
+        msg = error.response.data.message;
+      } else if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+        msg = 'Network Error: Unable to connect to the backend server. Please verify network or API configuration.';
+      } else if (error.message) {
+        msg = `Network/CORS Error: ${error.message}`;
+      }
       showToast(msg, 'error');
       return { success: false, error: msg };
     }
@@ -75,6 +84,8 @@ export const AuthProvider = ({ children }) => {
         msg = error.response.data.errors.map(e => e.message || e.msg).join(', ');
       } else if (error.response?.data?.message) {
         msg = error.response.data.message;
+      } else if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+        msg = 'Network Error: Unable to connect to the backend server. Please verify network or API configuration.';
       } else if (error.message) {
         msg = `Network/CORS Error: ${error.message}`;
       }

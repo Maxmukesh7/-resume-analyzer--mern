@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import adminService from '../../services/adminService';
+import { getFileUrl } from '../../services/api';
 import { exportToCSV, exportToExcel, exportToPDF } from '../../utils/exportUtils';
 import { useToast } from '../../components/Common/Toast';
 import {
@@ -264,7 +265,7 @@ export default function AdminResumes() {
 
                       {r.uploadPath && (
                         <a
-                          href={r.uploadPath.startsWith('http') ? r.uploadPath : `/${r.uploadPath}`}
+                          href={getFileUrl(r.uploadPath)}
                           target="_blank"
                           rel="noreferrer"
                           download

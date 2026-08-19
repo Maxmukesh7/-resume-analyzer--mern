@@ -8,12 +8,25 @@ import { formatMongoDoc } from '../utils/dbFormatter.js';
 
 import logActivity from '../utils/activityLogger.js';
 
-// Cookie options for token persistence (sameSite: 'none' in production ensures cross-origin cookies work)
-const cookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+/**
+ * Generates secure HTTP cookie options tailored for both single-origin
+ * and cross-origin production environments (Render, Vercel, Netlify).
+ * When running over HTTPS or in production, 'sameSite: none' with 'secure: true'
+ * allows cookies to be sent across different origins safely.
+ */
+export const getAuthCookieOptions = (req) => {
+  const isSecure =
+    process.env.NODE_ENV === 'production' ||
+    Boolean(req?.secure) ||
+    req?.headers?.['x-forwarded-proto'] === 'https';
+
+  return {
+    httpOnly: true,
+    secure: isSecure,
+    sameSite: isSecure ? 'none' : 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: '/'
+  };
 };
 
 /**
@@ -64,8 +77,8 @@ export const register = asyncHandler(async (req, res) => {
   const refreshToken = generateRefreshToken(user);
   console.log('🔑 [DEBUG] Tokens generated successfully.');
 
-  // Set HTTP-Only refresh cookie
-  res.cookie('refreshToken', refreshToken, cookieOptions);
+  // Set HTTP-Only refresh cookie with dynamic environment options
+  res.cookie('refreshToken', refreshToken, getAuthCookieOptions(req));
 
   console.log('📤 [DEBUG] Sending successful 201 response...');
   return successResponse(
@@ -117,8 +130,8 @@ export const login = asyncHandler(async (req, res) => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  // Set HTTP-Only refresh cookie
-  res.cookie('refreshToken', refreshToken, cookieOptions);
+  // Set HTTP-Only refresh cookie with dynamic environment options
+  res.cookie('refreshToken', refreshToken, getAuthCookieOptions(req));
 
   await logActivity({
     userId: user._id,
@@ -144,10 +157,12 @@ export const login = asyncHandler(async (req, res) => {
  * @access  Public
  */
 export const logout = asyncHandler(async (req, res) => {
+  const cookieOpts = getAuthCookieOptions(req);
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    secure: cookieOpts.secure,
+    sameSite: cookieOpts.sameSite,
+    path: '/'
   });
   return successResponse(res, null, 'Logged out successfully.');
 });

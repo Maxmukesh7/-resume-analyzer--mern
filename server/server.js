@@ -49,22 +49,6 @@ app.use(
   })
 );
 
-// Performance Compression (gzip)
-app.use(compression());
-
-// Request Body and Cookie Parsers
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-// Morgan HTTP request logging in development mode
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
-
-// Custom request file logger middleware (appends to logs/access.log)
-app.use(loggerMiddleware);
-
 // Helper to parse allowed origins list
 const parseAllowedOrigins = () => {
   const origins = [
@@ -86,6 +70,13 @@ const parseAllowedOrigins = () => {
     origins.push(...custom);
   }
 
+  if (process.env.FRONTEND_URL) {
+    const frontendUrls = process.env.FRONTEND_URL.split(',')
+      .map((o) => o.trim().replace(/\/+$/, ''))
+      .filter(Boolean);
+    origins.push(...frontendUrls);
+  }
+
   if (process.env.RENDER_EXTERNAL_URL) {
     origins.push(process.env.RENDER_EXTERNAL_URL.trim().replace(/\/+$/, ''));
   }
@@ -98,38 +89,54 @@ const allowedOrigins = parseAllowedOrigins();
 // Configure CORS for single-origin production, separate frontend static sites, and local development
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (same-origin browser requests, curl, mobile apps, postman)
+    // 1. Allow requests with no origin (same-origin browser requests, server-to-server, curl, mobile apps, Postman)
     if (!origin) return callback(null, true);
 
     const cleanOrigin = origin.trim().replace(/\/+$/, '');
 
-    // Allow localhost/127.0.0.1 in non-production or for local development
+    // 2. Allow localhost / 127.0.0.1 / 0.0.0.0 on any port for local development & testing
     if (
       cleanOrigin.startsWith('http://localhost:') ||
-      cleanOrigin.startsWith('http://127.0.0.1:')
+      cleanOrigin.startsWith('http://127.0.0.1:') ||
+      cleanOrigin.startsWith('http://0.0.0.0:') ||
+      cleanOrigin === 'http://localhost' ||
+      cleanOrigin === 'http://127.0.0.1'
     ) {
       return callback(null, true);
     }
 
-    // Allow explicitly listed origins (from CORS_ORIGIN or RENDER_EXTERNAL_URL)
+    // 3. Allow if wildcard '*' was configured in CORS_ORIGIN (reflect incoming origin so credentials work)
+    if (process.env.CORS_ORIGIN === '*' || process.env.CORS_ALLOW_ALL === 'true') {
+      return callback(null, true);
+    }
+
+    // 4. Allow explicitly listed origins (from CORS_ORIGIN, FRONTEND_URL, or RENDER_EXTERNAL_URL)
     if (allowedOrigins.includes(cleanOrigin)) {
       return callback(null, true);
     }
 
-    // Allow deployed Render domains (*.onrender.com)
-    if (/^https:\/\/[a-zA-Z0-9-]+\.onrender\.com$/.test(cleanOrigin)) {
+    // 5. Allow standard cloud platform deployments (Render, Vercel, Netlify, GitHub Pages)
+    const isAllowedCloudDomain =
+      /^https:\/\/[a-zA-Z0-9-]+\.onrender\.com$/.test(cleanOrigin) ||
+      /^https:\/\/[a-zA-Z0-9-_.]+\.vercel\.app$/.test(cleanOrigin) ||
+      /^https:\/\/[a-zA-Z0-9-_.]+\.netlify\.app$/.test(cleanOrigin) ||
+      /^https:\/\/[a-zA-Z0-9-_.]+\.github\.io$/.test(cleanOrigin);
+
+    if (isAllowedCloudDomain) {
       return callback(null, true);
     }
 
-    // If no CORS_ORIGIN is explicitly set, allow the requesting origin safely
+    // 6. If no CORS_ORIGIN was explicitly specified, safely permit the requesting origin
     if (!process.env.CORS_ORIGIN) {
       return callback(null, true);
     }
 
+    // Origin not permitted
+    console.warn(`⚠️ [CORS Blocked] Origin: ${origin} is not allowed by CORS configuration.`);
     return callback(null, false);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
   allowedHeaders: [
     'Content-Type',
     'Authorization',
@@ -139,15 +146,37 @@ const corsOptions = {
     'Access-Control-Request-Method',
     'Access-Control-Request-Headers',
     'Cache-Control',
-    'Pragma'
+    'Pragma',
+    'Range',
+    'Sec-Ch-Ua',
+    'Sec-Ch-Ua-Mobile',
+    'Sec-Ch-Ua-Platform',
+    'User-Agent'
   ],
-  exposedHeaders: ['Set-Cookie'],
+  exposedHeaders: ['Set-Cookie', 'Content-Length', 'ETag'],
+  maxAge: 86400, // 24 hours preflight cache
   optionsSuccessStatus: 204
 };
 
-// Apply CORS to all routes and handle preflight OPTIONS
+// CRITICAL: Mount CORS middleware immediately at top level to handle all preflight OPTIONS requests
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
+// Performance Compression (gzip)
+app.use(compression());
+
+// Request Body and Cookie Parsers
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
+
+// Morgan HTTP request logging in development mode
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+// Custom request file logger middleware (appends to logs/access.log)
+app.use(loggerMiddleware);
 
 // Setup static uploads folder directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -162,8 +191,12 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/job-match', jobMatchRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 
-// Health check endpoints (both /api/health and /health)
-app.get(['/api/health', '/health'], (req, res) => {
+// Health check endpoints (both /api/health and /health) supporting GET & HEAD
+app.all(['/api/health', '/health'], (req, res) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
+    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
+  }
+
   const dbState = mongoose.connection.readyState;
   const stateLabels = {
     0: 'Disconnected',
@@ -174,11 +207,12 @@ app.get(['/api/health', '/health'], (req, res) => {
 
   res.status(200).json({
     status: 'OK',
+    success: true,
     message: 'AI Resume Analyzer API is running smoothly',
     database: stateLabels[dbState] || 'Unknown',
     uptime: `${process.uptime().toFixed(1)}s`,
     version: '1.0.0',
-    timestamp: new Date()
+    timestamp: new Date().toISOString()
   });
 });
 
