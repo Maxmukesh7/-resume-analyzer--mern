@@ -48,6 +48,18 @@ export const errorHandler = (err, req, res, next) => {
     message = 'Duplicate database resource field value entered';
   }
 
+  // Catch Multer upload errors
+  if (err.name === 'MulterError') {
+    statusCode = 400;
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      message = 'File is too large. Maximum allowed size is 5MB.';
+    } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      message = `Unexpected upload field "${err.field}".`;
+    } else {
+      message = err.message || 'File upload failed.';
+    }
+  }
+
   // Log server errors (5xx codes) for visibility
   if (statusCode >= 500) {
     console.error(`[SERVER ERROR] ${err.message}\nStack: ${err.stack}`);

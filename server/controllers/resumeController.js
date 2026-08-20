@@ -35,9 +35,14 @@ export const uploadResume = asyncHandler(async (req, res) => {
     parseStatus: 'pending'
   });
 
-  // Automatically trigger parsing after successful upload
+  // Automatically trigger parsing and ATS evaluation after successful upload
   try {
     resume = await parseAndSaveResume(resume._id, true);
+    try {
+      await evaluateResumeAts(resume._id, req.user._id, true);
+    } catch (atsErr) {
+      console.warn('⚠️ Automated ATS evaluation warning on upload:', atsErr.message);
+    }
   } catch (err) {
     console.warn('⚠️ Automated parsing warning on upload:', err.message);
   }
@@ -60,11 +65,33 @@ export const getResumes = asyncHandler(async (req, res) => {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
 
-  const resumes = await Resume.find({ user: req.user._id }).sort({ uploadDate: -1 });
+  const resumes = await Resume.find({ user: req.user._id }).sort({ uploadDate: -1 }).lean();
+  const resumeIds = resumes.map((r) => r._id);
+
+  const analyses = await ResumeAnalysis.find({
+    $or: [{ resume: { $in: resumeIds } }, { user: req.user._id }]
+  }).lean();
+
+  const analysisMap = new Map();
+  analyses.forEach((a) => {
+    if (a.resume) {
+      analysisMap.set(a.resume.toString(), a);
+    }
+  });
+
+  const resumesWithScore = resumes.map((r) => {
+    const analysis = analysisMap.get(r._id.toString());
+    const score = analysis?.overallScore ?? (r.parseStatus === 'parsed' ? 80 : 0);
+    return {
+      ...r,
+      atsScore: score,
+      analysisId: analysis?._id || null
+    };
+  });
 
   return successResponse(
     res,
-    resumes,
+    resumesWithScore,
     'Resumes retrieved successfully.'
   );
 });

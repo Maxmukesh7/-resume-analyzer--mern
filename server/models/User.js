@@ -30,6 +30,20 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
+    college: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    skills: {
+      type: [String],
+      default: () => ['JavaScript', 'React', 'Node.js']
+    },
+    experience: {
+      type: String,
+      trim: true,
+      default: ''
+    },
     role: {
       type: String,
       enum: {

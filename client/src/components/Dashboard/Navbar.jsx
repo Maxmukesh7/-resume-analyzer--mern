@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaSearch, FaBell, FaUser, FaSignOutAlt, FaCog, FaMoon, FaSun } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { getFileUrl } from '../../services/api';
 
 export default function Navbar({ onToggleSidebar }) {
   const navigate = useNavigate();
@@ -134,9 +135,12 @@ export default function Navbar({ onToggleSidebar }) {
             className="flex items-center gap-2.5 p-1.5 rounded-xl border border-slate-800/60 hover:bg-slate-900 transition-all cursor-pointer"
           >
             <img
-              src={user?.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200"}
+              src={getFileUrl(user?.avatar) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200"}
               alt="User avatar"
               className="w-8 h-8 rounded-lg object-cover"
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200";
+              }}
             />
             <span className="text-xs font-bold text-slate-300 hidden sm:block pr-1">
               {user?.fullName || "User"}

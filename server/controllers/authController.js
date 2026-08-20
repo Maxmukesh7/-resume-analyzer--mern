@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import asyncHandler from '../middleware/asyncHandler.js';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
@@ -5,8 +8,10 @@ import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtHelper.js';
 import { formatMongoDoc } from '../utils/dbFormatter.js';
-
 import logActivity from '../utils/activityLogger.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Generates secure HTTP cookie options tailored for both single-origin
@@ -178,12 +183,58 @@ export const getProfile = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    Upload user profile avatar image
+ * @route   POST /api/auth/profile/avatar (also POST /api/auth/avatar)
+ * @access  Private
+ */
+export const uploadAvatar = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    throw new ApiError(400, 'Please select an image file (JPG, JPEG, PNG, WEBP) to upload.');
+  }
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new ApiError(404, 'User not found.');
+  }
+
+  // Delete previous custom uploaded avatar from disk if exists
+  if (user.avatar && user.avatar.startsWith('/uploads/avatars/')) {
+    try {
+      const oldAvatarPath = path.join(__dirname, '..', user.avatar);
+      if (fs.existsSync(oldAvatarPath)) {
+        await fs.promises.unlink(oldAvatarPath);
+      }
+    } catch (cleanErr) {
+      console.warn('⚠️ [Avatar] Old avatar file deletion skipped:', cleanErr.message);
+    }
+  }
+
+  // Set new relative avatar URL path for MongoDB persistence
+  const avatarPath = `/uploads/avatars/${req.file.filename}`;
+  user.avatar = avatarPath;
+  const updatedUser = await user.save();
+
+  await logActivity({
+    userId: user._id,
+    action: 'Profile Picture Updated',
+    description: `User ${user.fullName} uploaded a new profile picture.`,
+    req
+  });
+
+  return successResponse(
+    res,
+    formatMongoDoc(updatedUser),
+    'Profile picture uploaded successfully.'
+  );
+});
+
+/**
  * @desc    Update user profile credentials
  * @route   PUT /api/auth/profile
  * @access  Private
  */
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { fullName, phone, avatar } = req.body;
+  const { fullName, phone, avatar, college, skills, experience } = req.body;
   const user = await User.findById(req.user._id);
 
   if (!user) {
@@ -193,6 +244,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
   if (fullName !== undefined) user.fullName = fullName;
   if (phone !== undefined) user.phone = phone;
   if (avatar !== undefined) user.avatar = avatar;
+  if (college !== undefined) user.college = college;
+  if (skills !== undefined) user.skills = skills;
+  if (experience !== undefined) user.experience = experience;
 
   const updatedUser = await user.save();
 

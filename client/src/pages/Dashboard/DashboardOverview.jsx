@@ -110,7 +110,7 @@ export default function DashboardOverview() {
       ) : (
         <>
           {/* Grid of Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <StatCard
               title="Total Uploads"
               value={stats.totalUploads}
@@ -118,14 +118,6 @@ export default function DashboardOverview() {
               delta={stats.totalUploads > 0 ? `+${stats.totalUploads}` : '0'}
               deltaType="positive"
               description="total parsed documents"
-            />
-            <StatCard
-              title="Average ATS Score"
-              value={`${stats.averageAtsScore}%`}
-              icon={<FaAward size={20} className="text-amber-400" />}
-              delta={stats.averageAtsScore >= 70 ? 'Optimal' : 'Needs Action'}
-              deltaType={stats.averageAtsScore >= 70 ? 'positive' : 'negative'}
-              description="overall compliance"
             />
             <StatCard
               title="Highest ATS Score"

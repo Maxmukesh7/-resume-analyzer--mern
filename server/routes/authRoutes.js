@@ -6,6 +6,7 @@ import {
   logout, 
   getProfile, 
   updateProfile, 
+  uploadAvatar,
   changePassword, 
   forgotPassword, 
   resetPassword,
@@ -13,6 +14,7 @@ import {
 } from '../controllers/authController.js';
 import { validateRequest } from '../middleware/validationMiddleware.js';
 import { authenticateUser } from '../middleware/authMiddleware.js';
+import avatarUpload from '../config/avatarMulter.js';
 
 const router = express.Router();
 
@@ -61,6 +63,10 @@ router.post('/refresh', refresh);
 
 // Route: Get Profile (Protected)
 router.get('/profile', authenticateUser, getProfile);
+
+// Route: Upload Avatar Image (Protected)
+router.post('/profile/avatar', authenticateUser, avatarUpload.single('avatar'), uploadAvatar);
+router.post('/avatar', authenticateUser, avatarUpload.single('avatar'), uploadAvatar);
 
 // Route: Update Profile (Protected)
 router.put(

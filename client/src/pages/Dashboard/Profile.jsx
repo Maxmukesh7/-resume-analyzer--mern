@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
-import { FaUser, FaBriefcase, FaTimes, FaCamera } from 'react-icons/fa';
+import { useState, useEffect, useRef } from 'react';
+import { FaUser, FaBriefcase, FaTimes, FaCamera, FaSpinner } from 'react-icons/fa';
 import Card from '../../components/Common/Card';
 import Input from '../../components/Common/Input';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
 import { useAuth } from '../../context/AuthContext';
 import { getResumes } from '../../services/resumeService';
+import { getFileUrl } from '../../services/api';
 
 const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
 
 export default function Profile() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, uploadAvatar } = useAuth();
   const { showToast } = useToast();
+  const fileInputRef = useRef(null);
 
   const [profile, setProfile] = useState({
     name: user?.fullName || '',
@@ -25,6 +27,7 @@ export default function Profile() {
   const [resumesCount, setResumesCount] = useState(0);
   const [newSkill, setNewSkill] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -33,6 +36,9 @@ export default function Profile() {
         name: user.fullName || '',
         email: user.email || '',
         phone: user.phone || '',
+        college: user.college || '',
+        skills: Array.isArray(user.skills) && user.skills.length > 0 ? user.skills : prev.skills,
+        experience: user.experience || '',
         avatar: user.avatar || DEFAULT_AVATAR
       }));
     }
@@ -83,13 +89,51 @@ export default function Profile() {
     await updateProfile({
       fullName: profile.name,
       phone: profile.phone,
+      college: profile.college,
+      skills: profile.skills,
+      experience: profile.experience,
       avatar: profile.avatar
     });
     setLoading(false);
   };
 
-  const handleAvatarChange = () => {
-    showToast('To update profile picture, enter an image URL or connect Google account.', 'info');
+  const handleAvatarFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Reset input value to allow re-uploading same file if desired
+    e.target.value = '';
+
+    // Validate file type (JPG, JPEG, PNG, WEBP)
+    const validMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const validExtensions = /\.(jpe?g|png|webp)$/i;
+
+    if (!validMimes.includes(file.type) && !validExtensions.test(file.name)) {
+      showToast('Invalid file format. Please upload a JPG, JPEG, PNG, or WEBP image.', 'error');
+      return;
+    }
+
+    // Validate size (5MB maximum)
+    const maxSizeBytes = 5 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      showToast('Image file size exceeds the 5MB limit.', 'error');
+      return;
+    }
+
+    try {
+      setUploadingAvatar(true);
+      const result = await uploadAvatar(file);
+      if (result.success && result.user) {
+        setProfile((prev) => ({
+          ...prev,
+          avatar: result.user.avatar || DEFAULT_AVATAR
+        }));
+      }
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   return (
@@ -107,20 +151,43 @@ export default function Profile() {
         <Card className="flex flex-col items-center p-8 text-center h-fit">
           <div className="relative group">
             <img
-              src={profile.avatar}
+              src={getFileUrl(profile.avatar) || DEFAULT_AVATAR}
               alt="Profile avatar"
-              className="w-32 h-32 rounded-2xl object-cover border-2 border-slate-800 shadow-md group-hover:opacity-85 transition-opacity"
+              className={`w-32 h-32 rounded-2xl object-cover border-2 border-slate-800 shadow-md transition-all ${
+                uploadingAvatar ? 'opacity-50 blur-[1px]' : 'group-hover:opacity-90'
+              }`}
+              onError={(e) => {
+                e.currentTarget.src = DEFAULT_AVATAR;
+              }}
+            />
+            {uploadingAvatar && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/60 rounded-2xl">
+                <FaSpinner className="animate-spin text-blue-400" size={24} />
+                <span className="text-[10px] text-slate-200 mt-1 font-semibold">Uploading...</span>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/jpg"
+              onChange={handleAvatarFileChange}
+              className="hidden"
+              aria-label="Upload profile picture"
             />
             <button
               type="button"
-              onClick={handleAvatarChange}
-              className="absolute bottom-2 right-2 p-2.5 bg-blue-600 rounded-xl text-white hover:bg-blue-500 transition-colors shadow-lg"
-              title="Change Photo"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="absolute bottom-2 right-2 p-2.5 bg-blue-600 rounded-xl text-white hover:bg-blue-500 disabled:bg-blue-800 transition-colors shadow-lg cursor-pointer"
+              title="Upload new photo (JPG, PNG, WEBP max 5MB)"
             >
               <FaCamera size={14} />
             </button>
           </div>
-          <h3 className="text-base font-bold text-white mt-5">{profile.name || 'User Profile'}</h3>
+          <p className="text-[11px] text-slate-500 font-semibold mt-2.5">
+            JPG, PNG, or WEBP (Max 5MB)
+          </p>
+          <h3 className="text-base font-bold text-white mt-4">{profile.name || 'User Profile'}</h3>
           <p className="text-xs text-slate-500 font-semibold mt-1">{profile.email}</p>
           <div className="w-full border-t border-slate-850 mt-6 pt-5 flex flex-col gap-2 text-left">
             <span className="text-[10px] text-slate-500 uppercase font-extrabold">Account Summary</span>

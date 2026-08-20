@@ -130,6 +130,31 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Uploads and updates user profile avatar picture.
+   */
+  const uploadAvatar = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const res = await api.post('/auth/profile/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      const updatedUser = res.data.data;
+      setUser(updatedUser);
+      showToast(res.data.message || 'Profile picture updated successfully!', 'success');
+      return { success: true, user: updatedUser };
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Failed to upload profile picture.';
+      showToast(msg, 'error');
+      return { success: false, error: msg };
+    }
+  };
+
+  /**
    * Changes password.
    */
   const changePassword = async (currentPassword, newPassword, confirmPassword) => {
@@ -161,6 +186,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updateProfile,
+        uploadAvatar,
         changePassword,
         isAuthenticated: !!user
       }}
