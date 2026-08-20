@@ -56,22 +56,6 @@ export default function Hero() {
               <FaPlay size={12} className="text-blue-400" /> Watch Demo
             </a>
           </div>
-
-          {/* Micro stats banner */}
-          <div className="flex gap-8 border-t border-slate-900 pt-8 mt-4">
-            <div>
-              <p className="text-2xl font-extrabold text-white">98%</p>
-              <p className="text-xs text-slate-500">Recruiter Accuracy</p>
-            </div>
-            <div>
-              <p className="text-2xl font-extrabold text-white">100k+</p>
-              <p className="text-xs text-slate-500">Resumes Audited</p>
-            </div>
-            <div>
-              <p className="text-2xl font-extrabold text-white">&lt; 3s</p>
-              <p className="text-xs text-slate-500">Analysis Speed</p>
-            </div>
-          </div>
         </motion.div>
 
         {/* Right Side: Interactive 3D Canvas / Spline */}

@@ -7,7 +7,6 @@ import { ThemeProvider } from './context/ThemeContext';
 // Public Pages (Eagerly loaded for instant landing experience)
 import LandingPage from './pages/LandingPage';
 import About from './pages/Public/About';
-import Contact from './pages/Public/Contact';
 import NotFound from './pages/NotFound';
 
 // Auth Pages
@@ -96,7 +95,6 @@ export default function App() {
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
 
                 {/* Auth Public Routes (guards authenticated users away from Login/Register) */}
                 <Route element={<PublicRoute />}>
