@@ -40,18 +40,18 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-6 py-12 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#08090B] flex flex-col justify-center items-center px-6 py-12 relative overflow-hidden font-sans">
       {/* Background neon glows */}
-      <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-blue-900/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-purple-900/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-[#F5B83D]/[0.04] rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-[#FFD166]/[0.03] rounded-full blur-[140px] pointer-events-none" />
 
       {/* Brand Logo header */}
       <Link to="/" className="flex items-center gap-3.5 mb-8 z-10 group">
-        <div className="p-2.5 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+        <div className="p-2.5 bg-gradient-to-tr from-[#F5B83D] to-[#FFD166] rounded-2xl text-[#08090B] shadow-[0_0_20px_rgba(245,184,61,0.35)]">
           <FaRobot size={24} className="group-hover:rotate-12 transition-transform duration-300" />
         </div>
-        <span className="text-2xl font-extrabold text-white tracking-wide bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-          AI Resume <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Analyzer</span>
+        <span className="text-2xl font-extrabold text-[#F5F5F5] tracking-wide">
+          AI Resume <span className="bg-gradient-to-r from-[#F5B83D] to-[#FFD166] bg-clip-text text-transparent">Analyzer</span>
         </span>
       </Link>
 
@@ -61,12 +61,12 @@ export default function ForgotPassword() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md z-10"
       >
-        <Card className="p-8">
+        <Card className="p-8 bg-[#121519] border-[#292D33]">
           {!submitted ? (
             <>
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-white tracking-wide">Reset Password</h2>
-                <p className="text-slate-400 text-sm mt-1.5 font-medium">
+                <h2 className="text-2xl font-bold text-[#F5F5F5] tracking-wide">Reset Password</h2>
+                <p className="text-[#A7ADB7] text-sm mt-1.5 font-medium">
                   We will email you link instructions to reset your password.
                 </p>
               </div>
@@ -93,13 +93,13 @@ export default function ForgotPassword() {
               animate={{ scale: 1, opacity: 1 }}
               className="text-center py-4"
             >
-              <div className="flex justify-center mb-5 text-emerald-400">
-                <FaCheckCircle size={48} className="drop-shadow-[0_0_15px_rgba(16,185,129,0.3)] animate-bounce" />
+              <div className="flex justify-center mb-5 text-[#4ADE80]">
+                <FaCheckCircle size={48} className="drop-shadow-[0_0_15px_rgba(74,222,128,0.3)] animate-bounce" />
               </div>
-              <h2 className="text-2xl font-bold text-white tracking-wide">Link Sent!</h2>
-              <p className="text-slate-400 text-sm mt-3.5 leading-relaxed font-medium">
+              <h2 className="text-2xl font-bold text-[#F5F5F5] tracking-wide">Link Sent!</h2>
+              <p className="text-[#A7ADB7] text-sm mt-3.5 leading-relaxed font-medium">
                 We've successfully sent a password reset link to <br />
-                <span className="text-blue-400 font-bold">{email}</span>. <br />
+                <span className="text-[#F5B83D] font-bold">{email}</span>. <br />
                 Please inspect your spam folder if you do not receive it in a few minutes.
               </p>
 
@@ -114,10 +114,10 @@ export default function ForgotPassword() {
           )}
 
           {/* Go Back arrow link */}
-          <div className="border-t border-slate-800/80 pt-6 mt-8 text-center">
+          <div className="border-t border-[#292D33] pt-6 mt-8 text-center">
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-[#A7ADB7] hover:text-[#F5F5F5] transition-colors"
             >
               <FaArrowLeft size={10} />
               <span>Back to Login</span>

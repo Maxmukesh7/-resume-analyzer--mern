@@ -17,7 +17,7 @@ export default function Input({
   return (
     <div className={`flex flex-col gap-2 w-full ${className}`}>
       {label && (
-        <label htmlFor={id} className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <label htmlFor={id} className="text-xs font-semibold text-[#A7ADB7] uppercase tracking-wider">
           {label}
         </label>
       )}
@@ -26,10 +26,10 @@ export default function Input({
           id={id}
           type={inputType}
           placeholder={placeholder}
-          className={`w-full px-4 py-3 bg-slate-900/50 border rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none transition-all duration-300 backdrop-blur-md text-sm
+          className={`w-full px-4 py-3 bg-[#0D0F12] border rounded-xl text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none transition-all duration-300 backdrop-blur-md text-sm
             ${error 
-              ? 'border-red-500/80 focus:border-red-500 focus:ring-1 focus:ring-red-500/30' 
-              : 'border-slate-800 focus:border-blue-500/80 focus:ring-1 focus:ring-blue-500/30 shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]'
+              ? 'border-rose-500/80 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/30' 
+              : 'border-[#292D33] focus:border-[#F5B83D] focus:ring-1 focus:ring-[#F5B83D]/30 shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]'
             }`}
           {...props}
         />

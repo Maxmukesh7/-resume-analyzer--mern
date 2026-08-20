@@ -33,62 +33,62 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#08090B] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
       {/* Ambient background glow accents */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#F5B83D]/[0.04] rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#FFD166]/[0.03] rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="max-w-md w-full relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white mx-auto shadow-xl shadow-indigo-500/30 mb-4 border border-indigo-400/30">
+          <div className="w-14 h-14 bg-gradient-to-br from-[#F5B83D] to-[#FFD166] rounded-2xl flex items-center justify-center text-[#08090B] mx-auto shadow-xl shadow-[#F5B83D]/30 mb-4 border border-[#F5B83D]/40 font-bold">
             <FiShield className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">Admin Portal Login</h1>
-          <p className="text-sm text-slate-400 mt-2">
+          <h1 className="text-3xl font-extrabold text-[#F5F5F5] tracking-tight">Admin Portal Login</h1>
+          <p className="text-sm text-[#A7ADB7] mt-2">
             Secure administrative control center for AI Resume Analyzer
           </p>
         </div>
 
         {/* Login Form Container */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
+        <div className="bg-[#121519] border border-[#292D33] rounded-3xl p-8 shadow-2xl backdrop-blur-xl">
           {error && (
-            <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-medium leading-relaxed">
+            <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-medium leading-relaxed">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#A7ADB7] uppercase tracking-wider mb-2">
                 Admin Email Address
               </label>
               <div className="relative">
-                <FiMail className="absolute left-4 top-3.5 text-slate-400 w-5 h-5" />
+                <FiMail className="absolute left-4 top-3.5 text-[#6F7682] w-5 h-5" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@resumeanalyzer.com"
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-12 pr-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-all"
+                  className="w-full bg-[#0D0F12] border border-[#292D33] focus:border-[#F5B83D] focus:ring-1 focus:ring-[#F5B83D] rounded-xl pl-12 pr-4 py-3 text-sm text-[#F5F5F5] placeholder-[#6F7682] outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-[#A7ADB7] uppercase tracking-wider mb-2">
                 Administrator Password
               </label>
               <div className="relative">
-                <FiLock className="absolute left-4 top-3.5 text-slate-400 w-5 h-5" />
+                <FiLock className="absolute left-4 top-3.5 text-[#6F7682] w-5 h-5" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-12 pr-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-all"
+                  className="w-full bg-[#0D0F12] border border-[#292D33] focus:border-[#F5B83D] focus:ring-1 focus:ring-[#F5B83D] rounded-xl pl-12 pr-4 py-3 text-sm text-[#F5F5F5] placeholder-[#6F7682] outline-none transition-all"
                 />
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+              className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#F5B83D] to-[#FFD166] hover:from-[#e5a82d] hover:to-[#f0c256] text-[#08090B] font-bold text-sm shadow-lg shadow-[#F5B83D]/30 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <span>Authenticating Admin...</span>
@@ -110,20 +110,20 @@ export default function AdminLogin() {
           </form>
 
           {/* Quick Demo Admin Auto-fill Helper */}
-          <div className="mt-6 pt-6 border-t border-slate-800/80">
+          <div className="mt-6 pt-6 border-t border-[#292D33]">
             <button
               type="button"
               onClick={fillQuickCredentials}
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] border border-[#292D33] text-[#F5F5F5] text-xs font-medium transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <FiCheckCircle className="w-4 h-4 text-emerald-400" />
+              <FiCheckCircle className="w-4 h-4 text-[#F5B83D]" />
               <span>Use Default Admin Credentials (Auto-fill)</span>
             </button>
           </div>
         </div>
 
         {/* Footer Note */}
-        <p className="text-center text-xs text-slate-500 mt-6">
+        <p className="text-center text-xs text-[#6F7682] mt-6">
           Protected by JWT authentication and role-based permissions framework.
         </p>
       </div>

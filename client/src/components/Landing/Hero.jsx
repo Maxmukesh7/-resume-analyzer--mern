@@ -9,10 +9,10 @@ export default function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section id="home" className="relative min-h-screen pt-32 pb-20 flex items-center overflow-hidden bg-slate-950">
+    <section id="home" className="relative min-h-screen pt-32 pb-20 flex items-center overflow-hidden bg-[#08090B]">
       {/* Subtle background glow bubbles */}
-      <div className="absolute top-[10%] left-[5%] w-72 h-72 rounded-full bg-blue-600/10 blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[20%] right-[10%] w-96 h-96 rounded-full bg-purple-600/10 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[10%] left-[5%] w-72 h-72 rounded-full bg-[#F5B83D]/[0.06] blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[20%] right-[10%] w-96 h-96 rounded-full bg-[#FFD166]/[0.04] blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10 w-full">
         {/* Left Side: Content */}
@@ -23,21 +23,21 @@ export default function Hero() {
           className="text-left space-y-8"
         >
           {/* Tag badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-full">
-            <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping" />
-            <span className="text-xs font-semibold text-blue-300 uppercase tracking-wider">Next-Gen ATS Optimization</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-[#F5B83D]/10 to-[#FFD166]/10 border border-[#F5B83D]/30 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-[#F5B83D] animate-ping" />
+            <span className="text-xs font-semibold text-[#FFD166] uppercase tracking-wider">Next-Gen ATS Optimization</span>
           </div>
 
           {/* Heading */}
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
+          <h1 className="text-5xl md:text-6xl font-extrabold text-[#F5F5F5] leading-tight">
             Analyze Your Resume <br />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#F5B83D] via-[#FFD166] to-[#F5B83D] bg-clip-text text-transparent">
               with AI
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base md:text-lg text-slate-400 max-w-xl leading-relaxed">
+          <p className="text-base md:text-lg text-[#A7ADB7] max-w-xl leading-relaxed">
             Upload your resume and receive ATS score, AI-powered feedback, recruiter insights, keyword matching, and personalized improvement suggestions in seconds.
           </p>
 
@@ -45,15 +45,15 @@ export default function Hero() {
           <div className="flex flex-wrap gap-4 pt-2">
             <button 
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 px-7 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg hover:shadow-[0_8px_30px_rgba(79,70,229,0.4)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+              className="flex items-center gap-2 px-7 py-4 bg-gradient-to-r from-[#F5B83D] to-[#FFD166] hover:from-[#e5a82d] hover:to-[#f0c256] text-[#08090B] font-bold rounded-xl shadow-lg hover:shadow-[0_8px_30px_rgba(245,184,61,0.35)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
             >
               Analyze Resume <FaArrowRight size={14} />
             </button>
             <a 
               href="#how-it-works"
-              className="flex items-center gap-2 px-7 py-4 bg-slate-900/60 border border-slate-800 hover:bg-slate-850 hover:border-slate-700 text-slate-200 font-bold rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+              className="flex items-center gap-2 px-7 py-4 bg-[#121519] border border-[#F5B83D]/40 hover:bg-[#171A1F] hover:border-[#F5B83D] text-[#F5F5F5] font-bold rounded-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
             >
-              <FaPlay size={12} className="text-blue-400" /> Watch Demo
+              <FaPlay size={12} className="text-[#F5B83D]" /> Watch Demo
             </a>
           </div>
         </motion.div>
@@ -75,9 +75,9 @@ export default function Hero() {
 
           {/* Loader Fallback */}
           {!splineLoaded && (
-            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center bg-slate-950 border border-slate-900 rounded-2xl">
-              <FaSpinner className="animate-spin text-blue-500 mb-3" size={32} />
-              <p className="text-slate-400 text-sm font-medium">Loading Interactive 3D Interface...</p>
+            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center bg-[#08090B] border border-[#292D33] rounded-2xl">
+              <FaSpinner className="animate-spin text-[#F5B83D] mb-3" size={32} />
+              <p className="text-[#A7ADB7] text-sm font-medium">Loading Interactive 3D Interface...</p>
             </div>
           )}
         </motion.div>

@@ -50,17 +50,17 @@ export function useToast() {
 
 function ToastItem({ toast, onClose }) {
   const icons = {
-    success: <FaCheckCircle className="text-emerald-400" size={18} />,
-    error: <FaExclamationCircle className="text-red-400" size={18} />,
-    warning: <FaExclamationTriangle className="text-amber-400" size={18} />,
-    info: <FaInfoCircle className="text-blue-400" size={18} />
+    success: <FaCheckCircle className="text-[#4ADE80]" size={18} />,
+    error: <FaExclamationCircle className="text-[#F87171]" size={18} />,
+    warning: <FaExclamationTriangle className="text-[#F5B83D]" size={18} />,
+    info: <FaInfoCircle className="text-[#60A5FA]" size={18} />
   };
 
   const borderColors = {
-    success: 'border-emerald-500/20 bg-slate-900/90 shadow-[0_4px_20px_rgba(16,185,129,0.15)]',
-    error: 'border-red-500/20 bg-slate-900/90 shadow-[0_4px_20px_rgba(239,68,68,0.15)]',
-    warning: 'border-amber-500/20 bg-slate-900/90 shadow-[0_4px_20px_rgba(245,158,11,0.15)]',
-    info: 'border-blue-500/20 bg-slate-900/90 shadow-[0_4px_20px_rgba(59,130,246,0.15)]'
+    success: 'border-emerald-500/30 bg-[#121519]/95 shadow-[0_4px_20px_rgba(74,222,128,0.2)]',
+    error: 'border-rose-500/30 bg-[#121519]/95 shadow-[0_4px_20px_rgba(248,113,113,0.2)]',
+    warning: 'border-[#F5B83D]/30 bg-[#121519]/95 shadow-[0_4px_20px_rgba(245,184,61,0.25)]',
+    info: 'border-blue-500/30 bg-[#121519]/95 shadow-[0_4px_20px_rgba(96,165,250,0.2)]'
   };
 
   return (
@@ -73,11 +73,11 @@ function ToastItem({ toast, onClose }) {
     >
       <div className="flex items-center gap-3">
         {icons[toast.type]}
-        <p className="text-sm font-medium text-slate-200">{toast.message}</p>
+        <p className="text-sm font-medium text-[#F5F5F5]">{toast.message}</p>
       </div>
       <button
         onClick={onClose}
-        className="p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors"
+        className="p-1 rounded-lg text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#171A1F] transition-colors cursor-pointer"
       >
         <FaTimes size={12} />
       </button>

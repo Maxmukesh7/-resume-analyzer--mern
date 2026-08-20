@@ -160,13 +160,13 @@ export default function AdminUsers() {
   return (
     <div className="space-y-6 font-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 p-6 rounded-3xl backdrop-blur-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#121519] border border-[#292D33] p-6 rounded-3xl backdrop-blur-xl">
         <div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-3">
-            <FiUsers className="w-7 h-7 text-indigo-400" />
+          <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-tight flex items-center gap-3">
+            <FiUsers className="w-7 h-7 text-[#F5B83D]" />
             <span>User Management</span>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[#A7ADB7] mt-1">
             Manage user permissions, activate/deactivate accounts, and view user audit trails. ({totalUsers} total users)
           </p>
         </div>
@@ -175,48 +175,48 @@ export default function AdminUsers() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={handleExportCSV}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700/60 transition-all"
+            className="px-3.5 py-2 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] text-xs font-semibold flex items-center gap-1.5 border border-[#292D33] transition-all cursor-pointer"
           >
-            <FiDownload className="w-4 h-4 text-emerald-400" /> CSV
+            <FiDownload className="w-4 h-4 text-[#F5B83D]" /> CSV
           </button>
           <button
             onClick={handleExportExcel}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700/60 transition-all"
+            className="px-3.5 py-2 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] text-xs font-semibold flex items-center gap-1.5 border border-[#292D33] transition-all cursor-pointer"
           >
-            <FiDownload className="w-4 h-4 text-blue-400" /> Excel
+            <FiDownload className="w-4 h-4 text-[#FFD166]" /> Excel
           </button>
           <button
             onClick={handleExportPDF}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-700/60 transition-all"
+            className="px-3.5 py-2 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] text-xs font-semibold flex items-center gap-1.5 border border-[#292D33] transition-all cursor-pointer"
           >
-            <FiDownload className="w-4 h-4 text-rose-400" /> PDF
+            <FiDownload className="w-4 h-4 text-[#B7791F]" /> PDF
           </button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 bg-slate-900/80 border border-slate-800 rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="p-4 bg-[#121519] border border-[#292D33] rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between">
         <form onSubmit={handleSearchSubmit} className="relative w-full md:w-80">
-          <FiSearch className="absolute left-3.5 top-3 text-slate-400 w-4 h-4" />
+          <FiSearch className="absolute left-3.5 top-3 text-[#6F7682] w-4 h-4" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name or email..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            className="w-full bg-[#0D0F12] border border-[#292D33] rounded-xl pl-10 pr-4 py-2 text-xs text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D]"
           />
         </form>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           <div className="flex items-center gap-2">
-            <FiFilter className="text-slate-400 w-4 h-4" />
+            <FiFilter className="text-[#A7ADB7] w-4 h-4" />
             <select
               value={roleFilter}
               onChange={(e) => {
                 setRoleFilter(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 outline-none focus:border-indigo-500"
+              className="bg-[#0D0F12] border border-[#292D33] text-[#F5F5F5] text-xs rounded-xl px-3 py-2 outline-none focus:border-[#F5B83D]"
             >
               <option value="all">All Roles</option>
               <option value="user">User</option>
@@ -231,7 +231,7 @@ export default function AdminUsers() {
                 setStatusFilter(e.target.value);
                 setPage(1);
               }}
-              className="bg-slate-950 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2 outline-none focus:border-indigo-500"
+              className="bg-[#0D0F12] border border-[#292D33] text-[#F5F5F5] text-xs rounded-xl px-3 py-2 outline-none focus:border-[#F5B83D]"
             >
               <option value="all">All Statuses</option>
               <option value="active">Active Only</option>
@@ -242,10 +242,10 @@ export default function AdminUsers() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-xl backdrop-blur-xl">
+      <div className="bg-[#121519] border border-[#292D33] rounded-3xl overflow-hidden shadow-xl backdrop-blur-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
+            <thead className="bg-[#0D0F12] text-[#A7ADB7] uppercase tracking-wider font-semibold border-b border-[#292D33]">
               <tr>
                 <th className="px-6 py-4">User</th>
                 <th className="px-6 py-4">Email</th>
@@ -255,37 +255,37 @@ export default function AdminUsers() {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+            <tbody className="divide-y divide-[#292D33] text-[#A7ADB7]">
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="py-12 text-center text-slate-500">
+                  <td colSpan="6" className="py-12 text-center text-[#6F7682]">
                     Loading users list...
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-12 text-center text-slate-500">
+                  <td colSpan="6" className="py-12 text-center text-[#6F7682]">
                     No users matching criteria found.
                   </td>
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u._id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-white flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 font-bold flex items-center justify-center">
+                  <tr key={u._id} className="hover:bg-[#171A1F]/60 transition-colors">
+                    <td className="px-6 py-4 font-semibold text-[#F5F5F5] flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#171A1F] border border-[#F5B83D]/30 text-[#FFD166] font-bold flex items-center justify-center">
                         {u.fullName?.charAt(0) || 'U'}
                       </div>
                       <span>{u.fullName}</span>
                     </td>
-                    <td className="px-6 py-4 text-slate-400 font-mono">{u.email}</td>
+                    <td className="px-6 py-4 text-[#A7ADB7] font-mono">{u.email}</td>
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleRoleToggle(u._id, u.role)}
                         title="Click to toggle User/Admin role"
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
                           u.role === 'admin'
-                            ? 'bg-purple-500/10 text-purple-400 border-purple-500/30 hover:bg-purple-500/20'
-                            : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                            ? 'bg-[#F5B83D]/15 text-[#FFD166] border-[#F5B83D]/30 hover:bg-[#F5B83D]/25'
+                            : 'bg-[#0D0F12] text-[#A7ADB7] border-[#292D33] hover:bg-[#171A1F]'
                         }`}
                       >
                         {u.role.toUpperCase()}
@@ -295,30 +295,30 @@ export default function AdminUsers() {
                       <button
                         onClick={() => handleStatusToggle(u._id, u.isActive !== false)}
                         title="Click to activate/deactivate account"
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${
                           u.isActive !== false
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
-                            : 'bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/20'
+                            ? 'bg-[#4ADE80]/15 text-[#4ADE80] border-[#4ADE80]/30 hover:bg-[#4ADE80]/25'
+                            : 'bg-rose-500/10 text-[#F87171] border-rose-500/30 hover:bg-rose-500/20'
                         }`}
                       >
                         {u.isActive !== false ? 'Active' : 'Deactivated'}
                       </button>
                     </td>
-                    <td className="px-6 py-4 text-slate-400">
+                    <td className="px-6 py-4 text-[#A7ADB7]">
                       {new Date(u.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
                       <button
                         onClick={() => handleViewUser(u._id)}
                         title="View User Details"
-                        className="p-2 text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors"
+                        className="p-2 text-[#FFD166] hover:bg-[#171A1F] rounded-lg transition-colors cursor-pointer"
                       >
                         <FiEye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteUser(u._id, u.email)}
                         title="Delete User"
-                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-2 text-[#F87171] hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                       >
                         <FiTrash2 className="w-4 h-4" />
                       </button>
@@ -331,7 +331,7 @@ export default function AdminUsers() {
         </div>
 
         {/* Pagination Footer */}
-        <div className="p-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <div className="p-4 border-t border-[#292D33] flex items-center justify-between text-xs text-[#A7ADB7]">
           <span>
             Page {page} of {totalPages}
           </span>
@@ -339,14 +339,14 @@ export default function AdminUsers() {
             <button
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 transition-colors"
+              className="p-2 rounded-lg bg-[#0D0F12] hover:bg-[#171A1F] disabled:opacity-40 transition-colors border border-[#292D33] cursor-pointer"
             >
               <FiChevronLeft className="w-4 h-4" />
             </button>
             <button
               disabled={page >= totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 transition-colors"
+              className="p-2 rounded-lg bg-[#0D0F12] hover:bg-[#171A1F] disabled:opacity-40 transition-colors border border-[#292D33] cursor-pointer"
             >
               <FiChevronRight className="w-4 h-4" />
             </button>
@@ -356,63 +356,63 @@ export default function AdminUsers() {
 
       {/* User Details Modal */}
       {selectedUserDetail && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <FiShield className="w-5 h-5 text-indigo-400" />
+        <div className="fixed inset-0 bg-[#08090B]/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="bg-[#121519] border border-[#292D33] rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#292D33] pb-4">
+              <h2 className="text-lg font-bold text-[#F5F5F5] flex items-center gap-2">
+                <FiShield className="w-5 h-5 text-[#F5B83D]" />
                 <span>User Audit Details</span>
               </h2>
               <button
                 onClick={() => setSelectedUserDetail(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800"
+                className="p-2 text-[#A7ADB7] hover:text-[#F5F5F5] rounded-lg bg-[#0D0F12] border border-[#292D33] cursor-pointer"
               >
                 <FiX className="w-5 h-5" />
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                <p className="text-xs text-slate-400 font-semibold uppercase">Full Name</p>
-                <p className="text-base font-bold text-white mt-1">{selectedUserDetail.user?.fullName}</p>
+              <div className="p-4 rounded-2xl bg-[#0D0F12] border border-[#292D33]">
+                <p className="text-xs text-[#A7ADB7] font-semibold uppercase">Full Name</p>
+                <p className="text-base font-bold text-[#F5F5F5] mt-1">{selectedUserDetail.user?.fullName}</p>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                <p className="text-xs text-slate-400 font-semibold uppercase">Email Address</p>
-                <p className="text-base font-bold text-indigo-400 mt-1 font-mono">{selectedUserDetail.user?.email}</p>
+              <div className="p-4 rounded-2xl bg-[#0D0F12] border border-[#292D33]">
+                <p className="text-xs text-[#A7ADB7] font-semibold uppercase">Email Address</p>
+                <p className="text-base font-bold text-[#FFD166] mt-1 font-mono">{selectedUserDetail.user?.email}</p>
               </div>
             </div>
 
             {/* Metrics */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3 rounded-xl bg-slate-950 text-center border border-slate-800">
-                <p className="text-xl font-bold text-white">{selectedUserDetail.userMetrics?.totalResumes || 0}</p>
-                <p className="text-[10px] text-slate-400 uppercase">Resumes</p>
+              <div className="p-3 rounded-xl bg-[#0D0F12] text-center border border-[#292D33]">
+                <p className="text-xl font-bold text-[#F5F5F5]">{selectedUserDetail.userMetrics?.totalResumes || 0}</p>
+                <p className="text-[10px] text-[#A7ADB7] uppercase">Resumes</p>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 text-center border border-slate-800">
-                <p className="text-xl font-bold text-indigo-400">{selectedUserDetail.userMetrics?.totalAtsScans || 0}</p>
-                <p className="text-[10px] text-slate-400 uppercase">ATS Scans</p>
+              <div className="p-3 rounded-xl bg-[#0D0F12] text-center border border-[#292D33]">
+                <p className="text-xl font-bold text-[#FFD166]">{selectedUserDetail.userMetrics?.totalAtsScans || 0}</p>
+                <p className="text-[10px] text-[#A7ADB7] uppercase">ATS Scans</p>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 text-center border border-slate-800">
-                <p className="text-xl font-bold text-purple-400">{selectedUserDetail.userMetrics?.totalAiAnalyses || 0}</p>
-                <p className="text-[10px] text-slate-400 uppercase">AI Scans</p>
+              <div className="p-3 rounded-xl bg-[#0D0F12] text-center border border-[#292D33]">
+                <p className="text-xl font-bold text-[#F5B83D]">{selectedUserDetail.userMetrics?.totalAiAnalyses || 0}</p>
+                <p className="text-[10px] text-[#A7ADB7] uppercase">AI Scans</p>
               </div>
-              <div className="p-3 rounded-xl bg-slate-950 text-center border border-slate-800">
-                <p className="text-xl font-bold text-emerald-400">{selectedUserDetail.userMetrics?.totalJobMatches || 0}</p>
-                <p className="text-[10px] text-slate-400 uppercase">Job Matches</p>
+              <div className="p-3 rounded-xl bg-[#0D0F12] text-center border border-[#292D33]">
+                <p className="text-xl font-bold text-[#FFD166]">{selectedUserDetail.userMetrics?.totalJobMatches || 0}</p>
+                <p className="text-[10px] text-[#A7ADB7] uppercase">Job Matches</p>
               </div>
             </div>
 
             {/* Uploaded Resumes List */}
             <div>
-              <h3 className="text-sm font-bold text-white mb-2">Uploaded Resumes</h3>
+              <h3 className="text-sm font-bold text-[#F5F5F5] mb-2">Uploaded Resumes</h3>
               {selectedUserDetail.resumes?.length === 0 ? (
-                <p className="text-xs text-slate-500">No uploaded resumes on record.</p>
+                <p className="text-xs text-[#6F7682]">No uploaded resumes on record.</p>
               ) : (
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {selectedUserDetail.resumes?.map((r) => (
-                    <div key={r._id} className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center text-xs">
-                      <span className="font-semibold text-slate-200 truncate">{r.originalName}</span>
-                      <span className="text-slate-500 text-[11px]">{new Date(r.createdAt).toLocaleDateString()}</span>
+                    <div key={r._id} className="p-3 rounded-xl bg-[#0D0F12] border border-[#292D33] flex justify-between items-center text-xs">
+                      <span className="font-semibold text-[#F5F5F5] truncate">{r.originalName}</span>
+                      <span className="text-[#A7ADB7] text-[11px]">{new Date(r.createdAt).toLocaleDateString()}</span>
                     </div>
                   ))}
                 </div>

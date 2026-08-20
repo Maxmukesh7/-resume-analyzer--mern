@@ -320,19 +320,19 @@ export default function ResumeImprovement() {
   return (
     <div className="space-y-8">
       {/* Header Banner */}
-      <div className="relative p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-blue-950/40 border border-slate-800 shadow-2xl overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="relative p-8 rounded-3xl bg-gradient-to-r from-[#121519] via-[#121519] to-[#171A1F] border border-[#292D33] shadow-2xl overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#F5B83D]/[0.04] rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-[#FFD166]/[0.03] rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F5B83D]/10 border border-[#F5B83D]/25 text-[#FFD166] text-xs font-semibold uppercase tracking-wider">
               <FaMagic size={12} className="animate-spin-slow" /> Phase 12 Engine
             </div>
-            <h1 className="text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
-              AI Resume <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Rewriter & Optimizer</span>
+            <h1 className="text-3xl lg:text-4xl font-extrabold text-[#F5F5F5] tracking-tight">
+              AI Resume <span className="bg-gradient-to-r from-[#F5B83D] via-[#FFD166] to-[#F5B83D] bg-clip-text text-transparent">Rewriter & Optimizer</span>
             </h1>
-            <p className="text-slate-400 text-sm max-w-2xl leading-relaxed">
+            <p className="text-[#A7ADB7] text-sm max-w-2xl leading-relaxed">
               Transform your raw resume into a polished, high-impact, ATS-optimized portfolio using Google Gemini AI. Compare original vs. improved versions side-by-side with real-time diff metrics.
             </p>
           </div>
@@ -344,7 +344,7 @@ export default function ResumeImprovement() {
                 value={selectedResumeId}
                 onChange={(e) => setSelectedResumeId(e.target.value)}
                 disabled={loadingResumes || generating}
-                className="w-full pl-4 pr-10 py-3 bg-slate-950/80 border border-slate-700/80 rounded-xl text-slate-200 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all appearance-none cursor-pointer disabled:opacity-50"
+                className="w-full pl-4 pr-10 py-3 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] text-sm font-medium focus:outline-none focus:border-[#F5B83D] focus:ring-1 focus:ring-[#F5B83D] transition-all appearance-none cursor-pointer disabled:opacity-50"
               >
                 {resumes.length === 0 ? (
                   <option value="">No Resumes Found</option>
@@ -356,13 +356,13 @@ export default function ResumeImprovement() {
                   ))
                 )}
               </select>
-              <FaChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+              <FaChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6F7682] pointer-events-none" size={12} />
             </div>
 
             <Button
               onClick={() => handleGenerateImprovements(false)}
               disabled={generating || !selectedResumeId}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-600/25 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all whitespace-nowrap"
+              className="bg-gradient-to-r from-[#F5B83D] to-[#FFD166] hover:from-[#e5a82d] hover:to-[#f0c256] text-[#08090B] font-bold shadow-lg shadow-[#F5B83D]/25 px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all whitespace-nowrap"
             >
               {generating ? (
                 <>
@@ -380,19 +380,19 @@ export default function ResumeImprovement() {
         </div>
 
         {/* Configuration Controls Bar */}
-        <div className="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="mt-8 pt-6 border-t border-[#292D33] grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[#A7ADB7] uppercase tracking-wider mb-2">
               Experience Level
             </label>
-            <div className="flex bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+            <div className="flex bg-[#0D0F12] p-1 rounded-xl border border-[#292D33]">
               <button
                 type="button"
                 onClick={() => setExperienceLevel('Fresher')}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   experienceLevel === 'Fresher'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166] text-[#08090B] font-bold shadow-md'
+                    : 'text-[#A7ADB7] hover:text-[#F5F5F5]'
                 }`}
               >
                 <FaGraduationCap size={12} /> Fresher / Entry
@@ -400,10 +400,10 @@ export default function ResumeImprovement() {
               <button
                 type="button"
                 onClick={() => setExperienceLevel('Experienced')}
-                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   experienceLevel === 'Experienced'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166] text-[#08090B] font-bold shadow-md'
+                    : 'text-[#A7ADB7] hover:text-[#F5F5F5]'
                 }`}
               >
                 <FaBriefcase size={12} /> Experienced
@@ -412,7 +412,7 @@ export default function ResumeImprovement() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[#A7ADB7] uppercase tracking-wider mb-2">
               Target Industry / Role
             </label>
             <input
@@ -420,12 +420,12 @@ export default function ResumeImprovement() {
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
               placeholder="e.g. Full Stack Developer, DevOps Engineer"
-              className="w-full px-3.5 py-2 bg-slate-950/80 border border-slate-800 rounded-xl text-slate-200 text-xs font-medium focus:outline-none focus:border-blue-500 transition-all"
+              className="w-full px-3.5 py-2 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] text-xs font-medium focus:outline-none focus:border-[#F5B83D] transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-[#A7ADB7] uppercase tracking-wider mb-2">
               Target Job Description (Optional)
             </label>
             <input
@@ -433,7 +433,7 @@ export default function ResumeImprovement() {
               value={targetJobDescription}
               onChange={(e) => setTargetJobDescription(e.target.value)}
               placeholder="Paste Job Description snippet..."
-              className="w-full px-3.5 py-2 bg-slate-950/80 border border-slate-800 rounded-xl text-slate-200 text-xs font-medium focus:outline-none focus:border-blue-500 transition-all"
+              className="w-full px-3.5 py-2 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] text-xs font-medium focus:outline-none focus:border-[#F5B83D] transition-all"
             />
           </div>
         </div>
@@ -446,18 +446,18 @@ export default function ResumeImprovement() {
           <SkeletonCard />
         </div>
       ) : !improvementData ? (
-        <Card className="p-12 text-center bg-slate-900/40 backdrop-blur-xl border border-slate-800 rounded-3xl">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+        <Card className="p-12 text-center bg-[#121519] backdrop-blur-xl border border-[#292D33] rounded-3xl">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#F5B83D]/10 border border-[#F5B83D]/25 flex items-center justify-center text-[#F5B83D]">
             <FaMagic size={28} />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">No AI Improvements Generated Yet</h3>
-          <p className="text-slate-400 text-sm max-w-md mx-auto mb-6">
-            Click <span className="text-blue-400 font-semibold">"Improve Resume"</span> above to trigger Google Gemini AI re-writing, bullet point enhancement, and ATS skill recommendations.
+          <h3 className="text-xl font-bold text-[#F5F5F5] mb-2">No AI Improvements Generated Yet</h3>
+          <p className="text-[#A7ADB7] text-sm max-w-md mx-auto mb-6">
+            Click <span className="text-[#FFD166] font-semibold">"Improve Resume"</span> above to trigger Google Gemini AI re-writing, bullet point enhancement, and ATS skill recommendations.
           </p>
           <Button
             onClick={() => handleGenerateImprovements(false)}
             disabled={generating || !selectedResumeId}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-blue-600/30"
+            className="bg-gradient-to-r from-[#F5B83D] to-[#FFD166] text-[#08090B] font-bold px-8 py-3 rounded-xl shadow-lg shadow-[#F5B83D]/30"
           >
             Start AI Resume Improvement
           </Button>
@@ -465,7 +465,7 @@ export default function ResumeImprovement() {
       ) : (
         <div className="space-y-6">
           {/* Action Toolbar & Export Buttons */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-[#121519] backdrop-blur-xl border border-[#292D33] rounded-2xl">
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'summary', label: 'Summary', icon: <FaFileAlt size={14} /> },
@@ -477,10 +477,10 @@ export default function ResumeImprovement() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                     activeTab === tab.id
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 border border-blue-400/30'
-                      : 'text-slate-400 hover:text-slate-200 bg-slate-950/40 border border-slate-800'
+                      ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166] text-[#08090B] font-bold shadow-md shadow-[#F5B83D]/20 border border-[#FFD166]/30'
+                      : 'text-[#A7ADB7] hover:text-[#F5F5F5] bg-[#0D0F12] border border-[#292D33]'
                   }`}
                 >
                   {tab.icon} {tab.label}
@@ -492,21 +492,21 @@ export default function ResumeImprovement() {
               <Button
                 onClick={() => handleGenerateImprovements(true)}
                 disabled={generating}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+                className="bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] border border-[#292D33] px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <FaSync size={12} className={generating ? 'animate-spin' : ''} /> Regenerate
               </Button>
 
               <Button
                 onClick={handleDownloadTxt}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+                className="bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] border border-[#292D33] px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <FaFileAlt size={12} /> TXT
               </Button>
 
               <Button
                 onClick={handleDownloadPdf}
-                className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+                className="bg-[#121519] hover:bg-[#171A1F] text-[#F5B83D] border border-[#F5B83D]/40 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
               >
                 <FaFilePdf size={12} /> PDF Download
               </Button>
@@ -516,15 +516,15 @@ export default function ResumeImprovement() {
           {/* Side-by-Side Comparison Container */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* LEFT PANEL: Original Resume Content */}
-            <div className="p-6 bg-slate-900/50 backdrop-blur-xl border border-slate-800/80 rounded-3xl space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="p-6 bg-[#121519] backdrop-blur-xl border border-[#292D33] rounded-3xl space-y-4">
+              <div className="flex items-center justify-between pb-4 border-b border-[#292D33]">
                 <div className="flex items-center gap-2.5">
                   <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
                     <FaFileAlt size={16} />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">Original Content</h3>
-                    <p className="text-slate-400 text-xs">Unmodified parsed resume data</p>
+                    <h3 className="text-base font-bold text-[#F5F5F5]">Original Content</h3>
+                    <p className="text-[#A7ADB7] text-xs">Unmodified parsed resume data</p>
                   </div>
                 </div>
                 <Badge variant="warning" className="text-xs uppercase font-semibold">Before</Badge>
@@ -532,14 +532,14 @@ export default function ResumeImprovement() {
 
               {activeTab === 'summary' && (
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Professional Summary</h4>
-                  <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl text-slate-300 text-sm leading-relaxed min-h-[140px]">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#A7ADB7]">Professional Summary</h4>
+                  <div className="p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl text-[#F5F5F5] text-sm leading-relaxed min-h-[140px]">
                     {(() => {
                       const sum = (originalData.summary || improvementData?.originalResume?.summary || '').trim();
                       return sum.length > 0 ? (
                         sum
                       ) : (
-                        <p className="text-slate-500 text-xs italic">No professional summary found in the uploaded resume.</p>
+                        <p className="text-[#A7ADB7] text-xs italic">No professional summary found in the uploaded resume.</p>
                       );
                     })()}
                   </div>
@@ -548,31 +548,31 @@ export default function ResumeImprovement() {
 
               {activeTab === 'experience' && (
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Work Experience Entries</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#A7ADB7]">Work Experience Entries</h4>
                   {(() => {
                     const expList = originalData.experience?.length
                       ? originalData.experience
                       : improvementData?.originalResume?.experience || [];
                     if (!expList || expList.length === 0) {
-                      return <p className="text-slate-500 text-xs italic">No experience entries found in uploaded resume.</p>;
+                      return <p className="text-[#A7ADB7] text-xs italic">No experience entries found in uploaded resume.</p>;
                     }
                     return expList.map((exp, idx) => (
-                      <div key={idx} className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-2">
+                      <div key={idx} className="p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl space-y-2">
                         {typeof exp === 'object' && exp !== null ? (
                           <>
                             <div className="flex justify-between items-start gap-2">
                               <div>
-                                <span className="font-bold text-white text-sm block">{exp.role || 'Role'}</span>
-                                <span className="text-xs text-amber-400 font-medium">{exp.company}</span>
+                                <span className="font-bold text-[#F5F5F5] text-sm block">{exp.role || 'Role'}</span>
+                                <span className="text-xs text-[#FFD166] font-medium">{exp.company}</span>
                               </div>
                               {exp.period && (
-                                <span className="text-xs text-slate-400 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800 whitespace-nowrap">
+                                <span className="text-xs text-[#A7ADB7] bg-[#08090B] px-2 py-0.5 rounded-lg border border-[#292D33] whitespace-nowrap">
                                   {exp.period}
                                 </span>
                               )}
                             </div>
                             {(exp.bulletPoints?.length > 0 || exp.description) && (
-                              <ul className="list-disc list-inside text-slate-300 text-xs space-y-1 pt-1">
+                              <ul className="list-disc list-inside text-[#A7ADB7] text-xs space-y-1 pt-1">
                                 {(exp.bulletPoints?.length > 0 ? exp.bulletPoints : [exp.description]).map((bp, bIdx) => (
                                   <li key={bIdx} className="leading-relaxed">{bp}</li>
                                 ))}
@@ -580,7 +580,7 @@ export default function ResumeImprovement() {
                             )}
                           </>
                         ) : (
-                          <p className="text-slate-300 text-xs">{exp}</p>
+                          <p className="text-[#A7ADB7] text-xs">{exp}</p>
                         )}
                       </div>
                     ));
@@ -590,40 +590,40 @@ export default function ResumeImprovement() {
 
               {activeTab === 'projects' && (
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Key Projects</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#A7ADB7]">Key Projects</h4>
                   {(() => {
                     const projList = originalData.projects?.length
                       ? originalData.projects
                       : improvementData?.originalResume?.projects || [];
                     if (!projList || projList.length === 0) {
-                      return <p className="text-slate-500 text-xs italic">No project entries found in uploaded resume.</p>;
+                      return <p className="text-[#A7ADB7] text-xs italic">No project entries found in uploaded resume.</p>;
                     }
                     return projList.map((proj, idx) => (
-                      <div key={idx} className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-2">
+                      <div key={idx} className="p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl space-y-2">
                         {typeof proj === 'object' && proj !== null ? (
                           <>
-                            <h5 className="font-bold text-white text-sm">{proj.title || 'Project'}</h5>
-                            {proj.description && <p className="text-xs text-slate-300">{proj.description}</p>}
+                            <h5 className="font-bold text-[#F5F5F5] text-sm">{proj.title || 'Project'}</h5>
+                            {proj.description && <p className="text-xs text-[#A7ADB7]">{proj.description}</p>}
                             {proj.technologies?.length > 0 && (
                               <div className="flex flex-wrap gap-1 pt-1">
                                 {proj.technologies.map((t, tIdx) => (
-                                  <span key={tIdx} className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[10px]">{t}</span>
+                                  <span key={tIdx} className="px-2 py-0.5 rounded-md bg-[#08090B] text-[#A7ADB7] text-[10px]">{t}</span>
                                 ))}
                               </div>
                             )}
                             {proj.bulletPoints?.length > 0 && (
-                              <ul className="list-disc list-inside text-slate-300 text-xs space-y-1 pt-1">
+                              <ul className="list-disc list-inside text-[#A7ADB7] text-xs space-y-1 pt-1">
                                 {proj.bulletPoints.map((bp, bIdx) => (
                                   <li key={bIdx} className="leading-relaxed">{bp}</li>
                                 ))}
                               </ul>
                             )}
                             {proj.duration && (
-                              <p className="text-slate-500 text-[10px] pt-0.5">📅 {proj.duration}</p>
+                              <p className="text-[#6F7682] text-[10px] pt-0.5">📅 {proj.duration}</p>
                             )}
                           </>
                         ) : (
-                          <p className="text-slate-300 text-xs">• {proj}</p>
+                          <p className="text-[#A7ADB7] text-xs">• {proj}</p>
                         )}
                       </div>
                     ));
@@ -633,10 +633,10 @@ export default function ResumeImprovement() {
 
               {activeTab === 'skills' && (
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Original Skills List</h4>
-                  <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl flex flex-wrap gap-2">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#A7ADB7]">Original Skills List</h4>
+                  <div className="p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl flex flex-wrap gap-2">
                     {(originalData.skills || []).map((sk, idx) => (
-                      <span key={idx} className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 text-xs font-medium">
+                      <span key={idx} className="px-2.5 py-1 rounded-lg bg-[#08090B] text-[#A7ADB7] text-xs font-medium">
                         {sk}
                       </span>
                     ))}
@@ -645,27 +645,27 @@ export default function ResumeImprovement() {
               )}
 
               {activeTab === 'notes' && (
-                <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl text-slate-400 text-xs space-y-2">
+                <div className="p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl text-[#A7ADB7] text-xs space-y-2">
                   <p>Original parsed structure recorded without machine modifications.</p>
                 </div>
               )}
             </div>
 
             {/* RIGHT PANEL: AI Improved Content with Diff Highlights */}
-            <div className="p-6 bg-slate-900/80 backdrop-blur-xl border border-blue-500/30 rounded-3xl space-y-4 shadow-[0_0_30px_rgba(37,99,235,0.1)] relative">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="p-6 bg-[#121519] backdrop-blur-xl border border-[#F5B83D]/30 rounded-3xl space-y-4 shadow-[0_0_30px_rgba(245,184,61,0.08)] relative">
+              <div className="flex items-center justify-between pb-4 border-b border-[#292D33]">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                  <div className="p-2 rounded-xl bg-[#F5B83D]/10 border border-[#F5B83D]/25 text-[#F5B83D]">
                     <FaMagic size={16} />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-white">AI Improved Content</h3>
-                    <p className="text-slate-400 text-xs">Optimized with Google Gemini AI</p>
+                    <h3 className="text-base font-bold text-[#F5F5F5]">AI Improved Content</h3>
+                    <p className="text-[#A7ADB7] text-xs">Optimized with Google Gemini AI</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant="success" className="text-xs uppercase font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <Badge variant="success" className="text-xs uppercase font-semibold bg-[#F5B83D]/10 text-[#FFD166] border border-[#F5B83D]/25">
                     After (Improved)
                   </Badge>
 
@@ -677,10 +677,10 @@ export default function ResumeImprovement() {
                           : JSON.stringify(improvementData[`improved${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`], null, 2);
                       handleCopyText(textToCopy, activeTab);
                     }}
-                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+                    className="p-2 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] border border-[#292D33] transition-colors cursor-pointer"
                     title="Copy section"
                   >
-                    {copiedSection === activeTab ? <FaCheck className="text-emerald-400" size={14} /> : <FaCopy size={14} />}
+                    {copiedSection === activeTab ? <FaCheck className="text-[#4ADE80]" size={14} /> : <FaCopy size={14} />}
                   </button>
                 </div>
               </div>
@@ -689,17 +689,17 @@ export default function ResumeImprovement() {
               {activeTab === 'summary' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-blue-400">ATS-Friendly Summary</h4>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-[#FFD166]">ATS-Friendly Summary</h4>
                     <button
                       onClick={handleRewriteSummaryOnly}
                       disabled={rewriteLoading}
-                      className="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1"
+                      className="text-xs text-[#F5B83D] hover:text-[#FFD166] font-medium flex items-center gap-1 cursor-pointer"
                     >
                       {rewriteLoading ? <FaSpinner className="animate-spin" size={10} /> : <FaSync size={10} />} Re-generate Summary
                     </button>
                   </div>
 
-                  <div className="p-5 bg-gradient-to-b from-slate-950 to-slate-900 border border-emerald-500/30 rounded-2xl text-slate-100 text-sm leading-relaxed shadow-inner">
+                  <div className="p-5 bg-gradient-to-b from-[#08090B] to-[#0D0F12] border border-[#F5B83D]/30 rounded-2xl text-[#F5F5F5] text-sm leading-relaxed shadow-inner">
                     <TypingText text={improvementData.improvedSummary} speed={10} />
                   </div>
                 </div>
@@ -708,23 +708,23 @@ export default function ResumeImprovement() {
               {/* TAB 2: IMPROVED EXPERIENCE & BULLET POINTS */}
               {activeTab === 'experience' && (
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-blue-400">Enhanced Work Experience Bullet Points</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#FFD166]">Enhanced Work Experience Bullet Points</h4>
                   {(improvementData.improvedExperience || []).map((exp, idx) => (
-                    <div key={idx} className="p-4 bg-slate-950 border border-blue-500/20 rounded-2xl space-y-3">
+                    <div key={idx} className="p-4 bg-[#0D0F12] border border-[#F5B83D]/25 rounded-2xl space-y-3">
                       <div className="flex justify-between items-start">
                         <div>
-                          <span className="font-bold text-white text-sm">{exp.role}</span>
-                          <span className="text-xs text-blue-400 font-medium block">{exp.company}</span>
+                          <span className="font-bold text-[#F5F5F5] text-sm">{exp.role}</span>
+                          <span className="text-xs text-[#F5B83D] font-medium block">{exp.company}</span>
                         </div>
-                        <span className="text-xs text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">{exp.period}</span>
+                        <span className="text-xs text-[#A7ADB7] bg-[#08090B] px-2.5 py-1 rounded-lg border border-[#292D33]">{exp.period}</span>
                       </div>
 
                       <div className="space-y-2 pt-1">
-                        <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block">Quantified Action Bullets:</span>
+                        <span className="text-[11px] font-bold text-[#FFD166] uppercase tracking-wider block">Quantified Action Bullets:</span>
                         <ul className="space-y-2">
                           {(exp.bulletPoints || []).map((bp, bIdx) => (
-                            <li key={bIdx} className="p-2.5 bg-emerald-950/20 border border-emerald-500/20 rounded-xl text-xs text-emerald-200 leading-relaxed flex items-start gap-2">
-                              <span className="text-emerald-400 font-bold mt-0.5">•</span>
+                            <li key={bIdx} className="p-2.5 bg-[#F5B83D]/10 border border-[#F5B83D]/20 rounded-xl text-xs text-[#F5F5F5] leading-relaxed flex items-start gap-2">
+                              <span className="text-[#F5B83D] font-bold mt-0.5">•</span>
                               <span>{bp}</span>
                             </li>
                           ))}
@@ -738,16 +738,16 @@ export default function ResumeImprovement() {
               {/* TAB 3: IMPROVED PROJECTS */}
               {activeTab === 'projects' && (
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-blue-400">Optimized Key Projects</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#FFD166]">Optimized Key Projects</h4>
                   {(improvementData.improvedProjects || []).map((proj, idx) => (
-                    <div key={idx} className="p-4 bg-slate-950 border border-blue-500/20 rounded-2xl space-y-3">
-                      <h5 className="font-bold text-white text-sm">{proj.title}</h5>
-                      <p className="text-xs text-slate-300">{proj.description}</p>
+                    <div key={idx} className="p-4 bg-[#0D0F12] border border-[#F5B83D]/25 rounded-2xl space-y-3">
+                      <h5 className="font-bold text-[#F5F5F5] text-sm">{proj.title}</h5>
+                      <p className="text-xs text-[#A7ADB7]">{proj.description}</p>
                       
                       {proj.technologies?.length > 0 && (
                         <div className="flex flex-wrap gap-1.5">
                           {proj.technologies.map((t, tIdx) => (
-                            <span key={tIdx} className="px-2.5 py-0.5 rounded-md bg-blue-950 border border-blue-500/30 text-blue-300 text-[11px] font-mono">
+                            <span key={tIdx} className="px-2.5 py-0.5 rounded-md bg-[#171A1F] border border-[#F5B83D]/30 text-[#FFD166] text-[11px] font-mono">
                               {t}
                             </span>
                           ))}
@@ -756,8 +756,8 @@ export default function ResumeImprovement() {
 
                       <ul className="space-y-2 pt-1">
                         {(proj.bulletPoints || []).map((bp, bIdx) => (
-                          <li key={bIdx} className="p-2.5 bg-blue-950/20 border border-blue-500/20 rounded-xl text-xs text-blue-200 leading-relaxed flex items-start gap-2">
-                            <span className="text-blue-400 font-bold mt-0.5">•</span>
+                          <li key={bIdx} className="p-2.5 bg-[#F5B83D]/10 border border-[#F5B83D]/20 rounded-xl text-xs text-[#F5F5F5] leading-relaxed flex items-start gap-2">
+                            <span className="text-[#F5B83D] font-bold mt-0.5">•</span>
                             <span>{bp}</span>
                           </li>
                         ))}
@@ -770,15 +770,15 @@ export default function ResumeImprovement() {
               {/* TAB 4: RECOMMENDED SKILLS CATEGORIZATION */}
               {activeTab === 'skills' && (
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-blue-400">AI Recommended Skills Matrix</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#FFD166]">AI Recommended Skills Matrix</h4>
                   {(() => {
                     const rec = improvementData.recommendedSkills || {};
                     const categories = [
-                      { key: 'technicalSkills', title: 'Technical Skills', icon: <FaCode size={14} className="text-blue-400" /> },
-                      { key: 'softSkills', title: 'Soft Skills & Leadership', icon: <FaGraduationCap size={14} className="text-purple-400" /> },
-                      { key: 'frameworks', title: 'Frameworks & Libraries', icon: <FaLayerGroup size={14} className="text-emerald-400" /> },
-                      { key: 'cloudTechnologies', title: 'Cloud & Infrastructure', icon: <FaCloud size={14} className="text-sky-400" /> },
-                      { key: 'devOpsTools', title: 'DevOps & Tooling', icon: <FaTools size={14} className="text-amber-400" /> }
+                      { key: 'technicalSkills', title: 'Technical Skills', icon: <FaCode size={14} className="text-[#F5B83D]" /> },
+                      { key: 'softSkills', title: 'Soft Skills & Leadership', icon: <FaGraduationCap size={14} className="text-[#FFD166]" /> },
+                      { key: 'frameworks', title: 'Frameworks & Libraries', icon: <FaLayerGroup size={14} className="text-[#F5B83D]" /> },
+                      { key: 'cloudTechnologies', title: 'Cloud & Infrastructure', icon: <FaCloud size={14} className="text-[#FFD166]" /> },
+                      { key: 'devOpsTools', title: 'DevOps & Tooling', icon: <FaTools size={14} className="text-[#F5B83D]" /> }
                     ];
 
                     return (
@@ -786,18 +786,18 @@ export default function ResumeImprovement() {
                         {categories.map((cat) => {
                           const items = rec[cat.key] || [];
                           return (
-                            <div key={cat.key} className="p-3.5 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                            <div key={cat.key} className="p-3.5 bg-[#0D0F12] border border-[#292D33] rounded-xl space-y-2">
                               <div className="flex items-center gap-2">
                                 {cat.icon}
-                                <span className="text-xs font-bold text-white">{cat.title}</span>
-                                <span className="text-[10px] text-slate-500 font-mono">({items.length})</span>
+                                <span className="text-xs font-bold text-[#F5F5F5]">{cat.title}</span>
+                                <span className="text-[10px] text-[#A7ADB7] font-mono">({items.length})</span>
                               </div>
                               <div className="flex flex-wrap gap-1.5">
                                 {items.length === 0 ? (
-                                  <span className="text-slate-500 text-xs italic">None listed</span>
+                                  <span className="text-[#6F7682] text-xs italic">None listed</span>
                                 ) : (
                                   items.map((item, iIdx) => (
-                                    <span key={iIdx} className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-slate-200 text-xs font-medium shadow-sm">
+                                    <span key={iIdx} className="px-2.5 py-1 rounded-lg bg-[#08090B] border border-[#292D33] text-[#F5F5F5] text-xs font-medium shadow-sm">
                                       + {item}
                                     </span>
                                   ))
@@ -815,11 +815,11 @@ export default function ResumeImprovement() {
               {/* TAB 5: OPTIMIZATION NOTES */}
               {activeTab === 'notes' && (
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-blue-400">AI Optimization Insights</h4>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#FFD166]">AI Optimization Insights</h4>
                   <div className="space-y-2">
                     {(improvementData.optimizationNotes || []).map((note, idx) => (
-                      <div key={idx} className="p-3 bg-slate-950 border border-blue-500/20 rounded-xl text-xs text-slate-300 leading-relaxed flex items-start gap-2.5">
-                        <div className="p-1 rounded bg-blue-500/10 text-blue-400 mt-0.5">
+                      <div key={idx} className="p-3 bg-[#0D0F12] border border-[#F5B83D]/25 rounded-xl text-xs text-[#A7ADB7] leading-relaxed flex items-start gap-2.5">
+                        <div className="p-1 rounded bg-[#F5B83D]/10 text-[#F5B83D] mt-0.5">
                           <FaLightbulb size={12} />
                         </div>
                         <span>{note}</span>

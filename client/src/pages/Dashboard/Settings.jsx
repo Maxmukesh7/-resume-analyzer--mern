@@ -63,17 +63,17 @@ export default function Settings() {
     <div className="space-y-8 max-w-4xl mx-auto font-sans">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-white tracking-wide">Account Settings</h1>
-        <p className="text-slate-400 text-xs mt-1.5 font-semibold">
+        <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-wide">Account Settings</h1>
+        <p className="text-[#A7ADB7] text-xs mt-1.5 font-semibold">
           Configure display preferences and security settings.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Appearance / Theme Settings */}
-        <Card className="p-8 space-y-6">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-800 pb-3">
-            <FaPalette size={13} className="text-blue-400" />
+        <Card className="p-8 space-y-6 bg-[#121519] border-[#292D33]">
+          <h3 className="text-sm font-bold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-2.5 border-b border-[#292D33] pb-3">
+            <FaPalette size={13} className="text-[#F5B83D]" />
             <span>Theme & Display</span>
           </h3>
 
@@ -81,12 +81,12 @@ export default function Settings() {
             {/* Dark Mode Switch */}
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-xs font-bold text-slate-200 flex items-center gap-2">
-                  {darkMode ? <FaMoon size={12} className="text-blue-400" /> : <FaSun size={12} className="text-amber-400" />}
+                <span className="text-xs font-bold text-[#F5F5F5] flex items-center gap-2">
+                  {darkMode ? <FaMoon size={12} className="text-[#FFD166]" /> : <FaSun size={12} className="text-[#F5B83D]" />}
                   Dark Mode Theme
                 </span>
-                <span className="text-[10px] text-slate-500 font-semibold mt-0.5 block">
-                  {darkMode ? 'Use low-contrast dark system backgrounds' : 'Use high-contrast clean light backgrounds'}
+                <span className="text-[10px] text-[#A7ADB7] font-semibold mt-0.5 block">
+                  {darkMode ? 'Use Midnight Gold dark system palette' : 'Use high-contrast clean light backgrounds'}
                 </span>
               </div>
               <button
@@ -95,10 +95,10 @@ export default function Settings() {
                 aria-checked={darkMode}
                 onClick={handleToggleDarkMode}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none shadow-sm
-                  ${darkMode ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  ${darkMode ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166]' : 'bg-[#292D33]'}`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[#08090B] shadow-md ring-0 transition duration-200 ease-in-out
                     ${darkMode ? 'translate-x-5' : 'translate-x-0'}`}
                 />
               </button>
@@ -107,40 +107,40 @@ export default function Settings() {
         </Card>
 
         {/* Security & Access / Change Password */}
-        <Card className="p-8 space-y-6">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2.5 border-b border-slate-800 pb-3">
-            <FaLock size={13} className="text-amber-400" />
+        <Card className="p-8 space-y-6 bg-[#121519] border-[#292D33]">
+          <h3 className="text-sm font-bold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-2.5 border-b border-[#292D33] pb-3">
+            <FaLock size={13} className="text-[#F5B83D]" />
             <span>Change Password</span>
           </h3>
 
           <form onSubmit={handlePasswordChange} className="space-y-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Current Password</label>
+              <label className="text-[10px] text-[#A7ADB7] font-extrabold uppercase tracking-wider">Current Password</label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                className="w-full bg-[#0D0F12] border border-[#292D33] rounded-xl px-4 py-2.5 text-xs text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D]"
                 placeholder="••••••••"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">New Password</label>
+              <label className="text-[10px] text-[#A7ADB7] font-extrabold uppercase tracking-wider">New Password</label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                className="w-full bg-[#0D0F12] border border-[#292D33] rounded-xl px-4 py-2.5 text-xs text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D]"
                 placeholder="••••••••"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Confirm New Password</label>
+              <label className="text-[10px] text-[#A7ADB7] font-extrabold uppercase tracking-wider">Confirm New Password</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-blue-500/50"
+                className="w-full bg-[#0D0F12] border border-[#292D33] rounded-xl px-4 py-2.5 text-xs text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D]"
                 placeholder="••••••••"
               />
             </div>
@@ -151,16 +151,16 @@ export default function Settings() {
         </Card>
 
         {/* Dangerous Operations */}
-        <Card className="p-8 space-y-6 md:col-span-2 border border-red-950/20 bg-slate-900/10">
-          <h3 className="text-sm font-bold text-red-400 uppercase tracking-wider flex items-center gap-2.5 border-b border-red-950/25 pb-3">
+        <Card className="p-8 space-y-6 md:col-span-2 border border-rose-900/30 bg-[#121519]">
+          <h3 className="text-sm font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2.5 border-b border-rose-900/30 pb-3">
             <FaTrashAlt size={13} />
             <span>Dangerous Zones</span>
           </h3>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-bold text-slate-200 block">Deactivate & Remove Account</span>
-              <span className="text-[10px] text-slate-500 font-semibold mt-0.5">Permanently deletes all history logs, reports, and credential metadata files</span>
+              <span className="text-xs font-bold text-[#F5F5F5] block">Deactivate & Remove Account</span>
+              <span className="text-[10px] text-[#A7ADB7] font-semibold mt-0.5">Permanently deletes all history logs, reports, and credential metadata files</span>
             </div>
             <Button
               onClick={handleDeleteAccount}

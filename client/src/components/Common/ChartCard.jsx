@@ -12,10 +12,10 @@ export default function ChartCard({
     <Card className={`flex flex-col ${className}`}>
       {/* Header */}
       <div className="mb-6">
-        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+        <span className="text-xs font-semibold text-[#A7ADB7] uppercase tracking-wider">
           {title}
         </span>
-        {subtitle && <p className="text-slate-500 text-xs mt-1">{subtitle}</p>}
+        {subtitle && <p className="text-[#6F7682] text-xs mt-1">{subtitle}</p>}
       </div>
 
       {/* Content */}
@@ -23,7 +23,7 @@ export default function ChartCard({
         {type === 'line' && data.length > 0 && <AreaChart data={data} />}
         {type === 'bar-list' && data.length > 0 && <BarList data={data} />}
         {data.length === 0 && (
-          <span className="text-slate-500 text-sm">No data available</span>
+          <span className="text-[#6F7682] text-sm">No data available</span>
         )}
       </div>
     </Card>
@@ -65,12 +65,12 @@ function AreaChart({ data }) {
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
           <defs>
             <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2563eb" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#F5B83D" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#FFD166" stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#3b82f6" />
-              <stop offset="100%" stopColor="#a855f7" />
+              <stop offset="0%" stopColor="#F5B83D" />
+              <stop offset="100%" stopColor="#FFD166" />
             </linearGradient>
           </defs>
 
@@ -84,14 +84,14 @@ function AreaChart({ data }) {
                   y1={y}
                   x2={width - paddingX}
                   y2={y}
-                  stroke="rgba(30, 41, 59, 0.5)"
+                  stroke="rgba(41, 45, 51, 0.7)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
                 />
                 <text
                   x={paddingX - 10}
                   y={y + 4}
-                  fill="#64748b"
+                  fill="#A7ADB7"
                   fontSize="10"
                   textAnchor="end"
                   className="font-medium"
@@ -134,9 +134,9 @@ function AreaChart({ data }) {
                 cy={coord.y}
                 r="5"
                 fill="#ffffff"
-                stroke="#3b82f6"
+                stroke="#F5B83D"
                 strokeWidth="3"
-                className="transition-all duration-200 group-hover:r-7 group-hover:stroke-purple-500"
+                className="transition-all duration-200 group-hover:r-7 group-hover:stroke-[#FFD166]"
               />
               {/* Tooltip on Hover */}
               <g className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
@@ -146,14 +146,14 @@ function AreaChart({ data }) {
                   width="44"
                   height="22"
                   rx="6"
-                  fill="#0f172a"
-                  stroke="#334155"
+                  fill="#121519"
+                  stroke="#292D33"
                   strokeWidth="1"
                 />
                 <text
                   x={coord.x}
                   y={coord.y - 17}
-                  fill="#ffffff"
+                  fill="#F5F5F5"
                   fontSize="10"
                   fontWeight="bold"
                   textAnchor="middle"
@@ -167,9 +167,9 @@ function AreaChart({ data }) {
       </div>
 
       {/* X Labels */}
-      <div className="flex justify-between px-9 mt-2 border-t border-slate-900 pt-2">
+      <div className="flex justify-between px-9 mt-2 border-t border-[#292D33] pt-2">
         {coords.map((coord, idx) => (
-          <span key={idx} className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+          <span key={idx} className="text-[#A7ADB7] text-xs font-semibold uppercase tracking-wider">
             {coord.label}
           </span>
         ))}
@@ -185,15 +185,15 @@ function BarList({ data }) {
       {data.map((item, idx) => (
         <div key={idx} className="flex flex-col gap-1.5">
           <div className="flex justify-between text-xs font-medium">
-            <span className="text-slate-300">{item.name}</span>
-            <span className="text-blue-400 font-semibold">{item.score}%</span>
+            <span className="text-[#F5F5F5]">{item.name}</span>
+            <span className="text-[#F5B83D] font-semibold">{item.score}%</span>
           </div>
-          <div className="h-2 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-800/80">
+          <div className="h-2 w-full bg-[#0D0F12] rounded-full overflow-hidden border border-[#292D33]">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${item.score}%` }}
               transition={{ duration: 0.8, delay: idx * 0.1 }}
-              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+              className="h-full bg-gradient-to-r from-[#F5B83D] to-[#FFD166] rounded-full shadow-[0_0_10px_rgba(245,184,61,0.3)]"
             />
           </div>
         </div>

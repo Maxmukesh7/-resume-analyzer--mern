@@ -59,12 +59,12 @@ export default function AdminAnalytics() {
   if (loading || !analyticsData) {
     return (
       <div className="space-y-6 animate-pulse font-sans">
-        <div className="h-20 bg-slate-900 rounded-2xl"></div>
+        <div className="h-20 bg-[#121519] rounded-2xl border border-[#292D33]"></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="h-64 bg-slate-900 rounded-3xl"></div>
-          <div className="h-64 bg-slate-900 rounded-3xl"></div>
-          <div className="h-64 bg-slate-900 rounded-3xl"></div>
-          <div className="h-64 bg-slate-900 rounded-3xl"></div>
+          <div className="h-64 bg-[#121519] rounded-3xl border border-[#292D33]"></div>
+          <div className="h-64 bg-[#121519] rounded-3xl border border-[#292D33]"></div>
+          <div className="h-64 bg-[#121519] rounded-3xl border border-[#292D33]"></div>
+          <div className="h-64 bg-[#121519] rounded-3xl border border-[#292D33]"></div>
         </div>
       </div>
     );
@@ -77,8 +77,8 @@ export default function AdminAnalytics() {
       {
         label: 'Daily Registrations',
         data: analyticsData.dailyRegistrations?.data || [],
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+        borderColor: '#F5B83D',
+        backgroundColor: 'rgba(245, 184, 61, 0.15)',
         fill: true,
         tension: 0.4
       }
@@ -92,7 +92,7 @@ export default function AdminAnalytics() {
       {
         label: 'Resume Uploads',
         data: analyticsData.dailyUploads?.data || [],
-        backgroundColor: '#10b981',
+        backgroundColor: '#FFD166',
         borderRadius: 8
       }
     ]
@@ -106,9 +106,9 @@ export default function AdminAnalytics() {
     datasets: [
       {
         data: atsValues,
-        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'],
+        backgroundColor: ['#F87171', '#B7791F', '#F5B83D', '#4ADE80'],
         borderWidth: 2,
-        borderColor: '#0f172a'
+        borderColor: '#121519'
       }
     ]
   };
@@ -122,7 +122,7 @@ export default function AdminAnalytics() {
       {
         label: 'Frequency Extracted',
         data: skillCounts,
-        backgroundColor: '#8b5cf6',
+        backgroundColor: '#F5B83D',
         borderRadius: 6
       }
     ]
@@ -137,7 +137,7 @@ export default function AdminAnalytics() {
       {
         label: 'Times Missing in ATS Scans',
         data: missingCounts,
-        backgroundColor: '#f43f5e',
+        backgroundColor: '#F87171',
         borderRadius: 6
       }
     ]
@@ -151,9 +151,9 @@ export default function AdminAnalytics() {
     datasets: [
       {
         data: jmValues,
-        backgroundColor: ['#f43f5e', '#f59e0b', '#6366f1', '#10b981'],
+        backgroundColor: ['#F87171', '#B7791F', '#F5B83D', '#4ADE80'],
         borderWidth: 2,
-        borderColor: '#0f172a'
+        borderColor: '#121519'
       }
     ]
   };
@@ -195,61 +195,61 @@ export default function AdminAnalytics() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        labels: { color: '#94a3b8', font: { size: 11 } }
+        labels: { color: '#A7ADB7', font: { size: 11 } }
       }
     },
     scales: {
-      x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#1e293b' } },
-      y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: '#1e293b' } }
+      x: { ticks: { color: '#6F7682', font: { size: 10 } }, grid: { color: 'rgba(41, 45, 51, 0.6)' } },
+      y: { ticks: { color: '#6F7682', font: { size: 10 } }, grid: { color: 'rgba(41, 45, 51, 0.6)' } }
     }
   };
 
   return (
     <div className="space-y-8 font-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 p-6 rounded-3xl backdrop-blur-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#121519] border border-[#292D33] p-6 rounded-3xl backdrop-blur-xl">
         <div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-3">
-            <FiBarChart2 className="w-7 h-7 text-indigo-400" />
+          <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-tight flex items-center gap-3">
+            <FiBarChart2 className="w-7 h-7 text-[#F5B83D]" />
             <span>Platform Analytics & AI Intelligence</span>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[#A7ADB7] mt-1">
             Visual graphs for user growth, resume uploads, ATS distributions, extracted skills, and AI module usage.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300">
-            <FiCalendar className="text-slate-400" />
+          <div className="flex items-center gap-2 bg-[#0D0F12] border border-[#292D33] rounded-xl px-3 py-1.5 text-xs text-[#F5F5F5]">
+            <FiCalendar className="text-[#A7ADB7]" />
             <select
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
               className="bg-transparent outline-none cursor-pointer"
             >
-              <option value={7}>Last 7 Days</option>
-              <option value={14}>Last 14 Days</option>
-              <option value={30}>Last 30 Days</option>
+              <option value={7} className="bg-[#0D0F12]">Last 7 Days</option>
+              <option value={14} className="bg-[#0D0F12]">Last 14 Days</option>
+              <option value={30} className="bg-[#0D0F12]">Last 30 Days</option>
             </select>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportCSV}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 border border-slate-700/60"
+              className="px-3.5 py-1.5 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] text-xs font-semibold flex items-center gap-1 border border-[#292D33] cursor-pointer"
             >
-              <FiDownload className="text-emerald-400" /> CSV
+              <FiDownload className="text-[#F5B83D]" /> CSV
             </button>
             <button
               onClick={handleExportExcel}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 border border-slate-700/60"
+              className="px-3.5 py-1.5 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] text-xs font-semibold flex items-center gap-1 border border-[#292D33] cursor-pointer"
             >
-              <FiDownload className="text-blue-400" /> Excel
+              <FiDownload className="text-[#FFD166]" /> Excel
             </button>
             <button
               onClick={handleExportPDF}
-              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1 border border-slate-700/60"
+              className="px-3.5 py-1.5 rounded-xl bg-[#0D0F12] hover:bg-[#171A1F] text-[#F5F5F5] text-xs font-semibold flex items-center gap-1 border border-[#292D33] cursor-pointer"
             >
-              <FiDownload className="text-rose-400" /> PDF
+              <FiDownload className="text-[#B7791F]" /> PDF
             </button>
           </div>
         </div>
@@ -258,62 +258,62 @@ export default function AdminAnalytics() {
       {/* Grid of Interactive Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Registrations */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-bold text-white mb-4">Daily User Registrations</h3>
+        <div className="bg-[#121519] border border-[#292D33] rounded-3xl p-6 shadow-xl backdrop-blur-xl">
+          <h3 className="text-sm font-bold text-[#F5F5F5] mb-4">Daily User Registrations</h3>
           <div className="h-64">
             <Line data={dailyRegChartData} options={chartOptions} />
           </div>
         </div>
 
         {/* Daily Resume Uploads */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-bold text-white mb-4">Daily Resume Uploads</h3>
+        <div className="bg-[#121519] border border-[#292D33] rounded-3xl p-6 shadow-xl backdrop-blur-xl">
+          <h3 className="text-sm font-bold text-[#F5F5F5] mb-4">Daily Resume Uploads</h3>
           <div className="h-64">
             <Bar data={dailyUploadsChartData} options={chartOptions} />
           </div>
         </div>
 
         {/* ATS Score Distribution */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-bold text-white mb-4">ATS Score Range Distribution</h3>
+        <div className="bg-[#121519] border border-[#292D33] rounded-3xl p-6 shadow-xl backdrop-blur-xl">
+          <h3 className="text-sm font-bold text-[#F5F5F5] mb-4">ATS Score Range Distribution</h3>
           <div className="h-64 flex justify-center">
             <Doughnut
               data={atsDistributionChartData}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
+                plugins: { legend: { position: 'bottom', labels: { color: '#A7ADB7' } } }
               }}
             />
           </div>
         </div>
 
         {/* Job Match Score Distribution */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-bold text-white mb-4">Job Match Score Distribution</h3>
+        <div className="bg-[#121519] border border-[#292D33] rounded-3xl p-6 shadow-xl backdrop-blur-xl">
+          <h3 className="text-sm font-bold text-[#F5F5F5] mb-4">Job Match Score Distribution</h3>
           <div className="h-64 flex justify-center">
             <Doughnut
               data={jobMatchDistributionChartData}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8' } } }
+                plugins: { legend: { position: 'bottom', labels: { color: '#A7ADB7' } } }
               }}
             />
           </div>
         </div>
 
         {/* Most Common Extracted Skills */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-bold text-white mb-4">Top 10 Extracted Skills</h3>
+        <div className="bg-[#121519] border border-[#292D33] rounded-3xl p-6 shadow-xl backdrop-blur-xl">
+          <h3 className="text-sm font-bold text-[#F5F5F5] mb-4">Top 10 Extracted Skills</h3>
           <div className="h-64">
             <Bar data={topSkillsChartData} options={chartOptions} />
           </div>
         </div>
 
         {/* Most Common Missing Skills */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl backdrop-blur-xl">
-          <h3 className="text-sm font-bold text-white mb-4">Top 10 Most Common Missing Skills</h3>
+        <div className="bg-[#121519] border border-[#292D33] rounded-3xl p-6 shadow-xl backdrop-blur-xl">
+          <h3 className="text-sm font-bold text-[#F5F5F5] mb-4">Top 10 Most Common Missing Skills</h3>
           <div className="h-64">
             <Bar data={topMissingSkillsChartData} options={chartOptions} />
           </div>

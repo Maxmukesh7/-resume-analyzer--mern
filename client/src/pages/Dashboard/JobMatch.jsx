@@ -185,9 +185,9 @@ export default function JobMatchPage() {
   const circleStrokeDash = 251.2;
 
   const getScoreColor = (score) => {
-    if (score >= 85) return 'text-emerald-400';
-    if (score >= 70) return 'text-blue-400';
-    return 'text-amber-400';
+    if (score >= 85) return 'text-[#4ADE80]';
+    if (score >= 70) return 'text-[#FFD166]';
+    return 'text-[#F5B83D]';
   };
 
   const getBadgeVariant = (score) => {
@@ -222,19 +222,19 @@ export default function JobMatchPage() {
               result.projectsMatch || 0,
               result.certificationMatch || 0
             ],
-            backgroundColor: 'rgba(59, 130, 246, 0.25)',
-            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(245, 184, 61, 0.2)',
+            borderColor: '#F5B83D',
             borderWidth: 2,
-            pointBackgroundColor: '#60a5fa'
+            pointBackgroundColor: '#FFD166'
           },
           {
             label: 'Job Benchmark (100%)',
             data: [100, 100, 100, 100, 100],
-            backgroundColor: 'rgba(168, 85, 247, 0.08)',
-            borderColor: '#a855f7',
+            backgroundColor: 'rgba(255, 209, 102, 0.05)',
+            borderColor: '#FFD166',
             borderWidth: 1.5,
             borderDash: [4, 4],
-            pointBackgroundColor: '#c084fc'
+            pointBackgroundColor: '#F5B83D'
           }
         ]
       }
@@ -243,17 +243,17 @@ export default function JobMatchPage() {
   const radarOptions = {
     scales: {
       r: {
-        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-        grid: { color: 'rgba(255, 255, 255, 0.08)' },
-        pointLabels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } },
-        ticks: { backdropColor: 'transparent', color: '#64748b', stepSize: 20 },
+        angleLines: { color: 'rgba(41, 45, 51, 0.6)' },
+        grid: { color: 'rgba(41, 45, 51, 0.6)' },
+        pointLabels: { color: '#A7ADB7', font: { size: 10, weight: 'bold' } },
+        ticks: { backdropColor: 'transparent', color: '#6F7682', stepSize: 20 },
         suggestedMin: 0,
         suggestedMax: 100
       }
     },
     plugins: {
       legend: {
-        labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' } }
+        labels: { color: '#F5F5F5', font: { size: 11, weight: 'bold' } }
       }
     },
     maintainAspectRatio: false
@@ -262,41 +262,41 @@ export default function JobMatchPage() {
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       {/* Navigation Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#292D33] pb-5">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/dashboard')}
-            className="p-2.5 text-slate-400 hover:text-white bg-slate-900/60 border border-slate-800 rounded-xl transition-all"
+            className="p-2.5 text-[#A7ADB7] hover:text-[#F5F5F5] bg-[#0D0F12] border border-[#292D33] rounded-xl transition-all cursor-pointer"
             title="Back to Overview"
           >
             <FaArrowLeft size={12} />
           </button>
           <div>
-            <h1 className="text-2xl font-extrabold text-white tracking-wide">Job Description Matching</h1>
-            <p className="text-slate-450 text-xs mt-1 font-semibold">
+            <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-wide">Job Description Matching</h1>
+            <p className="text-[#A7ADB7] text-xs mt-1 font-semibold">
               Skill gap analysis & job description keyword comparison.
             </p>
           </div>
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex border border-slate-800 rounded-xl p-1 bg-slate-900/60 text-xs font-bold">
+        <div className="flex border border-[#292D33] rounded-xl p-1 bg-[#0D0F12] text-xs font-bold">
           <button
             onClick={() => setActiveTab('analyze')}
-            className={`px-4 py-2 rounded-lg transition-all ${
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer ${
               activeTab === 'analyze'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166] text-[#08090B] font-bold shadow-md'
+                : 'text-[#A7ADB7] hover:text-[#F5F5F5]'
             }`}
           >
             Analyze & Match
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`px-4 py-2 rounded-lg transition-all ${
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer ${
               activeTab === 'history'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166] text-[#08090B] font-bold shadow-md'
+                : 'text-[#A7ADB7] hover:text-[#F5F5F5]'
             }`}
           >
             Saved Match History
@@ -308,9 +308,9 @@ export default function JobMatchPage() {
       {activeTab === 'analyze' && (
         <div className="space-y-8">
           {/* Input Form Card */}
-          <Card className="p-6 space-y-6">
-            <h2 className="text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
-              <FaBriefcase className="text-blue-400" size={16} />
+          <Card className="p-6 space-y-6 bg-[#121519] border-[#292D33]">
+            <h2 className="text-sm font-extrabold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-2">
+              <FaBriefcase className="text-[#F5B83D]" size={16} />
               <span>Target Job & Resume Input</span>
             </h2>
 
@@ -318,11 +318,11 @@ export default function JobMatchPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                 {/* Select Resume */}
                 <div className="space-y-1.5">
-                  <label className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">
+                  <label className="text-[#A7ADB7] font-bold uppercase text-[10px] tracking-wider block">
                     Select Your Resume
                   </label>
                   {loadingResumes ? (
-                    <div className="p-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-500">
+                    <div className="p-2.5 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#A7ADB7]">
                       Loading resumes...
                     </div>
                   ) : (
@@ -330,7 +330,7 @@ export default function JobMatchPage() {
                       <select
                         value={selectedResumeId}
                         onChange={(e) => setSelectedResumeId(e.target.value)}
-                        className="w-full appearance-none bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 pr-10 font-semibold text-slate-200 focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                        className="w-full appearance-none bg-[#0D0F12] border border-[#292D33] rounded-xl px-4 py-2.5 pr-10 font-semibold text-[#F5F5F5] focus:outline-none focus:border-[#F5B83D] cursor-pointer"
                       >
                         {resumes.map((r) => (
                           <option key={r._id || r.id} value={r._id || r.id}>
@@ -338,41 +338,41 @@ export default function JobMatchPage() {
                           </option>
                         ))}
                       </select>
-                      <FaChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={10} />
+                      <FaChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#6F7682] pointer-events-none" size={10} />
                     </div>
                   )}
                 </div>
 
                 {/* Job Title Input */}
                 <div className="space-y-1.5">
-                  <label className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">
+                  <label className="text-[#A7ADB7] font-bold uppercase text-[10px] tracking-wider block">
                     Job Title (Optional)
                   </label>
                   <div className="relative">
-                    <FaBriefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={12} />
+                    <FaBriefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F7682]" size={12} />
                     <input
                       type="text"
                       placeholder="e.g. Senior React Developer"
                       value={jobTitle}
                       onChange={(e) => setJobTitle(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 font-semibold"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D] font-semibold"
                     />
                   </div>
                 </div>
 
                 {/* Company Name Input */}
                 <div className="space-y-1.5">
-                  <label className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">
+                  <label className="text-[#A7ADB7] font-bold uppercase text-[10px] tracking-wider block">
                     Company Name (Optional)
                   </label>
                   <div className="relative">
-                    <FaBuilding className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={12} />
+                    <FaBuilding className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F7682]" size={12} />
                     <input
                       type="text"
                       placeholder="e.g. Google / Microsoft"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 font-semibold"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D] font-semibold"
                     />
                   </div>
                 </div>
@@ -380,7 +380,7 @@ export default function JobMatchPage() {
 
               {/* Job Description Textarea */}
               <div className="space-y-1.5 text-xs">
-                <label className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">
+                <label className="text-[#A7ADB7] font-bold uppercase text-[10px] tracking-wider block">
                   Paste Job Description Requirements *
                 </label>
                 <textarea
@@ -388,7 +388,7 @@ export default function JobMatchPage() {
                   placeholder="Paste the full job posting text here (requirements, qualifications, technical stack, skills)..."
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
-                  className="w-full p-4 bg-slate-900 border border-slate-800 rounded-2xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 font-medium leading-relaxed"
+                  className="w-full p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D] font-medium leading-relaxed"
                 />
               </div>
 
@@ -405,10 +405,10 @@ export default function JobMatchPage() {
 
           {/* Result Output Dashboard */}
           {analyzing ? (
-            <Card className="p-12 text-center space-y-4">
-              <FaSpinner className="animate-spin text-blue-500 mx-auto" size={32} />
-              <h3 className="text-sm font-extrabold text-white">Comparing Candidate Resume Against Job Posting...</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            <Card className="p-12 text-center space-y-4 bg-[#121519] border-[#292D33]">
+              <FaSpinner className="animate-spin text-[#F5B83D] mx-auto" size={32} />
+              <h3 className="text-sm font-extrabold text-[#F5F5F5]">Comparing Candidate Resume Against Job Posting...</h3>
+              <p className="text-xs text-[#A7ADB7] max-w-sm mx-auto">
                 Extracting technical skills, experience rules, and evaluating keyword match percentages.
               </p>
             </Card>
@@ -417,25 +417,25 @@ export default function JobMatchPage() {
               {/* Overall Match % & Radar Chart Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Circular Score Meter */}
-                <Card className="flex flex-col items-center justify-center p-8 text-center h-full relative overflow-hidden">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
+                <Card className="flex flex-col items-center justify-center p-8 text-center h-full relative overflow-hidden bg-[#121519] border-[#292D33]">
+                  <span className="text-xs font-bold text-[#A7ADB7] uppercase tracking-widest mb-6">
                     Overall Job Match Score
                   </span>
 
                   <div className="relative w-44 h-44 flex items-center justify-center">
-                    <div className="absolute inset-2 bg-gradient-to-tr from-blue-600/10 to-purple-600/10 rounded-full blur-[10px] pointer-events-none" />
+                    <div className="absolute inset-2 bg-gradient-to-tr from-[#F5B83D]/10 to-[#FFD166]/10 rounded-full blur-[10px] pointer-events-none" />
                     <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
                       <defs>
                         <linearGradient id="matchGlow" x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stopColor="#3b82f6" />
-                          <stop offset="100%" stopColor="#a855f7" />
+                          <stop offset="0%" stopColor="#F5B83D" />
+                          <stop offset="100%" stopColor="#FFD166" />
                         </linearGradient>
                       </defs>
                       <circle
                         cx="50"
                         cy="50"
                         r="40"
-                        stroke="rgba(30, 41, 59, 0.4)"
+                        stroke="rgba(41, 45, 51, 0.6)"
                         strokeWidth="7"
                         fill="none"
                       />
@@ -458,7 +458,7 @@ export default function JobMatchPage() {
                       <span className={`text-4xl font-black tracking-tight ${getScoreColor(result.matchScore)}`}>
                         {result.matchScore}%
                       </span>
-                      <span className="text-[10px] text-slate-500 font-extrabold uppercase mt-0.5 tracking-widest">
+                      <span className="text-[10px] text-[#A7ADB7] font-extrabold uppercase mt-0.5 tracking-widest">
                         Match Fit
                       </span>
                     </div>
@@ -468,15 +468,15 @@ export default function JobMatchPage() {
                     <Badge variant={getBadgeVariant(result.matchScore)}>
                       {getHiringLabel(result.matchScore)}
                     </Badge>
-                    <p className="text-[10px] text-slate-500 font-semibold mt-1">
+                    <p className="text-[10px] text-[#A7ADB7] font-semibold mt-1">
                       {result.jobTitle} &bull; {result.companyName}
                     </p>
                   </div>
                 </Card>
 
                 {/* Radar Chart */}
-                <Card className="lg:col-span-2 p-6 flex flex-col justify-between h-[340px]">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">
+                <Card className="lg:col-span-2 p-6 flex flex-col justify-between h-[340px] bg-[#121519] border-[#292D33]">
+                  <span className="text-xs font-bold text-[#A7ADB7] uppercase tracking-widest mb-2 block">
                     Category Match Alignment
                   </span>
                   <div className="h-[260px] w-full">
@@ -488,40 +488,40 @@ export default function JobMatchPage() {
               {/* Matched vs Missing Skills Badges Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Matched Skills */}
-                <Card className="p-6 border border-emerald-950/20 bg-slate-900/10 space-y-4">
-                  <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                <Card className="p-6 border border-[#292D33] bg-[#121519] space-y-4">
+                  <h3 className="text-sm font-bold text-[#4ADE80] uppercase tracking-wider flex items-center gap-2">
                     <FaCheckCircle size={16} />
                     <span>Matched Skills & Keywords ({result.matchedKeywords?.length || 0})</span>
                   </h3>
                   {result.matchedKeywords && result.matchedKeywords.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {result.matchedKeywords.map((kw, i) => (
-                        <span key={i} className="px-3 py-1 bg-emerald-950/40 border border-emerald-800/40 text-emerald-300 text-xs font-semibold rounded-xl">
+                        <span key={i} className="px-3 py-1 bg-[#171A1F] border border-[#4ADE80]/30 text-[#4ADE80] text-xs font-semibold rounded-xl">
                           ✓ {kw}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-500">No explicit matching keywords detected.</p>
+                    <p className="text-xs text-[#A7ADB7]">No explicit matching keywords detected.</p>
                   )}
                 </Card>
 
                 {/* Missing Skills */}
-                <Card className="p-6 border border-rose-950/20 bg-slate-900/10 space-y-4">
-                  <h3 className="text-sm font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
+                <Card className="p-6 border border-[#292D33] bg-[#121519] space-y-4">
+                  <h3 className="text-sm font-bold text-[#F87171] uppercase tracking-wider flex items-center gap-2">
                     <FaExclamationTriangle size={16} />
                     <span>Missing Job Requirements ({result.missingKeywords?.length || 0})</span>
                   </h3>
                   {result.missingKeywords && result.missingKeywords.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {result.missingKeywords.map((kw, i) => (
-                        <span key={i} className="px-3 py-1 bg-rose-950/40 border border-rose-800/40 text-rose-300 text-xs font-semibold rounded-xl">
+                        <span key={i} className="px-3 py-1 bg-[#171A1F] border border-[#F87171]/30 text-[#F87171] text-xs font-semibold rounded-xl">
                           + {kw}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-emerald-400 font-semibold">No critical missing keywords!</p>
+                    <p className="text-xs text-[#4ADE80] font-semibold">No critical missing keywords!</p>
                   )}
                 </Card>
               </div>
@@ -529,31 +529,31 @@ export default function JobMatchPage() {
               {/* Feedback & Recommendations */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Strengths */}
-                <Card className="p-6 space-y-3">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <FaCheckCircle className="text-emerald-400" size={14} />
+                <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+                  <h3 className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-2">
+                    <FaCheckCircle className="text-[#4ADE80]" size={14} />
                     <span>Top Match Strengths</span>
                   </h3>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <ul className="space-y-2 text-xs text-[#A7ADB7]">
                     {result.strengths && result.strengths.length > 0 ? (
                       result.strengths.map((s, i) => <li key={i}>&bull; {s}</li>)
                     ) : (
-                      <p className="text-xs text-slate-500">No specific strengths recorded.</p>
+                      <p className="text-xs text-[#A7ADB7]">No specific strengths recorded.</p>
                     )}
                   </ul>
                 </Card>
 
                 {/* Recommendations */}
-                <Card className="p-6 space-y-3">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <FaLightbulb className="text-amber-400" size={14} />
+                <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+                  <h3 className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-2">
+                    <FaLightbulb className="text-[#F5B83D]" size={14} />
                     <span>Actionable Recommendations</span>
                   </h3>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <ul className="space-y-2 text-xs text-[#A7ADB7]">
                     {result.recommendations && result.recommendations.length > 0 ? (
                       result.recommendations.map((r, i) => <li key={i}>&bull; {r}</li>)
                     ) : (
-                      <p className="text-xs text-emerald-400 font-semibold">Candidate profile matches requirements!</p>
+                      <p className="text-xs text-[#4ADE80] font-semibold">Candidate profile matches requirements!</p>
                     )}
                   </ul>
                 </Card>
@@ -568,47 +568,47 @@ export default function JobMatchPage() {
         <div className="space-y-6">
           {/* Search Control */}
           <div className="relative max-w-sm w-full">
-            <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={13} />
+            <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F7682]" size={13} />
             <input
               type="text"
               placeholder="Search by job title or company..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 text-xs"
+              className="w-full pl-10 pr-4 py-2.5 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D] text-xs"
             />
           </div>
 
           {/* History Table */}
-          <Card className="overflow-hidden p-0">
+          <Card className="overflow-hidden p-0 bg-[#121519] border-[#292D33]">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-900/70 border-b border-slate-800/80 text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">
+                  <tr className="bg-[#0D0F12] border-b border-[#292D33] text-[10px] text-[#A7ADB7] font-extrabold uppercase tracking-widest">
                     <th className="px-6 py-4">Job Title & Company</th>
                     <th className="px-6 py-4">Match %</th>
                     <th className="px-6 py-4">Analysis Date</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-850/30">
+                <tbody className="divide-y divide-[#292D33]">
                   {loadingHistory ? (
                     <tr>
-                      <td colSpan="4" className="px-6 py-12 text-center text-slate-500 text-xs">
+                      <td colSpan="4" className="px-6 py-12 text-center text-[#A7ADB7] text-xs">
                         <div className="flex items-center justify-center gap-2">
-                          <FaSpinner className="animate-spin text-blue-400" size={16} />
+                          <FaSpinner className="animate-spin text-[#F5B83D]" size={16} />
                           <span>Loading match history...</span>
                         </div>
                       </td>
                     </tr>
                   ) : history.length > 0 ? (
                     history.map((item) => (
-                      <tr key={item._id} className="hover:bg-slate-800/10 transition-colors">
+                      <tr key={item._id} className="hover:bg-[#171A1F]/50 transition-colors">
                         <td className="px-6 py-4">
                           <div>
-                            <span className="text-xs font-bold text-white block">
+                            <span className="text-xs font-bold text-[#F5F5F5] block">
                               {item.jobTitle}
                             </span>
-                            <span className="text-[10px] text-slate-500 font-semibold">{item.companyName}</span>
+                            <span className="text-[10px] text-[#A7ADB7] font-semibold">{item.companyName}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -616,14 +616,14 @@ export default function JobMatchPage() {
                             {item.matchScore}% Match
                           </Badge>
                         </td>
-                        <td className="px-6 py-4 text-xs text-slate-400 font-medium">
+                        <td className="px-6 py-4 text-xs text-[#A7ADB7] font-medium">
                           {new Date(item.createdAt).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => handleViewHistoryDetail(item)}
-                              className="p-2 text-xs font-semibold rounded-lg text-blue-400 hover:text-white hover:bg-blue-600/10 border border-blue-500/20 transition-all flex items-center gap-1.5"
+                              className="p-2 text-xs font-semibold rounded-lg text-[#F5B83D] hover:text-[#F5F5F5] hover:bg-[#F5B83D]/10 border border-[#F5B83D]/30 transition-all flex items-center gap-1.5 cursor-pointer"
                               title="View Match Report"
                             >
                               <FaEye size={12} />
@@ -632,7 +632,7 @@ export default function JobMatchPage() {
                             <button
                               onClick={() => handleDeleteHistoryItem(item._id, item.jobTitle)}
                               disabled={deletingId === item._id}
-                              className="p-2 text-xs font-semibold rounded-lg text-rose-400 hover:text-white hover:bg-rose-600/10 border border-rose-500/20 transition-all disabled:opacity-50"
+                              className="p-2 text-xs font-semibold rounded-lg text-[#F87171] hover:text-white hover:bg-[#F87171]/10 border border-[#F87171]/20 transition-all disabled:opacity-50 cursor-pointer"
                               title="Delete Record"
                             >
                               {deletingId === item._id ? (
@@ -647,7 +647,7 @@ export default function JobMatchPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="px-6 py-12 text-center text-slate-500 text-xs">
+                      <td colSpan="4" className="px-6 py-12 text-center text-[#A7ADB7] text-xs">
                         No saved job match reports found.
                       </td>
                     </tr>

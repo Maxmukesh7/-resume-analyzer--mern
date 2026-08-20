@@ -39,7 +39,7 @@ export default function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-[#08090B]/85 backdrop-blur-md"
           />
 
           {/* Modal Container */}
@@ -48,14 +48,14 @@ export default function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: 'spring', duration: 0.3 }}
-            className={`w-full ${sizes[size]} bg-slate-900 border border-slate-800 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] relative z-10 overflow-hidden ${className}`}
+            className={`w-full ${sizes[size]} bg-[#121519] border border-[#292D33] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7)] relative z-10 overflow-hidden text-[#F5F5F5] ${className}`}
           >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-slate-800 flex items-center justify-between">
-              {title && <h3 className="text-lg font-bold text-white tracking-wide">{title}</h3>}
+            <div className="px-6 py-5 border-b border-[#292D33] flex items-center justify-between">
+              {title && <h3 className="text-lg font-bold text-[#F5F5F5] tracking-wide">{title}</h3>}
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+                className="p-1.5 rounded-lg text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#171A1F] transition-all cursor-pointer"
                 aria-label="Close modal"
               >
                 <FaTimes size={16} />

@@ -319,8 +319,8 @@ export default function ResumeUpload() {
     <div className="space-y-8 max-w-4xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-white tracking-wide">Automatic Resume Analysis</h1>
-        <p className="text-slate-450 text-xs mt-1.5 font-semibold">
+        <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-wide">Automatic Resume Analysis</h1>
+        <p className="text-[#A7ADB7] text-xs mt-1.5 font-semibold">
           Upload your resume. Our pipeline automatically extracts text, evaluates ATS compatibility, and generates Gemini AI insights in one seamless workflow.
         </p>
       </div>
@@ -343,27 +343,27 @@ export default function ResumeUpload() {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             onClick={triggerFileInput}
-            whileHover={{ scale: 1.005, borderColor: 'rgba(99,102,241,0.45)' }}
+            whileHover={{ scale: 1.005, borderColor: '#F5B83D' }}
             className={`border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all duration-300 min-h-[300px] text-center
               ${dragActive 
-                ? 'border-blue-500 bg-blue-900/10 shadow-[0_0_20px_rgba(59,130,246,0.15)]' 
-                : 'border-slate-800 bg-slate-900/15 hover:bg-slate-900/30'
+                ? 'border-[#F5B83D] bg-[#F5B83D]/10 shadow-[0_0_20px_rgba(245,184,61,0.15)]' 
+                : 'border-[#292D33] bg-[#0D0F12] hover:bg-[#171A1F]'
               }`}
           >
-            <div className="p-5 bg-slate-800/60 rounded-full border border-slate-700/50 text-blue-400 shadow-md">
+            <div className="p-5 bg-[#121519] rounded-full border border-[#292D33] text-[#F5B83D] shadow-md">
               <FaCloudUploadAlt size={42} className="animate-bounce" />
             </div>
             <div>
-              <p className="text-base font-bold text-slate-200">Drag & drop your resume file here</p>
-              <p className="text-xs text-slate-500 font-semibold mt-1">or click to browse local files (PDF, DOC, DOCX)</p>
+              <p className="text-base font-bold text-[#F5F5F5]">Drag & drop your resume file here</p>
+              <p className="text-xs text-[#A7ADB7] font-semibold mt-1">or click to browse local files (PDF, DOC, DOCX)</p>
             </div>
-            <div className="border border-slate-800/80 bg-slate-900/60 rounded-xl px-4 py-1.5 mt-2 flex gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+            <div className="border border-[#292D33] bg-[#121519] rounded-xl px-4 py-1.5 mt-2 flex gap-4 text-[10px] text-[#A7ADB7] font-bold uppercase tracking-wider">
               <span>PDF (.pdf)</span>
-              <span className="text-slate-700">|</span>
+              <span className="text-[#292D33]">|</span>
               <span>DOC (.doc)</span>
-              <span className="text-slate-700">|</span>
+              <span className="text-[#292D33]">|</span>
               <span>DOCX (.docx)</span>
-              <span className="text-slate-700">|</span>
+              <span className="text-[#292D33]">|</span>
               <span>Max 5 MB</span>
             </div>
           </motion.div>
@@ -379,20 +379,20 @@ export default function ResumeUpload() {
               className="space-y-6"
             >
               {/* File Info Preview Card */}
-              <div className="flex items-center justify-between p-4 bg-slate-900/60 border border-slate-800 rounded-2xl">
+              <div className="flex items-center justify-between p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl">
                 <div className="flex items-center gap-4 min-w-0">
                   {getFileIcon(file.name)}
                   <div className="min-w-0">
-                    <h4 className="text-sm font-bold text-white truncate" title={file.name}>
+                    <h4 className="text-sm font-bold text-[#F5F5F5] truncate" title={file.name}>
                       {file.name}
                     </h4>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs text-slate-500 font-semibold">
+                      <span className="text-xs text-[#A7ADB7] font-semibold">
                         {getFriendlySize(file.size)}
                       </span>
                       <span className="text-slate-700">&bull;</span>
                       <span className="text-xs font-semibold">
-                        {pipelineState === 'IDLE' && <Badge variant="neutral">Ready to Analyze</Badge>}
+                        {pipelineState === 'IDLE' && <Badge variant="slate">Ready to Analyze</Badge>}
                         {isBusy && <Badge variant="info">Analyzing...</Badge>}
                         {pipelineState === 'COMPLETED' && <Badge variant="success">Completed</Badge>}
                         {pipelineState === 'ATS_COMPLETED_AI_FAILED' && <Badge variant="warning">Partial</Badge>}
@@ -405,7 +405,7 @@ export default function ResumeUpload() {
                 {!isBusy && (
                   <button
                     onClick={() => handleRemoveFile(false)}
-                    className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/15 rounded-xl border border-transparent hover:border-rose-900/25 transition-all"
+                    className="p-2 text-[#A7ADB7] hover:text-rose-400 hover:bg-rose-950/15 rounded-xl border border-transparent hover:border-rose-900/25 transition-all cursor-pointer"
                     title="Remove selected file"
                   >
                     <FaTimes size={14} />
@@ -415,13 +415,13 @@ export default function ResumeUpload() {
 
               {/* AUTOMATIC MULTI-STEP PROGRESS INDICATOR */}
               {pipelineState !== 'IDLE' && (
-                <div className="p-6 bg-slate-900/40 border border-slate-800 rounded-2xl space-y-6">
+                <div className="p-6 bg-[#0D0F12] border border-[#292D33] rounded-2xl space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-extrabold text-white tracking-wide uppercase">
+                      <h3 className="text-sm font-extrabold text-[#F5F5F5] tracking-wide uppercase">
                         Analysis Progress
                       </h3>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-xs text-[#A7ADB7] mt-0.5">
                         {pipelineState === 'COMPLETED'
                           ? 'All analysis stages finished successfully.'
                           : pipelineState === 'ATS_COMPLETED_AI_FAILED'
@@ -433,7 +433,7 @@ export default function ResumeUpload() {
                     </div>
 
                     {parsedCandidateName && (
-                      <span className="text-xs font-bold text-blue-400 bg-blue-950/40 px-3 py-1 rounded-xl border border-blue-800/40">
+                      <span className="text-xs font-bold text-[#F5B83D] bg-[#F5B83D]/10 px-3 py-1 rounded-xl border border-[#F5B83D]/30">
                         Candidate: {parsedCandidateName}
                       </span>
                     )}
@@ -450,24 +450,24 @@ export default function ResumeUpload() {
                           key={step.id}
                           className={`flex items-center justify-between p-3.5 rounded-xl border transition-all duration-300 ${
                             status === 'completed'
-                              ? 'bg-emerald-950/15 border-emerald-800/30 text-emerald-300'
+                              ? 'bg-[#4ADE80]/10 border-[#4ADE80]/30 text-[#4ADE80]'
                               : status === 'active'
-                              ? 'bg-blue-950/20 border-blue-700/40 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
+                              ? 'bg-[#F5B83D]/15 border-[#F5B83D]/40 text-[#FFD166] shadow-[0_0_15px_rgba(245,184,61,0.15)]'
                               : status === 'failed'
                               ? 'bg-rose-950/20 border-rose-800/40 text-rose-300'
-                              : 'bg-slate-900/30 border-slate-850/60 text-slate-500'
+                              : 'bg-[#121519] border-[#292D33] text-[#6F7682]'
                           }`}
                         >
                           <div className="flex items-center gap-3.5 min-w-0">
                             <div
                               className={`p-2 rounded-xl border ${
                                 status === 'completed'
-                                  ? 'bg-emerald-950/60 border-emerald-700/50 text-emerald-400'
+                                  ? 'bg-[#4ADE80]/20 border-[#4ADE80]/40 text-[#4ADE80]'
                                   : status === 'active'
-                                  ? 'bg-blue-950/60 border-blue-600/50 text-blue-400'
+                                  ? 'bg-[#F5B83D]/25 border-[#F5B83D]/50 text-[#F5B83D]'
                                   : status === 'failed'
                                   ? 'bg-rose-950/60 border-rose-700/50 text-rose-400'
-                                  : 'bg-slate-900 border-slate-800 text-slate-600'
+                                  : 'bg-[#171A1F] border-[#292D33] text-[#6F7682]'
                               }`}
                             >
                               <Icon size={16} />
@@ -477,7 +477,7 @@ export default function ResumeUpload() {
                               <h5 className="text-xs font-bold tracking-wide flex items-center gap-2">
                                 <span>{step.title}</span>
                                 {step.id === 'ats' && atsScore !== null && (
-                                  <span className="text-[11px] font-extrabold text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-800/40">
+                                  <span className="text-[11px] font-extrabold text-[#08090B] bg-gradient-to-r from-[#F5B83D] to-[#FFD166] px-2 py-0.5 rounded">
                                     Score: {atsScore}/100
                                   </span>
                                 )}
@@ -489,13 +489,13 @@ export default function ResumeUpload() {
                           {/* Status Indicator Icon */}
                           <div>
                             {status === 'completed' && (
-                              <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
+                              <span className="flex items-center gap-1.5 text-xs font-bold text-[#4ADE80]">
                                 <FaCheckCircle size={15} />
                                 <span>Completed</span>
                               </span>
                             )}
                             {status === 'active' && (
-                              <span className="flex items-center gap-1.5 text-xs font-bold text-blue-400">
+                              <span className="flex items-center gap-1.5 text-xs font-bold text-[#F5B83D]">
                                 <FaSpinner size={14} className="animate-spin" />
                                 <span>Processing...</span>
                               </span>
@@ -507,7 +507,7 @@ export default function ResumeUpload() {
                               </span>
                             )}
                             {status === 'pending' && (
-                              <span className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                              <span className="flex items-center gap-1.5 text-xs font-bold text-[#6F7682]">
                                 <FaClock size={13} />
                                 <span>Queued</span>
                               </span>
@@ -521,13 +521,13 @@ export default function ResumeUpload() {
                   {/* Upload Progress Bar if currently uploading */}
                   {pipelineState === 'UPLOADING' && (
                     <div className="space-y-1.5 pt-2">
-                      <div className="flex justify-between text-xs font-bold text-slate-400">
+                      <div className="flex justify-between text-xs font-bold text-[#A7ADB7]">
                         <span>Uploading stream...</span>
                         <span>{uploadProgress}%</span>
                       </div>
-                      <div className="h-2 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-850">
+                      <div className="h-2 w-full bg-[#08090B] rounded-full overflow-hidden border border-[#292D33]">
                         <div 
-                          className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-150"
+                          className="h-full bg-gradient-to-r from-[#F5B83D] to-[#FFD166] rounded-full transition-all duration-150"
                           style={{ width: `${uploadProgress}%` }}
                         />
                       </div>
@@ -536,12 +536,12 @@ export default function ResumeUpload() {
 
                   {/* Success Banner on Complete */}
                   {pipelineState === 'COMPLETED' && (
-                    <div className="p-4 bg-emerald-950/20 border border-emerald-800/40 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-                      <div className="flex items-center gap-3 text-emerald-300 font-semibold">
-                        <FaCheckCircle size={20} className="text-emerald-400 shrink-0" />
+                    <div className="p-4 bg-[#4ADE80]/10 border border-[#4ADE80]/30 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                      <div className="flex items-center gap-3 text-[#4ADE80] font-semibold">
+                        <FaCheckCircle size={20} className="text-[#4ADE80] shrink-0" />
                         <div>
-                          <p className="font-bold text-emerald-200">Resume analysis completed successfully.</p>
-                          <p className="text-[11px] text-emerald-400/80">
+                          <p className="font-bold text-[#4ADE80]">Resume analysis completed successfully.</p>
+                          <p className="text-[11px] text-[#4ADE80]/80">
                             {redirectCountdown !== null
                               ? `Redirecting to Complete Analysis Dashboard in ${redirectCountdown}s...`
                               : 'All results saved to database.'}
@@ -562,12 +562,12 @@ export default function ResumeUpload() {
 
                   {/* Partial AI Error Banner */}
                   {pipelineState === 'ATS_COMPLETED_AI_FAILED' && (
-                    <div className="p-4 bg-amber-950/20 border border-amber-800/40 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-                      <div className="flex items-center gap-3 text-amber-300 font-semibold">
-                        <FaExclamationTriangle size={20} className="text-amber-400 shrink-0" />
+                    <div className="p-4 bg-[#F5B83D]/10 border border-[#F5B83D]/30 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                      <div className="flex items-center gap-3 text-[#F5B83D] font-semibold">
+                        <FaExclamationTriangle size={20} className="text-[#F5B83D] shrink-0" />
                         <div>
-                          <p className="font-bold text-amber-200">ATS analysis completed. AI analysis could not be completed.</p>
-                          <p className="text-[11px] text-amber-400/80">
+                          <p className="font-bold text-[#FFD166]">ATS analysis completed. AI analysis could not be completed.</p>
+                          <p className="text-[11px] text-[#F5B83D]/80">
                             Your ATS score and parsed resume details were saved successfully.
                           </p>
                         </div>

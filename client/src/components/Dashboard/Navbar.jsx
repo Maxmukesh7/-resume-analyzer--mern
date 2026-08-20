@@ -39,12 +39,12 @@ export default function Navbar({ onToggleSidebar }) {
   };
 
   return (
-    <header className="sticky top-0 right-0 left-0 bg-slate-950/75 backdrop-blur-md border-b border-slate-800/60 z-30 px-6 py-4 flex items-center justify-between">
+    <header className="sticky top-0 right-0 left-0 bg-[#08090B]/90 backdrop-blur-md border-b border-[#292D33] z-30 px-6 py-4 flex items-center justify-between">
       {/* Left side: Sidebar Toggle & Search */}
       <div className="flex items-center gap-4 flex-1">
         <button
           onClick={onToggleSidebar}
-          className="p-2 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl lg:hidden transition-colors"
+          className="p-2 text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#121519] rounded-xl lg:hidden transition-colors cursor-pointer"
           aria-label="Toggle Sidebar"
         >
           <FaBars size={18} />
@@ -52,11 +52,11 @@ export default function Navbar({ onToggleSidebar }) {
 
         {/* Search Bar */}
         <div className="relative max-w-md w-full hidden md:block">
-          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F7682]" size={14} />
           <input
             type="text"
             placeholder="Search resume history, reports, settings..."
-            className="w-full pl-10 pr-4 py-2 bg-slate-900/40 border border-slate-850 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25 transition-all text-xs"
+            className="w-full pl-10 pr-4 py-2 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D] focus:ring-1 focus:ring-[#F5B83D]/25 transition-all text-xs"
           />
         </div>
       </div>
@@ -67,13 +67,13 @@ export default function Navbar({ onToggleSidebar }) {
         <button
           onClick={toggleDarkMode}
           title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800/60 rounded-xl transition-all cursor-pointer"
+          className="p-2.5 text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#121519] border border-[#292D33] rounded-xl transition-all cursor-pointer"
           aria-label="Toggle Dark/Light Mode"
         >
           {darkMode ? (
-            <FaSun size={15} className="text-amber-400 hover:rotate-45 transition-transform duration-300" />
+            <FaSun size={15} className="text-[#F5B83D] hover:rotate-45 transition-transform duration-300" />
           ) : (
-            <FaMoon size={15} className="text-blue-500 hover:-rotate-12 transition-transform duration-300" />
+            <FaMoon size={15} className="text-[#FFD166] hover:-rotate-12 transition-transform duration-300" />
           )}
         </button>
 
@@ -81,24 +81,24 @@ export default function Navbar({ onToggleSidebar }) {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800/60 rounded-xl transition-all relative cursor-pointer"
+            className="p-2.5 text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#121519] border border-[#292D33] rounded-xl transition-all relative cursor-pointer"
             aria-label="Notifications"
           >
             <FaBell size={16} />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gradient-to-r from-[#F5B83D] to-[#FFD166] rounded-full animate-pulse shadow-[0_0_8px_rgba(245,184,61,0.8)]" />
             )}
           </button>
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 bg-slate-900 border border-slate-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] overflow-hidden z-40">
-              <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
-                <span className="text-sm font-bold text-white">Notifications</span>
+            <div className="absolute right-0 mt-3 w-80 bg-[#121519] border border-[#292D33] rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.6)] overflow-hidden z-40">
+              <div className="px-5 py-4 border-b border-[#292D33] flex items-center justify-between">
+                <span className="text-sm font-bold text-[#F5F5F5]">Notifications</span>
                 {unreadCount > 0 && (
                   <button 
                     onClick={markAllAsRead}
-                    className="text-[10px] text-blue-400 hover:text-blue-300 font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    className="text-[10px] text-[#F5B83D] hover:text-[#FFD166] font-bold uppercase tracking-wider transition-colors cursor-pointer"
                   >
                     Mark all read
                   </button>
@@ -109,17 +109,17 @@ export default function Navbar({ onToggleSidebar }) {
                   notifications.map((notif) => (
                     <div
                       key={notif.id}
-                      className={`px-5 py-3.5 border-b border-slate-850/50 hover:bg-slate-800/20 transition-all flex flex-col gap-1.5
-                        ${!notif.read ? 'bg-blue-900/5' : ''}`}
+                      className={`px-5 py-3.5 border-b border-[#292D33]/50 hover:bg-[#171A1F] transition-all flex flex-col gap-1.5
+                        ${!notif.read ? 'bg-[#F5B83D]/10' : ''}`}
                     >
-                      <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                      <p className="text-xs text-[#F5F5F5] font-medium leading-relaxed">
                         {notif.text}
                       </p>
-                      <span className="text-[10px] text-slate-500 font-semibold">{notif.time}</span>
+                      <span className="text-[10px] text-[#A7ADB7] font-semibold">{notif.time}</span>
                     </div>
                   ))
                 ) : (
-                  <div className="px-5 py-8 text-center text-slate-500 text-xs">
+                  <div className="px-5 py-8 text-center text-[#6F7682] text-xs">
                     No new notifications
                   </div>
                 )}
@@ -132,7 +132,7 @@ export default function Navbar({ onToggleSidebar }) {
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-2.5 p-1.5 rounded-xl border border-slate-800/60 hover:bg-slate-900 transition-all cursor-pointer"
+            className="flex items-center gap-2.5 p-1.5 rounded-xl border border-[#292D33] hover:bg-[#121519] transition-all cursor-pointer"
           >
             <img
               src={getFileUrl(user?.avatar) || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200"}
@@ -142,18 +142,18 @@ export default function Navbar({ onToggleSidebar }) {
                 e.currentTarget.src = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200";
               }}
             />
-            <span className="text-xs font-bold text-slate-300 hidden sm:block pr-1">
+            <span className="text-xs font-bold text-[#F5F5F5] hidden sm:block pr-1">
               {user?.fullName || "User"}
             </span>
           </button>
 
           {/* Profile Dropdown Menu */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-3 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] overflow-hidden z-40">
+            <div className="absolute right-0 mt-3 w-56 bg-[#121519] border border-[#292D33] rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.6)] overflow-hidden z-40">
               {/* Profile Overview */}
-              <div className="px-5 py-4 border-b border-slate-800">
-                <p className="text-xs font-extrabold text-white truncate">{user?.fullName || "User"}</p>
-                <p className="text-[10px] text-slate-500 truncate mt-0.5">{user?.email}</p>
+              <div className="px-5 py-4 border-b border-[#292D33]">
+                <p className="text-xs font-extrabold text-[#F5F5F5] truncate">{user?.fullName || "User"}</p>
+                <p className="text-[10px] text-[#A7ADB7] truncate mt-0.5">{user?.email}</p>
               </div>
 
               {/* Menu Links */}
@@ -161,30 +161,30 @@ export default function Navbar({ onToggleSidebar }) {
                 <Link
                   to="/dashboard/profile"
                   onClick={() => setShowProfileMenu(false)}
-                  className="flex items-center gap-3 px-5 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800/40 transition-colors"
+                  className="flex items-center gap-3 px-5 py-2.5 text-xs text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#171A1F] transition-colors"
                 >
-                  <FaUser size={13} />
+                  <FaUser size={13} className="text-[#F5B83D]" />
                   <span>My Profile</span>
                 </Link>
                 <Link
                   to="/dashboard/settings"
                   onClick={() => setShowProfileMenu(false)}
-                  className="flex items-center gap-3 px-5 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800/40 transition-colors"
+                  className="flex items-center gap-3 px-5 py-2.5 text-xs text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#171A1F] transition-colors"
                 >
-                  <FaCog size={13} />
+                  <FaCog size={13} className="text-[#FFD166]" />
                   <span>Account Settings</span>
                 </Link>
               </div>
 
               {/* Logout */}
-              <div className="border-t border-slate-800 py-1 bg-slate-900/50">
+              <div className="border-t border-[#292D33] py-1 bg-[#0D0F12]">
                 <button
                   onClick={async () => {
                     setShowProfileMenu(false);
                     await logout();
                     navigate('/login');
                   }}
-                  className="w-full flex items-center gap-3 px-5 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/10 transition-colors cursor-pointer text-left"
+                  className="w-full flex items-center gap-3 px-5 py-2.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer text-left"
                 >
                   <FaSignOutAlt size={13} />
                   <span>Logout</span>

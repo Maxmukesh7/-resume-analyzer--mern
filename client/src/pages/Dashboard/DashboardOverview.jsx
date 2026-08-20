@@ -15,6 +15,7 @@ export default function DashboardOverview() {
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
   const [stats, setStats] = useState({
     totalUploads: 0,
     averageAtsScore: 0,
@@ -31,9 +32,11 @@ export default function DashboardOverview() {
   });
   const [recentResumes, setRecentResumes] = useState([]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (isInitial = false) => {
     try {
-      setLoading(true);
+      if (isInitial) {
+        setLoading(true);
+      }
       const [statsRes, resumesRes] = await Promise.all([
         api.get('/dashboard/stats').catch(() => ({ data: { data: {} } })),
         getResumes().catch(() => ({ data: [] }))
@@ -56,12 +59,14 @@ export default function DashboardOverview() {
     } catch (err) {
       console.error('Failed to load dashboard metrics:', err);
     } finally {
-      setLoading(false);
+      if (isInitial) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(true);
   }, []);
 
   const handleAnalyzeResume = (id) => {
@@ -70,12 +75,30 @@ export default function DashboardOverview() {
 
   const handleDeleteResume = async (id) => {
     if (!window.confirm('Are you sure you want to delete this resume?')) return;
+
+    const previousResumes = recentResumes;
+    const previousStats = stats;
+
+    // Optimistic UI updates
+    setRecentResumes((prev) => prev.filter((r) => r.id !== id));
+    setStats((prev) => ({
+      ...prev,
+      totalUploads: Math.max(0, prev.totalUploads - 1)
+    }));
+    setDeletingId(id);
+
     try {
       await deleteResume(id);
       showToast('Resume deleted successfully', 'success');
-      fetchDashboardData();
+      // Background sync without taking down the UI
+      fetchDashboardData(false);
     } catch (err) {
+      // Revert optimistic updates on failure
+      setRecentResumes(previousResumes);
+      setStats(previousStats);
       showToast(err.response?.data?.message || 'Failed to delete resume', 'error');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -88,8 +111,8 @@ export default function DashboardOverview() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white tracking-wide">Dashboard Overview</h1>
-          <p className="text-slate-450 text-xs mt-1.5 font-semibold">
+          <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-wide">Dashboard Overview</h1>
+          <p className="text-[#A7ADB7] text-xs mt-1.5 font-semibold">
             Track your profile's parsing optimization efficiency and score improvements.
           </p>
         </div>
@@ -103,8 +126,8 @@ export default function DashboardOverview() {
       </div>
 
       {loading ? (
-        <div className="min-h-[300px] flex flex-col items-center justify-center gap-3 text-slate-400">
-          <FaSpinner className="animate-spin text-blue-500" size={28} />
+        <div className="min-h-[300px] flex flex-col items-center justify-center gap-3 text-[#A7ADB7]">
+          <FaSpinner className="animate-spin text-[#F5B83D]" size={28} />
           <span className="text-xs font-semibold">Loading live dashboard metrics...</span>
         </div>
       ) : (
@@ -122,7 +145,7 @@ export default function DashboardOverview() {
             <StatCard
               title="Highest ATS Score"
               value={`${stats.highestAtsScore}%`}
-              icon={<FaAward size={20} className="text-emerald-400" />}
+              icon={<FaAward size={20} className="text-[#F5B83D]" />}
               delta="Target: 85%+"
               deltaType="positive"
               description="peak benchmark"
@@ -130,7 +153,7 @@ export default function DashboardOverview() {
             <StatCard
               title="Target Matches"
               value={stats.applicationsSent}
-              icon={<FaPaperPlane size={20} />}
+              icon={<FaPaperPlane size={20} className="text-[#FFD166]" />}
               delta="Job Match"
               deltaType="positive"
               description="scanned positions"
@@ -157,8 +180,8 @@ export default function DashboardOverview() {
           {/* Recent Resumes List */}
           <div>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-bold text-white tracking-wide flex items-center gap-2">
-                <FaListAlt size={16} className="text-blue-400" />
+              <h3 className="text-lg font-bold text-[#F5F5F5] tracking-wide flex items-center gap-2">
+                <FaListAlt size={16} className="text-[#F5B83D]" />
                 <span>Recent Resumes</span>
               </h3>
               <Button
@@ -178,14 +201,15 @@ export default function DashboardOverview() {
                     resume={resume}
                     onAnalyze={handleAnalyzeResume}
                     onDelete={handleDeleteResume}
+                    isDeleting={deletingId === resume.id}
                   />
                 ))}
               </div>
             ) : (
-              <Card className="p-8 text-center space-y-4">
-                <FaFileAlt className="text-slate-600 mx-auto" size={32} />
-                <p className="text-sm font-semibold text-slate-300">No resumes uploaded yet.</p>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <Card className="p-8 text-center space-y-4 bg-[#121519] border-[#292D33]">
+                <FaFileAlt className="text-[#6F7682] mx-auto" size={32} />
+                <p className="text-sm font-semibold text-[#F5F5F5]">No resumes uploaded yet.</p>
+                <p className="text-xs text-[#A7ADB7] max-w-sm mx-auto">
                   Upload your resume in PDF or DOCX format to receive immediate ATS scoring, keyword match analysis, and AI suggestions.
                 </p>
                 <Button onClick={handleCreateUpload} variant="primary" size="sm">

@@ -135,10 +135,10 @@ export default function ResumeAnalysisDashboard() {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 90) return 'text-emerald-400 border-emerald-500/30 bg-emerald-950/20';
-    if (score >= 80) return 'text-blue-400 border-blue-500/30 bg-blue-950/20';
-    if (score >= 70) return 'text-amber-400 border-amber-500/30 bg-amber-950/20';
-    return 'text-rose-400 border-rose-500/30 bg-rose-950/20';
+    if (score >= 90) return 'text-[#FFD166] border-[#F5B83D]/40 bg-[#F5B83D]/10';
+    if (score >= 80) return 'text-[#F5B83D] border-[#F5B83D]/30 bg-[#F5B83D]/10';
+    if (score >= 70) return 'text-[#FFD166] border-[#FFD166]/25 bg-[#171A1F]';
+    return 'text-[#F87171] border-[#F87171]/30 bg-[#F87171]/10';
   };
 
   const getScoreBadge = (score) => {
@@ -150,13 +150,13 @@ export default function ResumeAnalysisDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-[500px] flex flex-col items-center justify-center gap-4 text-slate-400">
+      <div className="min-h-[500px] flex flex-col items-center justify-center gap-4 text-[#A7ADB7]">
         <div className="relative">
-          <div className="w-14 h-14 rounded-full border-4 border-slate-800 border-t-blue-500 animate-spin" />
-          <FaRobot className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-400" size={20} />
+          <div className="w-14 h-14 rounded-full border-4 border-[#292D33] border-t-[#F5B83D] animate-spin" />
+          <FaRobot className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#F5B83D]" size={20} />
         </div>
-        <p className="text-sm font-semibold text-slate-300">Loading Complete Resume Analysis...</p>
-        <p className="text-xs text-slate-500">Aggregating parsed data, ATS metrics, and Gemini AI insights.</p>
+        <p className="text-sm font-semibold text-[#F5F5F5]">Loading Complete Resume Analysis...</p>
+        <p className="text-xs text-[#A7ADB7]">Aggregating parsed data, ATS metrics, and Gemini AI insights.</p>
       </div>
     );
   }
@@ -164,10 +164,10 @@ export default function ResumeAnalysisDashboard() {
   if (!data || !data.resume) {
     return (
       <div className="space-y-6 max-w-3xl mx-auto text-center py-16">
-        <Card className="p-8 space-y-4">
-          <FaExclamationTriangle className="text-amber-400 mx-auto" size={40} />
-          <h2 className="text-xl font-bold text-white">Resume Analysis Not Found</h2>
-          <p className="text-xs text-slate-450 max-w-md mx-auto">
+        <Card className="p-8 space-y-4 bg-[#121519] border-[#292D33]">
+          <FaExclamationTriangle className="text-[#F5B83D] mx-auto" size={40} />
+          <h2 className="text-xl font-bold text-[#F5F5F5]">Resume Analysis Not Found</h2>
+          <p className="text-xs text-[#A7ADB7] max-w-md mx-auto">
             The requested resume record could not be loaded. Please ensure it exists and you have permissions.
           </p>
           <div className="flex justify-center gap-3 pt-2">
@@ -196,28 +196,28 @@ export default function ResumeAnalysisDashboard() {
         <div className="flex items-start gap-4">
           <button
             onClick={() => navigate('/dashboard/history')}
-            className="p-3 bg-slate-900/80 border border-slate-800 rounded-xl text-slate-400 hover:text-white hover:border-slate-700 transition-all shrink-0 mt-0.5 print:hidden"
+            className="p-3 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#A7ADB7] hover:text-[#F5F5F5] hover:border-[#F5B83D]/40 transition-all shrink-0 mt-0.5 print:hidden cursor-pointer"
             title="Back to History"
           >
             <FaArrowLeft size={14} />
           </button>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400 bg-blue-950/40 px-2.5 py-0.5 rounded-md border border-blue-800/40">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#FFD166] bg-[#171A1F] px-2.5 py-0.5 rounded-md border border-[#F5B83D]/30">
                 Complete Analysis Dashboard
               </span>
-              <span className="text-slate-600">&bull;</span>
-              <span className="text-xs text-slate-400">
+              <span className="text-[#6F7682]">&bull;</span>
+              <span className="text-xs text-[#A7ADB7]">
                 Uploaded {new Date(resume.uploadDate || resume.createdAt).toLocaleDateString()}
               </span>
-              <span className="text-slate-600">&bull;</span>
-              <span className="text-xs text-slate-400">{getFriendlySize(resume.fileSize)}</span>
+              <span className="text-[#6F7682]">&bull;</span>
+              <span className="text-xs text-[#A7ADB7]">{getFriendlySize(resume.fileSize)}</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-white tracking-wide mt-1 truncate max-w-xl" title={resume.originalName}>
+            <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-wide mt-1 truncate max-w-xl" title={resume.originalName}>
               {parsed.fullName ? `${parsed.fullName}'s Resume Analysis` : resume.originalName}
             </h1>
-            <p className="text-xs text-slate-400 font-medium mt-0.5">
-              File: <span className="text-slate-300 font-mono">{resume.originalName}</span>
+            <p className="text-xs text-[#A7ADB7] font-medium mt-0.5">
+              File: <span className="text-[#F5F5F5] font-mono">{resume.originalName}</span>
             </p>
           </div>
         </div>
@@ -263,8 +263,8 @@ export default function ResumeAnalysisDashboard() {
             exit={{ opacity: 0, y: -10 }}
             className="p-4 bg-amber-950/20 border border-amber-800/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs"
           >
-            <div className="flex items-center gap-3 text-amber-300">
-              <FaExclamationTriangle size={18} className="shrink-0 text-amber-400" />
+            <div className="flex items-center gap-3 text-[#FFD166]">
+              <FaExclamationTriangle size={18} className="shrink-0 text-[#F5B83D]" />
               <span>
                 <strong>ATS Analysis completed.</strong> AI analysis could not be completed or is pending.
               </span>
@@ -288,8 +288,8 @@ export default function ResumeAnalysisDashboard() {
             exit={{ opacity: 0, y: -10 }}
             className="p-4 bg-rose-950/20 border border-rose-800/40 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs"
           >
-            <div className="flex items-center gap-3 text-rose-300">
-              <FaExclamationTriangle size={18} className="shrink-0 text-rose-400" />
+            <div className="flex items-center gap-3 text-[#F87171]">
+              <FaExclamationTriangle size={18} className="shrink-0 text-[#F87171]" />
               <span>
                 <strong>ATS Score Evaluation pending or failed.</strong>
               </span>
@@ -313,8 +313,8 @@ export default function ResumeAnalysisDashboard() {
             exit={{ opacity: 0, y: -10 }}
             className="p-4 bg-rose-950/30 border border-rose-800/50 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs"
           >
-            <div className="flex items-center gap-3 text-rose-300">
-              <FaExclamationTriangle size={18} className="shrink-0 text-rose-400" />
+            <div className="flex items-center gap-3 text-[#F87171]">
+              <FaExclamationTriangle size={18} className="shrink-0 text-[#F87171]" />
               <span>
                 <strong>Parsing failed:</strong> {resume.parseError || 'Could not parse document structure.'}
               </span>
@@ -335,20 +335,20 @@ export default function ResumeAnalysisDashboard() {
       {/* TOP ROW: Candidate Info & ATS Score Summary Gauge */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Candidate Information Card */}
-        <Card className="lg:col-span-2 p-6 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+        <Card className="lg:col-span-2 p-6 relative overflow-hidden flex flex-col justify-between bg-[#121519] border-[#292D33]">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-[#F5B83D]/5 rounded-full blur-3xl pointer-events-none" />
 
           <div>
-            <div className="flex items-center justify-between border-b border-slate-850 pb-4 mb-5">
+            <div className="flex items-center justify-between border-b border-[#292D33] pb-4 mb-5">
               <div className="flex items-center gap-3.5">
-                <div className="p-3 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl text-white shadow-lg shadow-blue-500/20">
+                <div className="p-3 bg-gradient-to-tr from-[#F5B83D] to-[#FFD166] rounded-2xl text-[#08090B] font-bold shadow-lg shadow-[#F5B83D]/20">
                   <FaUser size={20} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-white">
+                  <h3 className="text-lg font-extrabold text-[#F5F5F5]">
                     {parsed.fullName || 'Candidate Profile'}
                   </h3>
-                  <p className="text-xs text-slate-400 font-semibold">
+                  <p className="text-xs text-[#A7ADB7] font-semibold">
                     {parsed.experience?.[0]?.role || 'Technical Professional'}
                   </p>
                 </div>
@@ -361,59 +361,59 @@ export default function ResumeAnalysisDashboard() {
 
             {/* Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
-              <div className="flex items-center gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl">
-                <FaEnvelope className="text-blue-400 shrink-0" size={14} />
+              <div className="flex items-center gap-3 p-3 bg-[#0D0F12] border border-[#292D33] rounded-xl">
+                <FaEnvelope className="text-[#F5B83D] shrink-0" size={14} />
                 <div className="min-w-0">
-                  <span className="text-[10px] text-slate-500 uppercase font-bold block">Email</span>
-                  <span className="text-slate-200 font-semibold truncate block" title={parsed.email}>
+                  <span className="text-[10px] text-[#A7ADB7] uppercase font-bold block">Email</span>
+                  <span className="text-[#F5F5F5] font-semibold truncate block" title={parsed.email}>
                     {parsed.email || 'Not specified'}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl">
-                <FaPhone className="text-emerald-400 shrink-0" size={14} />
+              <div className="flex items-center gap-3 p-3 bg-[#0D0F12] border border-[#292D33] rounded-xl">
+                <FaPhone className="text-[#FFD166] shrink-0" size={14} />
                 <div className="min-w-0">
-                  <span className="text-[10px] text-slate-500 uppercase font-bold block">Phone</span>
-                  <span className="text-slate-200 font-semibold truncate block" title={parsed.phone}>
+                  <span className="text-[10px] text-[#A7ADB7] uppercase font-bold block">Phone</span>
+                  <span className="text-[#F5F5F5] font-semibold truncate block" title={parsed.phone}>
                     {parsed.phone || 'Not specified'}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl">
-                <FaMapMarkerAlt className="text-rose-400 shrink-0" size={14} />
+              <div className="flex items-center gap-3 p-3 bg-[#0D0F12] border border-[#292D33] rounded-xl">
+                <FaMapMarkerAlt className="text-[#F87171] shrink-0" size={14} />
                 <div className="min-w-0">
-                  <span className="text-[10px] text-slate-500 uppercase font-bold block">Location</span>
-                  <span className="text-slate-200 font-semibold truncate block" title={parsed.location}>
+                  <span className="text-[10px] text-[#A7ADB7] uppercase font-bold block">Location</span>
+                  <span className="text-[#F5F5F5] font-semibold truncate block" title={parsed.location}>
                     {parsed.location || 'Not specified'}
                   </span>
                 </div>
               </div>
 
               {parsed.linkedin ? (
-                <div className="flex items-center gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl">
-                  <FaLinkedin className="text-sky-400 shrink-0" size={14} />
+                <div className="flex items-center gap-3 p-3 bg-[#0D0F12] border border-[#292D33] rounded-xl">
+                  <FaLinkedin className="text-[#60A5FA] shrink-0" size={14} />
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] text-slate-500 uppercase font-bold block">LinkedIn</span>
+                    <span className="text-[10px] text-[#A7ADB7] uppercase font-bold block">LinkedIn</span>
                     <a
                       href={parsed.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:underline font-semibold truncate block"
+                      className="text-[#FFD166] hover:underline font-semibold truncate block"
                     >
                       {parsed.linkedin.replace(/^https?:\/\/(www\.)?/, '')}
                     </a>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 p-3 bg-slate-900/60 border border-slate-800/80 rounded-xl">
-                  <FaGithub className="text-purple-400 shrink-0" size={14} />
+                <div className="flex items-center gap-3 p-3 bg-[#0D0F12] border border-[#292D33] rounded-xl">
+                  <FaGithub className="text-[#F5F5F5] shrink-0" size={14} />
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] text-slate-500 uppercase font-bold block">GitHub</span>
-                    <span className="text-slate-400 font-semibold">
+                    <span className="text-[10px] text-[#A7ADB7] uppercase font-bold block">GitHub</span>
+                    <span className="text-[#A7ADB7] font-semibold">
                       {parsed.github ? (
-                        <a href={parsed.github} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">
+                        <a href={parsed.github} target="_blank" rel="noopener noreferrer" className="text-[#FFD166] hover:underline">
                           {parsed.github.replace(/^https?:\/\/(www\.)?/, '')}
                         </a>
                       ) : 'Not specified'}
@@ -426,13 +426,13 @@ export default function ResumeAnalysisDashboard() {
 
           {/* Social Links Row if both LinkedIn and GitHub exist */}
           {parsed.linkedin && (parsed.github || parsed.portfolio) && (
-            <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-850/60 text-xs">
+            <div className="flex items-center gap-4 mt-4 pt-3 border-t border-[#292D33] text-xs">
               {parsed.github && (
                 <a
                   href={parsed.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-purple-400 hover:underline font-semibold"
+                  className="flex items-center gap-1.5 text-[#FFD166] hover:underline font-semibold"
                 >
                   <FaGithub size={13} />
                   <span>GitHub Profile</span>
@@ -444,7 +444,7 @@ export default function ResumeAnalysisDashboard() {
                   href={parsed.portfolio}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-amber-400 hover:underline font-semibold"
+                  className="flex items-center gap-1.5 text-[#F5B83D] hover:underline font-semibold"
                 >
                   <FaGlobe size={13} />
                   <span>Portfolio Site</span>
@@ -456,13 +456,13 @@ export default function ResumeAnalysisDashboard() {
         </Card>
 
         {/* ATS Score Gauge Card */}
-        <Card className="p-6 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+        <Card className="p-6 flex flex-col justify-between relative overflow-hidden bg-[#121519] border-[#292D33]">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5B83D]/10 rounded-full blur-2xl pointer-events-none" />
 
           <div>
-            <div className="flex items-center justify-between border-b border-slate-850 pb-3 mb-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <FaTrophy className="text-amber-400" size={14} />
+            <div className="flex items-center justify-between border-b border-[#292D33] pb-3 mb-4">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#F5F5F5] flex items-center gap-2">
+                <FaTrophy className="text-[#F5B83D]" size={14} />
                 <span>Overall ATS Score</span>
               </h3>
               {hasAts && getScoreBadge(atsAnalysis.overallScore)}
@@ -472,42 +472,42 @@ export default function ResumeAnalysisDashboard() {
               <div className="flex flex-col items-center justify-center py-4">
                 <div className="relative flex items-center justify-center">
                   <div className={`w-32 h-32 rounded-full border-8 flex flex-col items-center justify-center transition-all ${getScoreColor(atsAnalysis.overallScore)}`}>
-                    <span className="text-4xl font-extrabold text-white tracking-tight">
+                    <span className="text-4xl font-extrabold text-[#F5F5F5] tracking-tight">
                       {atsAnalysis.overallScore}
                     </span>
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    <span className="text-[11px] font-bold text-[#A7ADB7] uppercase tracking-wider">
                       out of 100
                     </span>
                   </div>
                 </div>
 
                 <div className="text-center mt-3">
-                  <p className="text-xs font-bold text-slate-200">
-                    Rating: <span className="text-emerald-400">{atsAnalysis.ratingLabel || 'Good'}</span>
+                  <p className="text-xs font-bold text-[#F5F5F5]">
+                    Rating: <span className="text-[#FFD166]">{atsAnalysis.ratingLabel || 'Good'}</span>
                   </p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-[#A7ADB7] mt-0.5">
                     Deterministic score computed across 10 evaluation categories
                   </p>
                 </div>
               </div>
             ) : (
-              <div className="py-8 text-center text-slate-500 text-xs">
-                <FaSpinner className="animate-spin text-blue-400 mx-auto mb-2" size={24} />
+              <div className="py-8 text-center text-[#A7ADB7] text-xs">
+                <FaSpinner className="animate-spin text-[#F5B83D] mx-auto mb-2" size={24} />
                 <span>Calculating ATS evaluation metrics...</span>
               </div>
             )}
           </div>
 
-          <div className="pt-3 border-t border-slate-850/80 flex items-center justify-between text-xs">
+          <div className="pt-3 border-t border-[#292D33] flex items-center justify-between text-xs">
             <Link
               to={`/dashboard/report?id=${resume._id}`}
-              className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1.5 transition-colors"
+              className="text-[#FFD166] hover:text-[#F5B83D] font-bold flex items-center gap-1.5 transition-colors"
             >
               <span>View Detailed ATS Report</span>
               <FaExternalLinkAlt size={10} />
             </Link>
             {hasAts && (
-              <span className="text-[11px] text-slate-500 font-semibold">
+              <span className="text-[11px] text-[#A7ADB7] font-semibold">
                 {atsAnalysis.keywordAnalysis?.keywordCount || parsed.skills?.length || 0} keywords found
               </span>
             )}
@@ -517,17 +517,17 @@ export default function ResumeAnalysisDashboard() {
 
       {/* Professional Summary Card */}
       {(aiAnalysis?.summary || parsed.summary) && (
-        <Card className="p-6 space-y-3 relative overflow-hidden border-blue-900/30">
-          <div className="flex items-center justify-between border-b border-slate-850 pb-3">
+        <Card className="p-6 space-y-3 relative overflow-hidden bg-[#121519] border-[#292D33]">
+          <div className="flex items-center justify-between border-b border-[#292D33] pb-3">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-purple-950/50 border border-purple-800/40 text-purple-400 rounded-xl">
+              <div className="p-2 bg-[#171A1F] border border-[#F5B83D]/30 text-[#FFD166] rounded-xl">
                 <FaRobot size={15} />
               </div>
               <div>
-                <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
+                <h3 className="text-sm font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   Professional Executive Summary
                 </h3>
-                <span className="text-[10px] text-purple-400 font-semibold">
+                <span className="text-[10px] text-[#FFD166] font-semibold">
                   {aiAnalysis?.summary ? 'Google Gemini AI Analysis Engine' : 'Extracted from Resume Document'}
                 </span>
               </div>
@@ -544,20 +544,20 @@ export default function ResumeAnalysisDashboard() {
             </Button>
           </div>
 
-          <p className="text-xs text-slate-300 leading-relaxed font-normal bg-slate-900/40 p-4 rounded-xl border border-slate-850/60">
+          <p className="text-xs text-[#F5F5F5] leading-relaxed font-normal bg-[#0D0F12] p-4 rounded-xl border border-[#292D33]">
             {aiAnalysis?.summary || parsed.summary}
           </p>
         </Card>
       )}
 
       {/* TABS NAVIGATION */}
-      <div className="flex border-b border-slate-800 gap-8 text-xs font-bold uppercase tracking-wider overflow-x-auto">
+      <div className="flex border-b border-[#292D33] gap-8 text-xs font-bold uppercase tracking-wider overflow-x-auto">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`pb-3.5 transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
+          className={`pb-3.5 transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'overview'
-              ? 'border-blue-500 text-blue-400'
-              : 'border-transparent text-slate-500 hover:text-slate-300'
+              ? 'border-[#F5B83D] text-[#FFD166]'
+              : 'border-transparent text-[#A7ADB7] hover:text-[#F5F5F5]'
           }`}
         >
           <FaTrophy size={13} />
@@ -566,23 +566,23 @@ export default function ResumeAnalysisDashboard() {
 
         <button
           onClick={() => setActiveTab('ai')}
-          className={`pb-3.5 transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
+          className={`pb-3.5 transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'ai'
-              ? 'border-purple-500 text-purple-400'
-              : 'border-transparent text-slate-500 hover:text-slate-300'
+              ? 'border-[#F5B83D] text-[#FFD166]'
+              : 'border-transparent text-[#A7ADB7] hover:text-[#F5F5F5]'
           }`}
         >
           <FaRobot size={13} />
           <span>AI Insights & Roadmap</span>
-          {hasAi && <span className="w-2 h-2 rounded-full bg-purple-400" />}
+          {hasAi && <span className="w-2 h-2 rounded-full bg-[#F5B83D]" />}
         </button>
 
         <button
           onClick={() => setActiveTab('details')}
-          className={`pb-3.5 transition-all border-b-2 flex items-center gap-2 whitespace-nowrap ${
+          className={`pb-3.5 transition-all border-b-2 flex items-center gap-2 whitespace-nowrap cursor-pointer ${
             activeTab === 'details'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-300'
+              ? 'border-[#F5B83D] text-[#FFD166]'
+              : 'border-transparent text-[#A7ADB7] hover:text-[#F5F5F5]'
           }`}
         >
           <FaFileAlt size={13} />
@@ -595,15 +595,15 @@ export default function ResumeAnalysisDashboard() {
         <div className="space-y-6">
           {/* Section Scores Grid */}
           {hasAts && (
-            <Card className="p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-850 pb-3">
+            <Card className="p-6 space-y-4 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center justify-between border-b border-[#292D33] pb-3">
                 <div className="flex items-center gap-2">
-                  <FaChartBar className="text-blue-400" size={16} />
-                  <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">
+                  <FaChartBar className="text-[#F5B83D]" size={16} />
+                  <h3 className="text-sm font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                     Category Score Breakdown
                   </h3>
                 </div>
-                <span className="text-[11px] text-slate-500">Weight-adjusted evaluation criteria</span>
+                <span className="text-[11px] text-[#A7ADB7]">Weight-adjusted evaluation criteria</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -618,20 +618,20 @@ export default function ResumeAnalysisDashboard() {
                   { label: 'Achievements & Impact', score: atsAnalysis.achievementsScore, weight: '5%' },
                   { label: 'Certifications', score: atsAnalysis.certificationsScore, weight: '5%' },
                 ].map((item, idx) => (
-                  <div key={idx} className="p-3.5 bg-slate-900/50 border border-slate-800 rounded-xl space-y-2">
+                  <div key={idx} className="p-3.5 bg-[#0D0F12] border border-[#292D33] rounded-xl space-y-2">
                     <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-slate-300">{item.label}</span>
-                      <span className="font-extrabold text-white">{item.score || 0}%</span>
+                      <span className="font-bold text-[#F5F5F5]">{item.label}</span>
+                      <span className="font-extrabold text-[#FFD166]">{item.score || 0}%</span>
                     </div>
-                    <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-slate-850">
+                    <div className="h-1.5 w-full bg-[#08090B] rounded-full overflow-hidden border border-[#292D33]">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${
-                          (item.score || 0) >= 80 ? 'bg-emerald-500' : (item.score || 0) >= 60 ? 'bg-blue-500' : 'bg-amber-500'
+                          (item.score || 0) >= 80 ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166]' : (item.score || 0) >= 60 ? 'bg-[#F5B83D]' : 'bg-[#B7791F]'
                         }`}
                         style={{ width: `${item.score || 0}%` }}
                       />
                     </div>
-                    <div className="flex justify-between text-[10px] text-slate-500 font-semibold">
+                    <div className="flex justify-between text-[10px] text-[#A7ADB7] font-semibold">
                       <span>Weight: {item.weight}</span>
                       <span>{(item.score || 0) >= 80 ? 'Strong' : (item.score || 0) >= 60 ? 'Moderate' : 'Low'}</span>
                     </div>
@@ -644,11 +644,11 @@ export default function ResumeAnalysisDashboard() {
           {/* Keywords & Missing Keywords Analysis */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Detected Keywords */}
-            <Card className="p-6 space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-850 pb-3">
+            <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center justify-between border-b border-[#292D33] pb-3">
                 <div className="flex items-center gap-2">
-                  <FaCheckCircle className="text-emerald-400" size={15} />
-                  <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+                  <FaCheckCircle className="text-[#4ADE80]" size={15} />
+                  <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                     Detected Keywords ({atsAnalysis?.keywordAnalysis?.detectedKeywords?.length || parsed.skills?.length || 0})
                   </h4>
                 </div>
@@ -659,7 +659,7 @@ export default function ResumeAnalysisDashboard() {
                 {(atsAnalysis?.keywordAnalysis?.detectedKeywords || parsed.skills || []).map((kw, i) => (
                   <span
                     key={i}
-                    className="px-2.5 py-1 bg-emerald-950/30 border border-emerald-800/40 text-emerald-300 rounded-lg text-xs font-semibold"
+                    className="px-2.5 py-1 bg-[#171A1F] border border-[#F5B83D]/30 text-[#FFD166] rounded-lg text-xs font-semibold"
                   >
                     {kw}
                   </span>
@@ -668,11 +668,11 @@ export default function ResumeAnalysisDashboard() {
             </Card>
 
             {/* Missing Industry Keywords */}
-            <Card className="p-6 space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-850 pb-3">
+            <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center justify-between border-b border-[#292D33] pb-3">
                 <div className="flex items-center gap-2">
-                  <FaExclamationTriangle className="text-rose-400" size={15} />
-                  <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+                  <FaExclamationTriangle className="text-[#F87171]" size={15} />
+                  <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                     Missing Target Keywords ({atsAnalysis?.missingKeywords?.length || 0})
                   </h4>
                 </div>
@@ -684,14 +684,14 @@ export default function ResumeAnalysisDashboard() {
                   {atsAnalysis.missingKeywords.map((kw, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 bg-rose-950/30 border border-rose-800/40 text-rose-300 rounded-lg text-xs font-semibold"
+                      className="px-2.5 py-1 bg-[#171A1F] border border-[#F87171]/30 text-[#F87171] rounded-lg text-xs font-semibold"
                     >
                       + {kw}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 pt-2">No critical missing keywords identified.</p>
+                <p className="text-xs text-[#6F7682] pt-2">No critical missing keywords identified.</p>
               )}
             </Card>
           </div>
@@ -699,48 +699,48 @@ export default function ResumeAnalysisDashboard() {
           {/* ATS Recommendations & Strengths */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* ATS Recommendations */}
-            <Card className="p-6 space-y-3">
-              <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                <FaLightbulb className="text-amber-400" size={16} />
-                <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+            <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                <FaLightbulb className="text-[#F5B83D]" size={16} />
+                <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   ATS Optimization Recommendations
                 </h4>
               </div>
 
               {atsAnalysis?.recommendations && atsAnalysis.recommendations.length > 0 ? (
-                <ul className="space-y-2.5 text-xs text-slate-300">
+                <ul className="space-y-2.5 text-xs text-[#A7ADB7]">
                   {atsAnalysis.recommendations.map((rec, i) => (
-                    <li key={i} className="flex items-start gap-2.5 bg-slate-900/30 p-2.5 rounded-xl border border-slate-850">
-                      <span className="text-amber-400 font-bold">•</span>
+                    <li key={i} className="flex items-start gap-2.5 bg-[#0D0F12] p-2.5 rounded-xl border border-[#292D33]">
+                      <span className="text-[#F5B83D] font-bold">•</span>
                       <span className="leading-relaxed">{rec}</span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-500">No active ATS recommendations.</p>
+                <p className="text-xs text-[#6F7682]">No active ATS recommendations.</p>
               )}
             </Card>
 
             {/* ATS Strengths */}
-            <Card className="p-6 space-y-3">
-              <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                <FaCheckCircle className="text-emerald-400" size={16} />
-                <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+            <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                <FaCheckCircle className="text-[#4ADE80]" size={16} />
+                <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   Key Resume Strengths
                 </h4>
               </div>
 
               {atsAnalysis?.strengths && atsAnalysis.strengths.length > 0 ? (
-                <ul className="space-y-2.5 text-xs text-slate-300">
+                <ul className="space-y-2.5 text-xs text-[#A7ADB7]">
                   {atsAnalysis.strengths.map((str, i) => (
-                    <li key={i} className="flex items-start gap-2.5 bg-slate-900/30 p-2.5 rounded-xl border border-slate-850">
-                      <span className="text-emerald-400 font-bold">✓</span>
+                    <li key={i} className="flex items-start gap-2.5 bg-[#0D0F12] p-2.5 rounded-xl border border-[#292D33]">
+                      <span className="text-[#4ADE80] font-bold">✓</span>
                       <span className="leading-relaxed">{str}</span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-500">No strengths recorded.</p>
+                <p className="text-xs text-[#6F7682]">No strengths recorded.</p>
               )}
             </Card>
           </div>
@@ -751,10 +751,10 @@ export default function ResumeAnalysisDashboard() {
       {activeTab === 'ai' && (
         <div className="space-y-6">
           {!hasAi ? (
-            <Card className="p-8 text-center space-y-4">
-              <FaRobot className="text-purple-400 mx-auto" size={40} />
-              <h3 className="text-base font-bold text-white">AI Analysis Not Yet Generated</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto">
+            <Card className="p-8 text-center space-y-4 bg-[#121519] border-[#292D33]">
+              <FaRobot className="text-[#F5B83D] mx-auto" size={40} />
+              <h3 className="text-base font-bold text-[#F5F5F5]">AI Analysis Not Yet Generated</h3>
+              <p className="text-xs text-[#A7ADB7] max-w-md mx-auto">
                 Generate in-depth recruiter feedback, career roadmap, and priority action recommendations powered by Google Gemini AI.
               </p>
               <Button
@@ -771,17 +771,17 @@ export default function ResumeAnalysisDashboard() {
               {/* Strengths & Weaknesses Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* AI Strengths */}
-                <Card className="p-6 space-y-3 border-emerald-900/30">
-                  <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                    <FaCheckCircle className="text-emerald-400" size={16} />
-                    <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+                <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+                  <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                    <FaCheckCircle className="text-[#4ADE80]" size={16} />
+                    <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                       Identified Strengths
                     </h4>
                   </div>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <ul className="space-y-2 text-xs text-[#A7ADB7]">
                     {aiAnalysis.strengths?.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 bg-slate-900/40 p-2.5 rounded-xl border border-slate-850">
-                        <span className="text-emerald-400 font-bold shrink-0">✓</span>
+                      <li key={idx} className="flex items-start gap-2 bg-[#0D0F12] p-2.5 rounded-xl border border-[#292D33]">
+                        <span className="text-[#4ADE80] font-bold shrink-0">✓</span>
                         <span className="leading-relaxed">{item}</span>
                       </li>
                     ))}
@@ -789,17 +789,17 @@ export default function ResumeAnalysisDashboard() {
                 </Card>
 
                 {/* AI Weaknesses */}
-                <Card className="p-6 space-y-3 border-amber-900/30">
-                  <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                    <FaExclamationTriangle className="text-amber-400" size={16} />
-                    <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+                <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+                  <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                    <FaExclamationTriangle className="text-[#F5B83D]" size={16} />
+                    <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                       Areas to Improve
                     </h4>
                   </div>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <ul className="space-y-2 text-xs text-[#A7ADB7]">
                     {aiAnalysis.weaknesses?.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 bg-slate-900/40 p-2.5 rounded-xl border border-slate-850">
-                        <span className="text-amber-400 font-bold shrink-0">!</span>
+                      <li key={idx} className="flex items-start gap-2 bg-[#0D0F12] p-2.5 rounded-xl border border-[#292D33]">
+                        <span className="text-[#F5B83D] font-bold shrink-0">!</span>
                         <span className="leading-relaxed">{item}</span>
                       </li>
                     ))}
@@ -810,17 +810,17 @@ export default function ResumeAnalysisDashboard() {
               {/* Career Suggestions & Recruiter Feedback */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Career Suggestions */}
-                <Card className="p-6 space-y-3">
-                  <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                    <FaBriefcase className="text-blue-400" size={16} />
-                    <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+                <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+                  <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                    <FaBriefcase className="text-[#F5B83D]" size={16} />
+                    <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                       Target Roles & Career Roadmap
                     </h4>
                   </div>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <ul className="space-y-2 text-xs text-[#A7ADB7]">
                     {aiAnalysis.careerSuggestions?.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 bg-blue-950/20 p-2.5 rounded-xl border border-blue-900/30">
-                        <span className="text-blue-400 font-bold shrink-0">🎯</span>
+                      <li key={idx} className="flex items-start gap-2 bg-[#171A1F] p-2.5 rounded-xl border border-[#F5B83D]/20">
+                        <span className="text-[#FFD166] font-bold shrink-0">🎯</span>
                         <span className="leading-relaxed">{item}</span>
                       </li>
                     ))}
@@ -828,17 +828,17 @@ export default function ResumeAnalysisDashboard() {
                 </Card>
 
                 {/* Recruiter Feedback */}
-                <Card className="p-6 space-y-3">
-                  <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                    <FaUser className="text-purple-400" size={16} />
-                    <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+                <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+                  <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                    <FaUser className="text-[#FFD166]" size={16} />
+                    <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                       Executive Recruiter Feedback
                     </h4>
                   </div>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <ul className="space-y-2 text-xs text-[#A7ADB7]">
                     {aiAnalysis.recruiterFeedback?.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 bg-purple-950/20 p-2.5 rounded-xl border border-purple-900/30">
-                        <span className="text-purple-400 font-bold shrink-0">💬</span>
+                      <li key={idx} className="flex items-start gap-2 bg-[#171A1F] p-2.5 rounded-xl border border-[#FFD166]/20">
+                        <span className="text-[#FFD166] font-bold shrink-0">💬</span>
                         <span className="leading-relaxed">{item}</span>
                       </li>
                     ))}
@@ -848,20 +848,20 @@ export default function ResumeAnalysisDashboard() {
 
               {/* Priority Action Checklist */}
               {aiAnalysis.priorityActions && aiAnalysis.priorityActions.length > 0 && (
-                <Card className="p-6 space-y-3">
-                  <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                    <FaAward className="text-indigo-400" size={16} />
-                    <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+                <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+                  <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                    <FaAward className="text-[#F5B83D]" size={16} />
+                    <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                       Priority Next Steps Checklist
                     </h4>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {aiAnalysis.priorityActions.map((action, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 p-3 bg-slate-900/50 rounded-xl border border-slate-800 text-xs">
-                        <span className="w-5 h-5 rounded-full bg-indigo-950 text-indigo-400 border border-indigo-800 flex items-center justify-center font-bold text-[10px] shrink-0">
+                      <div key={idx} className="flex items-start gap-2.5 p-3 bg-[#0D0F12] rounded-xl border border-[#292D33] text-xs">
+                        <span className="w-5 h-5 rounded-full bg-[#171A1F] text-[#FFD166] border border-[#F5B83D]/40 flex items-center justify-center font-bold text-[10px] shrink-0">
                           {idx + 1}
                         </span>
-                        <span className="text-slate-300 leading-relaxed">{action}</span>
+                        <span className="text-[#A7ADB7] leading-relaxed">{action}</span>
                       </div>
                     ))}
                   </div>
@@ -876,22 +876,22 @@ export default function ResumeAnalysisDashboard() {
       {activeTab === 'details' && (
         <div className="space-y-6">
           {/* Skills Grid */}
-          <Card className="p-6 space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-              <FaCode className="text-blue-400" size={16} />
-              <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+          <Card className="p-6 space-y-4 bg-[#121519] border-[#292D33]">
+            <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+              <FaCode className="text-[#F5B83D]" size={16} />
+              <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                 Extracted Skills Profile ({parsed.skills?.length || 0})
               </h4>
             </div>
 
             {parsed.technicalSkills && parsed.technicalSkills.length > 0 && (
               <div className="space-y-2">
-                <span className="text-[11px] text-blue-400 font-bold uppercase tracking-wider block">
+                <span className="text-[11px] text-[#FFD166] font-bold uppercase tracking-wider block">
                   Technical Stack ({parsed.technicalSkills.length})
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {parsed.technicalSkills.map((s, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-blue-950/40 border border-blue-800/40 text-blue-300 rounded-xl text-xs font-semibold">
+                    <span key={idx} className="px-3 py-1 bg-[#171A1F] border border-[#F5B83D]/30 text-[#FFD166] rounded-xl text-xs font-semibold">
                       {s}
                     </span>
                   ))}
@@ -900,13 +900,13 @@ export default function ResumeAnalysisDashboard() {
             )}
 
             {parsed.softSkills && parsed.softSkills.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-slate-850/50">
-                <span className="text-[11px] text-purple-400 font-bold uppercase tracking-wider block">
+              <div className="space-y-2 pt-2 border-t border-[#292D33]">
+                <span className="text-[11px] text-[#F5B83D] font-bold uppercase tracking-wider block">
                   Soft Skills ({parsed.softSkills.length})
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {parsed.softSkills.map((s, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-purple-950/40 border border-purple-800/40 text-purple-300 rounded-xl text-xs font-semibold">
+                    <span key={idx} className="px-3 py-1 bg-[#171A1F] border border-[#FFD166]/25 text-[#FFD166] rounded-xl text-xs font-semibold">
                       {s}
                     </span>
                   ))}
@@ -917,7 +917,7 @@ export default function ResumeAnalysisDashboard() {
             {(!parsed.technicalSkills?.length && !parsed.softSkills?.length && parsed.skills?.length > 0) && (
               <div className="flex flex-wrap gap-2">
                 {parsed.skills.map((s, idx) => (
-                  <span key={idx} className="px-3 py-1 bg-blue-950/40 border border-blue-800/40 text-blue-300 rounded-xl text-xs font-semibold">
+                  <span key={idx} className="px-3 py-1 bg-[#171A1F] border border-[#F5B83D]/30 text-[#FFD166] rounded-xl text-xs font-semibold">
                     {s}
                   </span>
                 ))}
@@ -928,31 +928,31 @@ export default function ResumeAnalysisDashboard() {
           {/* Experience & Education */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Experience */}
-            <Card className="p-6 space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                <FaBriefcase className="text-purple-400" size={16} />
-                <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+            <Card className="p-6 space-y-4 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                <FaBriefcase className="text-[#FFD166]" size={16} />
+                <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   Work Experience ({parsed.experience?.length || 0})
                 </h4>
               </div>
 
               {parsed.experience && parsed.experience.length > 0 ? (
-                <ul className="space-y-3.5 text-xs divide-y divide-slate-850/50">
+                <ul className="space-y-3.5 text-xs divide-y divide-[#292D33]">
                   {parsed.experience.map((exp, idx) => (
                     <li key={idx} className="pt-3 first:pt-0 space-y-1">
                       <div className="flex justify-between items-start">
                         <div>
-                          <p className="text-white font-bold">{exp.role || 'Role'}</p>
-                          <p className="text-purple-400 font-medium">{exp.company}</p>
+                          <p className="text-[#F5F5F5] font-bold">{exp.role || 'Role'}</p>
+                          <p className="text-[#FFD166] font-medium">{exp.company}</p>
                         </div>
                         {exp.period && (
-                          <span className="text-[10px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                          <span className="text-[10px] text-[#A7ADB7] bg-[#08090B] px-2 py-0.5 rounded border border-[#292D33]">
                             {exp.period}
                           </span>
                         )}
                       </div>
                       {exp.bulletPoints?.length > 0 && (
-                        <ul className="list-disc list-inside space-y-0.5 text-slate-300 pl-1">
+                        <ul className="list-disc list-inside space-y-0.5 text-[#A7ADB7] pl-1">
                           {exp.bulletPoints.slice(0, 3).map((bp, bIdx) => (
                             <li key={bIdx} className="leading-relaxed">{bp}</li>
                           ))}
@@ -962,15 +962,15 @@ export default function ResumeAnalysisDashboard() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-500">No work experience identified.</p>
+                <p className="text-xs text-[#6F7682]">No work experience identified.</p>
               )}
             </Card>
 
             {/* Education */}
-            <Card className="p-6 space-y-4">
-              <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                <FaGraduationCap className="text-emerald-400" size={16} />
-                <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+            <Card className="p-6 space-y-4 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                <FaGraduationCap className="text-[#F5B83D]" size={16} />
+                <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   Education ({parsed.education?.length || 0})
                 </h4>
               </div>
@@ -978,26 +978,26 @@ export default function ResumeAnalysisDashboard() {
               {parsed.education && parsed.education.length > 0 ? (
                 <ul className="space-y-3 text-xs">
                   {parsed.education.map((edu, idx) => (
-                    <li key={idx} className="pt-2 border-t border-slate-850/50 first:border-t-0 first:pt-0 space-y-0.5">
+                    <li key={idx} className="pt-2 border-t border-[#292D33] first:border-t-0 first:pt-0 space-y-0.5">
                       {typeof edu === 'object' && edu !== null ? (
                         <>
-                          <p className="text-white font-bold">{edu.degree || edu.institution}</p>
+                          <p className="text-[#F5F5F5] font-bold">{edu.degree || edu.institution}</p>
                           {edu.degree && edu.institution && (
-                            <p className="text-emerald-400 font-medium">{edu.institution}</p>
+                            <p className="text-[#FFD166] font-medium">{edu.institution}</p>
                           )}
-                          <div className="flex gap-3 text-slate-400 text-[11px]">
+                          <div className="flex gap-3 text-[#A7ADB7] text-[11px]">
                             {edu.year && <span>📅 {edu.year}</span>}
                             {edu.grade && <span>🎯 {edu.grade}</span>}
                           </div>
                         </>
                       ) : (
-                        <p className="text-slate-300">{edu}</p>
+                        <p className="text-[#A7ADB7]">{edu}</p>
                       )}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-500">No education entries identified.</p>
+                <p className="text-xs text-[#6F7682]">No education entries identified.</p>
               )}
             </Card>
           </div>
@@ -1005,64 +1005,64 @@ export default function ResumeAnalysisDashboard() {
           {/* Projects, Certifications & Languages */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Projects */}
-            <Card className="p-6 space-y-3">
-              <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                <FaFileAlt className="text-indigo-400" size={14} />
-                <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+            <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                <FaFileAlt className="text-[#F5B83D]" size={14} />
+                <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   Projects ({parsed.projects?.length || 0})
                 </h4>
               </div>
               {parsed.projects && parsed.projects.length > 0 ? (
                 <ul className="space-y-3 text-xs">
                   {parsed.projects.map((p, idx) => (
-                    <li key={idx} className="border-t border-slate-850/50 pt-2 first:border-t-0 first:pt-0 space-y-1">
-                      <p className="text-white font-bold">{p.title || p}</p>
-                      {p.description && <p className="text-slate-400 leading-relaxed line-clamp-2">{p.description}</p>}
+                    <li key={idx} className="border-t border-[#292D33] pt-2 first:border-t-0 first:pt-0 space-y-1">
+                      <p className="text-[#F5F5F5] font-bold">{p.title || p}</p>
+                      {p.description && <p className="text-[#A7ADB7] leading-relaxed line-clamp-2">{p.description}</p>}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-500">No project items found.</p>
+                <p className="text-xs text-[#6F7682]">No project items found.</p>
               )}
             </Card>
 
             {/* Certifications */}
-            <Card className="p-6 space-y-3">
-              <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                <FaCertificate className="text-amber-400" size={14} />
-                <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+            <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                <FaCertificate className="text-[#F5B83D]" size={14} />
+                <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   Certifications ({parsed.certifications?.length || 0})
                 </h4>
               </div>
               {parsed.certifications && parsed.certifications.length > 0 ? (
-                <ul className="space-y-1 text-xs text-slate-300">
+                <ul className="space-y-1 text-xs text-[#A7ADB7]">
                   {parsed.certifications.map((c, idx) => (
                     <li key={idx} className="truncate">• {c}</li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-500">No certifications recorded.</p>
+                <p className="text-xs text-[#6F7682]">No certifications recorded.</p>
               )}
             </Card>
 
             {/* Languages */}
-            <Card className="p-6 space-y-3">
-              <div className="flex items-center gap-2 border-b border-slate-850 pb-3">
-                <FaLanguage className="text-teal-400" size={15} />
-                <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">
+            <Card className="p-6 space-y-3 bg-[#121519] border-[#292D33]">
+              <div className="flex items-center gap-2 border-b border-[#292D33] pb-3">
+                <FaLanguage className="text-[#FFD166]" size={15} />
+                <h4 className="text-xs font-extrabold text-[#F5F5F5] uppercase tracking-wider">
                   Languages ({parsed.languages?.length || 0})
                 </h4>
               </div>
               {parsed.languages && parsed.languages.length > 0 ? (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {parsed.languages.map((l, idx) => (
-                    <span key={idx} className="px-2.5 py-0.5 bg-slate-900 border border-slate-800 text-slate-300 text-xs font-semibold rounded-lg">
+                    <span key={idx} className="px-2.5 py-0.5 bg-[#08090B] border border-[#292D33] text-[#F5F5F5] text-xs font-semibold rounded-lg">
                       {l}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500">No languages recorded.</p>
+                <p className="text-xs text-[#6F7682]">No languages recorded.</p>
               )}
             </Card>
           </div>
@@ -1070,11 +1070,11 @@ export default function ResumeAnalysisDashboard() {
       )}
 
       {/* QUICK ACTIONS FOOTER BAR */}
-      <Card className="p-6 border-slate-800/80 bg-slate-900/60 print:hidden">
+      <Card className="p-6 border-[#292D33] bg-[#121519] print:hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h4 className="text-sm font-extrabold text-white">Next Quick Actions</h4>
-            <p className="text-xs text-slate-450 mt-0.5">Explore specific optimization tools for this resume:</p>
+            <h4 className="text-sm font-extrabold text-[#F5F5F5]">Next Quick Actions</h4>
+            <p className="text-xs text-[#A7ADB7] mt-0.5">Explore specific optimization tools for this resume:</p>
           </div>
 
           <div className="flex items-center gap-2.5 flex-wrap">

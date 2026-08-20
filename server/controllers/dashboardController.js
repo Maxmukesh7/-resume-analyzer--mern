@@ -3,7 +3,6 @@ import { successResponse } from '../utils/apiResponse.js';
 import Resume from '../models/Resume.js';
 import ResumeAnalysis from '../models/ResumeAnalysis.js';
 import JobMatch from '../models/JobMatch.js';
-import { evaluateResumeAts } from '../services/atsEngineService.js';
 
 /**
  * @desc    Get real user dashboard metrics, statistics, and trends from MongoDB
@@ -34,41 +33,21 @@ export const getStats = asyncHandler(async (req, res) => {
     );
   }
 
-  // 1. Total resumes uploaded by user
-  const userResumes = await Resume.find({ user: userId }).sort({ createdAt: 1 }).lean();
+  // 1. Fetch user's active resumes and job matches count in parallel
+  const [userResumes, jobMatchesCount] = await Promise.all([
+    Resume.find({ user: userId }).select('_id parseStatus createdAt').sort({ createdAt: 1 }).lean(),
+    JobMatch.countDocuments({
+      $or: [{ userId }, { user: userId }]
+    })
+  ]);
+
   const totalUploads = userResumes.length;
   const userResumeIds = userResumes.map((r) => r._id);
 
-  // 2. Total job match checks performed
-  const jobMatchesCount = await JobMatch.countDocuments({
-    $or: [{ userId }, { user: userId }]
-  });
-
-  // 3. Ensure parsed resumes have ATS analysis evaluated
-  for (const r of userResumes) {
-    const exists = await ResumeAnalysis.exists({
-      $or: [{ resume: r._id }, { resumeId: r._id }]
-    });
-    if (!exists && (r.parseStatus === 'parsed' || (r.parsedText && r.parsedText.length > 50))) {
-      try {
-        await evaluateResumeAts(r._id, userId, false);
-      } catch (err) {
-        console.warn(`[Stats] Auto ATS eval skipped for resume ${r._id}:`, err.message);
-      }
-    }
-  }
-
-  // 4. Query all user's ATS analysis records
-  const analyses = await ResumeAnalysis.find({
-    $or: [
-      { user: userId },
-      { userId: userId },
-      { resume: { $in: userResumeIds } },
-      { resumeId: { $in: userResumeIds } }
-    ]
-  })
-    .sort({ createdAt: 1 })
-    .lean();
+  // 2. Query only existing ATS analyses belonging to active user resumes
+  const analyses = userResumeIds.length > 0
+    ? await ResumeAnalysis.find({ resume: { $in: userResumeIds } }).sort({ createdAt: 1 }).lean()
+    : [];
 
   let averageAtsScore = 0;
   let highestAtsScore = 0;

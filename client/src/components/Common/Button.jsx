@@ -11,14 +11,15 @@ export default function Button({
   iconPosition = 'left',
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#F5B83D]/50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
   
   const variants = {
-    primary: 'text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-[0_4px_20px_rgba(79,70,229,0.35)] hover:shadow-[0_4px_25px_rgba(79,70,229,0.5)]',
-    secondary: 'text-white bg-slate-800 hover:bg-slate-700 border border-slate-700/80',
-    outline: 'text-slate-300 hover:text-white bg-transparent border border-slate-700 hover:border-slate-500 hover:bg-slate-900/40',
-    danger: 'text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 shadow-[0_4px_15px_rgba(239,68,68,0.3)] hover:shadow-[0_4px_20px_rgba(239,68,68,0.5)]',
-    glass: 'text-white bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md hover:border-white/20'
+    primary: 'text-[#08090B] font-bold bg-gradient-to-r from-[#F5B83D] to-[#FFD166] hover:from-[#e5a82d] hover:to-[#f0c256] shadow-[0_4px_20px_rgba(245,184,61,0.28)] hover:shadow-[0_4px_25px_rgba(245,184,61,0.42)]',
+    secondary: 'text-[#F5B83D] bg-[#121519] hover:bg-[#171A1F] border border-[#F5B83D]/40 hover:border-[#F5B83D] hover:shadow-[0_0_15px_rgba(245,184,61,0.18)]',
+    outline: 'text-[#A7ADB7] hover:text-[#F5F5F5] bg-transparent border border-[#292D33] hover:border-[#F5B83D]/50 hover:bg-[#F5B83D]/10',
+    danger: 'text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 shadow-[0_4px_15px_rgba(244,63,94,0.3)] hover:shadow-[0_4px_20px_rgba(244,63,94,0.5)]',
+    accent: 'text-[#08090B] font-bold bg-gradient-to-r from-[#F5B83D] to-[#B7791F] hover:from-[#FFD166] hover:to-[#F5B83D] shadow-[0_4px_15px_rgba(245,184,61,0.3)]',
+    glass: 'text-[#F5F5F5] bg-[#121519]/80 hover:bg-[#171A1F] border border-[#292D33] backdrop-blur-md hover:border-[#F5B83D]/30'
   };
 
   const sizes = {

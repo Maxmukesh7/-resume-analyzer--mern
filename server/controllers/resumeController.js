@@ -3,6 +3,8 @@ import path from 'path';
 import Resume from '../models/Resume.js';
 import ResumeAnalysis from '../models/ResumeAnalysis.js';
 import AIAnalysis from '../models/AIAnalysis.js';
+import JobMatch from '../models/JobMatch.js';
+import ResumeImprovement from '../models/ResumeImprovement.js';
 import asyncHandler from '../middleware/asyncHandler.js';
 import ApiError from '../utils/apiError.js';
 import { successResponse } from '../utils/apiResponse.js';
@@ -68,9 +70,9 @@ export const getResumes = asyncHandler(async (req, res) => {
   const resumes = await Resume.find({ user: req.user._id }).sort({ uploadDate: -1 }).lean();
   const resumeIds = resumes.map((r) => r._id);
 
-  const analyses = await ResumeAnalysis.find({
-    $or: [{ resume: { $in: resumeIds } }, { user: req.user._id }]
-  }).lean();
+  const analyses = resumeIds.length > 0
+    ? await ResumeAnalysis.find({ resume: { $in: resumeIds } }).lean()
+    : [];
 
   const analysisMap = new Map();
   analyses.forEach((a) => {
@@ -141,17 +143,23 @@ export const deleteResume = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'Access denied. You do not have permission to delete this resume.');
   }
 
-  // Delete physical file from disk if it exists
-  if (resume.uploadPath && fs.existsSync(resume.uploadPath)) {
-    try {
-      await fs.promises.unlink(resume.uploadPath);
-    } catch (err) {
-      console.error(`Failed to delete physical file at ${resume.uploadPath}:`, err.message);
-    }
+  // Delete physical file asynchronously from disk if it exists
+  if (resume.uploadPath) {
+    fs.promises.unlink(resume.uploadPath).catch((err) => {
+      if (err.code !== 'ENOENT') {
+        console.error(`Failed to delete physical file at ${resume.uploadPath}:`, err.message);
+      }
+    });
   }
 
-  // Delete MongoDB document
-  await Resume.deleteOne({ _id: id });
+  // Concurrently delete MongoDB document and all related cascade records
+  await Promise.all([
+    Resume.deleteOne({ _id: id }),
+    ResumeAnalysis.deleteMany({ $or: [{ resume: id }, { resumeId: id }] }),
+    AIAnalysis.deleteMany({ resumeId: id }),
+    JobMatch.deleteMany({ resumeId: id }),
+    ResumeImprovement.deleteMany({ resumeId: id })
+  ]);
 
   return successResponse(
     res,

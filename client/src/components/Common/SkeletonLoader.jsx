@@ -3,7 +3,7 @@ export default function SkeletonLoader({
   rows = 3,
   className = ''
 }) {
-  const baseClass = 'bg-slate-800/40 animate-pulse rounded-lg';
+  const baseClass = 'bg-[#171A1F] animate-pulse rounded-lg';
 
   if (type === 'circle') {
     return <div className={`rounded-full ${baseClass} ${className}`} />;
@@ -11,7 +11,7 @@ export default function SkeletonLoader({
 
   if (type === 'card') {
     return (
-      <div className={`p-6 border border-slate-800/50 bg-slate-900/25 rounded-2xl flex flex-col gap-4 ${className}`}>
+      <div className={`p-6 border border-[#292D33] bg-[#121519] rounded-2xl flex flex-col gap-4 ${className}`}>
         <div className={`h-8 w-1/3 ${baseClass}`} />
         <div className="flex flex-col gap-2">
           <div className={`h-4 w-full ${baseClass}`} />
@@ -25,7 +25,7 @@ export default function SkeletonLoader({
   if (type === 'table') {
     return (
       <div className={`flex flex-col gap-4 w-full ${className}`}>
-        <div className="flex gap-4 border-b border-slate-800 pb-3">
+        <div className="flex gap-4 border-b border-[#292D33] pb-3">
           <div className={`h-5 w-1/4 ${baseClass}`} />
           <div className={`h-5 w-1/4 ${baseClass}`} />
           <div className={`h-5 w-1/4 ${baseClass}`} />

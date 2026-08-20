@@ -122,8 +122,8 @@ export default function ResumeHistory() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-white tracking-wide">Resume History</h1>
-        <p className="text-slate-450 text-xs mt-1.5 font-semibold">
+        <h1 className="text-2xl font-extrabold text-[#F5F5F5] tracking-wide">Resume History</h1>
+        <p className="text-[#A7ADB7] text-xs mt-1.5 font-semibold">
           Review, view details, and manage your uploaded resumes.
         </p>
       </div>
@@ -132,23 +132,23 @@ export default function ResumeHistory() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search */}
         <div className="relative max-w-sm w-full">
-          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={13} />
+          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6F7682]" size={13} />
           <input
             type="text"
             placeholder="Search resumes by file name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-900/40 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-all text-xs"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#0D0F12] border border-[#292D33] rounded-xl text-[#F5F5F5] placeholder-[#6F7682] focus:outline-none focus:border-[#F5B83D]/60 transition-all text-xs"
           />
         </div>
       </div>
 
       {/* History Table Card */}
-      <Card className="overflow-hidden p-0">
+      <Card className="overflow-hidden p-0 bg-[#121519] border-[#292D33]">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-900/70 border-b border-slate-800/80 text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">
+              <tr className="bg-[#0D0F12] border-b border-[#292D33] text-[10px] text-[#A7ADB7] font-extrabold uppercase tracking-widest">
                 <th className="px-6 py-4">File Name</th>
                 <th className="px-6 py-4">Upload Date</th>
                 <th className="px-6 py-4">File Size</th>
@@ -156,12 +156,12 @@ export default function ResumeHistory() {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-850/30">
+            <tbody className="divide-y divide-[#292D33]/60">
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="px-6 py-12 text-center text-slate-500 text-xs">
+                  <td colSpan="5" className="px-6 py-12 text-center text-[#A7ADB7] text-xs">
                     <div className="flex items-center justify-center gap-2">
-                      <FaSpinner className="animate-spin text-blue-400" size={16} />
+                      <FaSpinner className="animate-spin text-[#F5B83D]" size={16} />
                       <span>Loading resume history...</span>
                     </div>
                   </td>
@@ -173,24 +173,24 @@ export default function ResumeHistory() {
                   const fileTypeLabel = getFileTypeLabel(item.fileType, name);
 
                   return (
-                    <tr key={itemId} className="hover:bg-slate-800/10 transition-colors group">
+                    <tr key={itemId} className="hover:bg-[#171A1F] transition-colors group">
                       <td className="px-6 py-4.5">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 bg-blue-600/10 border border-blue-500/15 text-blue-400 rounded-lg group-hover:scale-105 transition-transform">
+                          <div className="p-2 bg-[#F5B83D]/10 border border-[#F5B83D]/25 text-[#F5B83D] rounded-lg group-hover:scale-105 transition-transform">
                             <FaFileAlt size={14} />
                           </div>
                           <div>
-                            <span className="text-xs font-bold text-white block truncate max-w-xs md:max-w-md" title={name}>
+                            <span className="text-xs font-bold text-[#F5F5F5] block truncate max-w-xs md:max-w-md" title={name}>
                               {name}
                             </span>
-                            <span className="text-[10px] text-slate-500 font-semibold">{item.fileName}</span>
+                            <span className="text-[10px] text-[#A7ADB7] font-semibold">{item.fileName}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4.5 text-xs text-slate-400 font-medium">
+                      <td className="px-6 py-4.5 text-xs text-[#A7ADB7] font-medium">
                         {formatDate(item.uploadDate)}
                       </td>
-                      <td className="px-6 py-4.5 text-xs text-slate-400 font-medium">
+                      <td className="px-6 py-4.5 text-xs text-[#A7ADB7] font-medium">
                         {getFriendlySize(item.fileSize)}
                       </td>
                       <td className="px-6 py-4.5">
@@ -202,7 +202,7 @@ export default function ResumeHistory() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => navigate(`/dashboard/analysis/${itemId}`)}
-                            className="p-2 text-xs font-semibold rounded-lg text-emerald-400 hover:text-white hover:bg-emerald-600/10 border border-emerald-500/20 transition-all flex items-center gap-1.5"
+                            className="p-2 text-xs font-semibold rounded-lg text-[#F5B83D] hover:text-[#08090B] hover:bg-[#F5B83D] border border-[#F5B83D]/30 transition-all flex items-center gap-1.5 cursor-pointer"
                             title="View Complete Resume Analysis Dashboard"
                           >
                             <FaInfoCircle size={12} />
@@ -210,7 +210,7 @@ export default function ResumeHistory() {
                           </button>
                           <button
                             onClick={() => navigate(`/dashboard/report?id=${itemId}`)}
-                            className="p-2 text-xs font-semibold rounded-lg text-purple-400 hover:text-white hover:bg-purple-600/10 border border-purple-500/20 transition-all flex items-center gap-1.5"
+                            className="p-2 text-xs font-semibold rounded-lg text-[#FFD166] hover:text-[#08090B] hover:bg-[#FFD166] border border-[#FFD166]/30 transition-all flex items-center gap-1.5 cursor-pointer"
                             title="View ATS Evaluation Report"
                           >
                             <FaInfoCircle size={12} />
@@ -218,7 +218,7 @@ export default function ResumeHistory() {
                           </button>
                           <button
                             onClick={() => handleViewDetails(item)}
-                            className="p-2 text-xs font-semibold rounded-lg text-blue-400 hover:text-white hover:bg-blue-600/10 border border-blue-500/20 transition-all flex items-center gap-1.5"
+                            className="p-2 text-xs font-semibold rounded-lg text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#171A1F] border border-[#292D33] transition-all flex items-center gap-1.5 cursor-pointer"
                             title="View Details"
                           >
                             <FaInfoCircle size={12} />
@@ -227,7 +227,7 @@ export default function ResumeHistory() {
                           <button
                             onClick={() => handleDelete(itemId, name)}
                             disabled={deletingId === itemId}
-                            className="p-2 text-xs font-semibold rounded-lg text-rose-400 hover:text-white hover:bg-rose-600/10 border border-rose-500/20 transition-all disabled:opacity-50"
+                            className="p-2 text-xs font-semibold rounded-lg text-rose-400 hover:text-white hover:bg-rose-600/10 border border-rose-500/20 transition-all disabled:opacity-50 cursor-pointer"
                             title="Delete Resume"
                           >
                             {deletingId === itemId ? (
@@ -243,8 +243,8 @@ export default function ResumeHistory() {
                 })
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-6 py-12 text-center text-slate-500 text-xs">
-                    No uploaded resumes found.
+                  <td colSpan="5" className="px-6 py-12 text-center text-[#A7ADB7] text-xs">
+                    No resume files found matching your search.
                   </td>
                 </tr>
               )}
@@ -252,19 +252,20 @@ export default function ResumeHistory() {
           </table>
         </div>
 
-        {/* Pagination Section Footer */}
+        {/* Pagination Bar */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 bg-slate-900/30 border-t border-slate-800/80 flex items-center justify-between text-xs">
-            <span className="text-slate-500 font-medium">
-              Showing page <span className="text-slate-350 font-bold">{currentPage}</span> of{' '}
-              <span className="text-slate-350 font-bold">{totalPages}</span>
+          <div className="px-6 py-4 border-t border-[#292D33] flex items-center justify-between">
+            <span className="text-xs text-[#A7ADB7]">
+              Showing <span className="font-bold text-[#F5F5F5]">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
+              <span className="font-bold text-[#F5F5F5]">{Math.min(currentPage * itemsPerPage, filteredResumes.length)}</span> of{' '}
+              <span className="font-bold text-[#F5F5F5]">{filteredResumes.length}</span> resumes
             </span>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-lg bg-[#0D0F12] border border-[#292D33] text-[#A7ADB7] hover:text-[#F5F5F5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 aria-label="Previous Page"
               >
                 <FaChevronLeft size={10} />
@@ -273,10 +274,10 @@ export default function ResumeHistory() {
                 <button
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all border
+                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all border cursor-pointer
                     ${currentPage === i + 1
-                      ? 'bg-blue-600 border-blue-500 text-white shadow-md'
-                      : 'bg-slate-900 border-slate-800 text-slate-450 hover:text-white hover:bg-slate-800/40'
+                      ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166] border-[#FFD166] text-[#08090B] shadow-md font-bold'
+                      : 'bg-[#0D0F12] border-[#292D33] text-[#A7ADB7] hover:text-[#F5F5F5] hover:bg-[#171A1F]'
                     }`}
                 >
                   {i + 1}
@@ -285,7 +286,7 @@ export default function ResumeHistory() {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-2 rounded-lg bg-[#0D0F12] border border-[#292D33] text-[#A7ADB7] hover:text-[#F5F5F5] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 aria-label="Next Page"
               >
                 <FaChevronRight size={10} />
@@ -304,38 +305,38 @@ export default function ResumeHistory() {
       >
         {selectedResume && (
           <div className="space-y-4 text-xs">
-            <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2.5">
+            <div className="bg-[#0D0F12] p-4 rounded-xl border border-[#292D33] space-y-2.5">
               <div className="flex justify-between">
-                <span className="text-slate-500 font-semibold">Original File Name:</span>
-                <span className="text-slate-200 font-bold truncate max-w-[200px]" title={selectedResume.originalName}>
+                <span className="text-[#6F7682] font-semibold">Original File Name:</span>
+                <span className="text-[#F5F5F5] font-bold truncate max-w-[200px]" title={selectedResume.originalName}>
                   {selectedResume.originalName}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-semibold">Stored File Name:</span>
-                <span className="text-slate-300 font-mono text-[11px] truncate max-w-[200px]" title={selectedResume.fileName}>
+                <span className="text-[#6F7682] font-semibold">Stored File Name:</span>
+                <span className="text-[#A7ADB7] font-mono text-[11px] truncate max-w-[200px]" title={selectedResume.fileName}>
                   {selectedResume.fileName}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-semibold">File Type:</span>
-                <span className="text-slate-200 font-semibold">{selectedResume.fileType}</span>
+                <span className="text-[#6F7682] font-semibold">File Type:</span>
+                <span className="text-[#F5F5F5] font-semibold">{selectedResume.fileType}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-semibold">File Size:</span>
-                <span className="text-slate-200 font-semibold">{getFriendlySize(selectedResume.fileSize)}</span>
+                <span className="text-[#6F7682] font-semibold">File Size:</span>
+                <span className="text-[#F5F5F5] font-semibold">{getFriendlySize(selectedResume.fileSize)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-semibold">Upload Date:</span>
-                <span className="text-slate-200 font-semibold">{formatDate(selectedResume.uploadDate)}</span>
+                <span className="text-[#6F7682] font-semibold">Upload Date:</span>
+                <span className="text-[#F5F5F5] font-semibold">{formatDate(selectedResume.uploadDate)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-semibold">Upload Status:</span>
+                <span className="text-[#6F7682] font-semibold">Upload Status:</span>
                 <Badge variant="success">{selectedResume.status || 'Uploaded'}</Badge>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 font-semibold">Database Record ID:</span>
-                <span className="text-slate-400 font-mono text-[10px]">{selectedResume._id || selectedResume.id}</span>
+                <span className="text-[#6F7682] font-semibold">Database Record ID:</span>
+                <span className="text-[#A7ADB7] font-mono text-[10px]">{selectedResume._id || selectedResume.id}</span>
               </div>
             </div>
 

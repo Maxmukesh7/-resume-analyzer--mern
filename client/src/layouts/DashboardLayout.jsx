@@ -7,10 +7,10 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="relative flex h-screen h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans selection:bg-blue-600/35 selection:text-white">
+    <div className="relative flex h-screen h-[100dvh] bg-[#08090B] text-[#F5F5F5] overflow-hidden font-sans selection:bg-[#F5B83D]/30 selection:text-[#F5F5F5]">
       {/* Background ambient glowing shapes */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#F5B83D]/[0.03] rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#FFD166]/[0.02] rounded-full blur-[140px] pointer-events-none z-0" />
 
       {/* Sidebar Panel */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
