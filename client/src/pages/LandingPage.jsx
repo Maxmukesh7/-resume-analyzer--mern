@@ -1,10 +1,18 @@
+import { useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import Navbar from '../components/Landing/Navbar';
 import Hero from '../components/Landing/Hero';
 import Features from '../components/Landing/Features';
 import HowItWorks from '../components/Landing/HowItWorks';
-import Footer from '../components/Landing/Footer';
+import About from '../components/Landing/About';
 
 export default function LandingPage() {
+  const { setDarkMode } = useTheme();
+
+  useEffect(() => {
+    setDarkMode(true);
+  }, []);
+
   return (
     <div className="bg-slate-950 min-h-screen text-slate-100 font-sans antialiased selection:bg-blue-600/35 selection:text-white">
       {/* Sticky Navigation */}
@@ -19,8 +27,8 @@ export default function LandingPage() {
       {/* How it Works Section */}
       <HowItWorks />
 
-      {/* Footer Details */}
-      <Footer />
+      {/* About Section */}
+      <About />
     </div>
   );
 }

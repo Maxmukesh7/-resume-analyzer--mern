@@ -1,9 +1,15 @@
+import { useEffect } from 'react';
 import Navbar from '../../components/Landing/Navbar';
-import Footer from '../../components/Landing/Footer';
 import Card from '../../components/Common/Card';
 import { FaEye, FaRocket, FaShieldAlt, FaChartLine, FaRobot, FaUsers } from 'react-icons/fa';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function About() {
+  const { setDarkMode } = useTheme();
+
+  useEffect(() => {
+    setDarkMode(true);
+  }, []);
   const benefits = [
     {
       icon: <FaRobot size={24} className="text-blue-400" />,
@@ -104,8 +110,6 @@ export default function About() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
