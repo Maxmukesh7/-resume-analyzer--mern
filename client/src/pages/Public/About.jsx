@@ -5,11 +5,6 @@ import { FaEye, FaRocket, FaShieldAlt, FaChartLine, FaRobot, FaUsers } from 'rea
 import { useTheme } from '../../context/ThemeContext';
 
 export default function About() {
-  const { setDarkMode } = useTheme();
-
-  useEffect(() => {
-    setDarkMode(true);
-  }, []);
   const benefits = [
     {
       icon: <FaRobot size={24} className="text-[#F5B83D]" />,

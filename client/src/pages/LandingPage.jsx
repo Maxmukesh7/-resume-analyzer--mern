@@ -7,11 +7,6 @@ import HowItWorks from '../components/Landing/HowItWorks';
 import About from '../components/Landing/About';
 
 export default function LandingPage() {
-  const { setDarkMode } = useTheme();
-
-  useEffect(() => {
-    setDarkMode(true);
-  }, []);
 
   return (
     <div className="bg-slate-950 min-h-screen text-slate-100 font-sans antialiased selection:bg-blue-600/35 selection:text-white">

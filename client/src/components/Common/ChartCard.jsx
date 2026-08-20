@@ -1,5 +1,6 @@
 import Card from './Card';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function ChartCard({
   title,
@@ -8,6 +9,8 @@ export default function ChartCard({
   data = [],
   className = ''
 }) {
+  const { darkMode } = useTheme();
+
   return (
     <Card className={`flex flex-col ${className}`}>
       {/* Header */}
@@ -20,8 +23,8 @@ export default function ChartCard({
 
       {/* Content */}
       <div className="flex-1 min-h-[200px] flex items-center justify-center">
-        {type === 'line' && data.length > 0 && <AreaChart data={data} />}
-        {type === 'bar-list' && data.length > 0 && <BarList data={data} />}
+        {type === 'line' && data.length > 0 && <AreaChart data={data} darkMode={darkMode} />}
+        {type === 'bar-list' && data.length > 0 && <BarList data={data} darkMode={darkMode} />}
         {data.length === 0 && (
           <span className="text-[#6F7682] text-sm">No data available</span>
         )}
@@ -31,7 +34,7 @@ export default function ChartCard({
 }
 
 // Custom SVG Area Chart
-function AreaChart({ data }) {
+function AreaChart({ data, darkMode = true }) {
   const width = 500;
   const height = 200;
   const paddingX = 40;
@@ -84,14 +87,14 @@ function AreaChart({ data }) {
                   y1={y}
                   x2={width - paddingX}
                   y2={y}
-                  stroke="rgba(41, 45, 51, 0.7)"
+                  stroke={darkMode ? "rgba(41, 45, 51, 0.7)" : "rgba(226, 232, 240, 0.9)"}
                   strokeWidth="1"
                   strokeDasharray="4 4"
                 />
                 <text
                   x={paddingX - 10}
                   y={y + 4}
-                  fill="#A7ADB7"
+                  fill={darkMode ? "#A7ADB7" : "#64748B"}
                   fontSize="10"
                   textAnchor="end"
                   className="font-medium"
@@ -146,14 +149,14 @@ function AreaChart({ data }) {
                   width="44"
                   height="22"
                   rx="6"
-                  fill="#121519"
-                  stroke="#292D33"
+                  fill={darkMode ? "#121519" : "#FFFFFF"}
+                  stroke={darkMode ? "#292D33" : "#CBD5E1"}
                   strokeWidth="1"
                 />
                 <text
                   x={coord.x}
                   y={coord.y - 17}
-                  fill="#F5F5F5"
+                  fill={darkMode ? "#F5F5F5" : "#0F172A"}
                   fontSize="10"
                   fontWeight="bold"
                   textAnchor="middle"
@@ -179,7 +182,7 @@ function AreaChart({ data }) {
 }
 
 // Category Scores Bar List
-function BarList({ data }) {
+function BarList({ data, darkMode = true }) {
   return (
     <div className="w-full flex flex-col gap-4">
       {data.map((item, idx) => (

@@ -31,6 +31,7 @@ import Card from '../../components/Common/Card';
 import Badge from '../../components/Common/Badge';
 import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
+import { useTheme } from '../../context/ThemeContext';
 import { getResumes, getResumeAnalysis, analyzeResume } from '../../services/resumeService';
 
 // Register ChartJS components
@@ -51,6 +52,7 @@ export default function ATSReport() {
   const location = useLocation();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { darkMode } = useTheme();
 
   const [resumes, setResumes] = useState([]);
   const [selectedResumeId, setSelectedResumeId] = useState('');
@@ -196,17 +198,17 @@ export default function ATSReport() {
   const radarOptions = {
     scales: {
       r: {
-        angleLines: { color: 'rgba(41, 45, 51, 0.7)' },
-        grid: { color: 'rgba(41, 45, 51, 0.5)' },
-        pointLabels: { color: '#A7ADB7', font: { size: 10, weight: 'bold' } },
-        ticks: { backdropColor: 'transparent', color: '#6F7682', stepSize: 20 },
+        angleLines: { color: darkMode ? 'rgba(41, 45, 51, 0.7)' : 'rgba(203, 213, 225, 0.8)' },
+        grid: { color: darkMode ? 'rgba(41, 45, 51, 0.5)' : 'rgba(226, 232, 240, 0.9)' },
+        pointLabels: { color: darkMode ? '#A7ADB7' : '#334155', font: { size: 10, weight: 'bold' } },
+        ticks: { backdropColor: 'transparent', color: darkMode ? '#6F7682' : '#64748B', stepSize: 20 },
         suggestedMin: 0,
         suggestedMax: 100
       }
     },
     plugins: {
       legend: {
-        labels: { color: '#F5F5F5', font: { size: 11, weight: 'bold' } }
+        labels: { color: darkMode ? '#F5F5F5' : '#0F172A', font: { size: 11, weight: 'bold' } }
       }
     },
     maintainAspectRatio: false
@@ -308,7 +310,7 @@ export default function ATSReport() {
                     cx="50"
                     cy="50"
                     r="40"
-                    stroke="rgba(41, 45, 51, 0.6)"
+                    stroke={darkMode ? "rgba(41, 45, 51, 0.6)" : "rgba(226, 232, 240, 0.9)"}
                     strokeWidth="7"
                     fill="none"
                   />

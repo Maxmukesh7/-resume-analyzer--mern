@@ -95,10 +95,10 @@ export default function Settings() {
                 aria-checked={darkMode}
                 onClick={handleToggleDarkMode}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none shadow-sm
-                  ${darkMode ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166]' : 'bg-[#292D33]'}`}
+                  ${darkMode ? 'bg-gradient-to-r from-[#F5B83D] to-[#FFD166]' : 'bg-slate-300'}`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-[#08090B] shadow-md ring-0 transition duration-200 ease-in-out
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full ${darkMode ? 'bg-[#08090B]' : 'bg-white'} shadow-md ring-0 transition duration-200 ease-in-out
                     ${darkMode ? 'translate-x-5' : 'translate-x-0'}`}
                 />
               </button>
