@@ -5,21 +5,41 @@ import Button from '../../components/Common/Button';
 import { useToast } from '../../components/Common/Toast';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { deleteAllResumes } from '../../services/resumeService';
 
 export default function Settings() {
   const { showToast } = useToast();
   const { changePassword } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
 
-  // Change Password State
+  // State
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
+  const [deletingResumes, setDeletingResumes] = useState(false);
 
   const handleToggleDarkMode = () => {
     toggleDarkMode();
     showToast(`Theme switched to ${darkMode ? 'Light Mode' : 'Dark Mode'}!`, 'info');
+  };
+
+  const handleDeleteAllResumes = async () => {
+    const confirmation = window.confirm(
+      'CRITICAL WARNING: Are you sure you want to permanently delete ALL uploaded resumes and all associated analysis reports? This action cannot be undone.'
+    );
+    if (!confirmation) return;
+
+    try {
+      setDeletingResumes(true);
+      const res = await deleteAllResumes();
+      const count = res.data?.count || 0;
+      showToast(`Successfully purged ${count} resume(s) and all analysis records.`, 'success');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to delete resumes.', 'error');
+    } finally {
+      setDeletingResumes(false);
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -157,18 +177,39 @@ export default function Settings() {
             <span>Dangerous Zones</span>
           </h3>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-xs font-bold text-[#F5F5F5] block">Deactivate & Remove Account</span>
-              <span className="text-[10px] text-[#A7ADB7] font-semibold mt-0.5">Permanently deletes all history logs, reports, and credential metadata files</span>
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-bold text-[#F5F5F5] block">Purge All Uploaded Resumes</span>
+                <span className="text-[10px] text-[#A7ADB7] font-semibold mt-0.5 block">
+                  Permanently deletes all uploaded resume documents, parsed texts, ATS evaluations, and AI reports.
+                </span>
+              </div>
+              <Button
+                onClick={handleDeleteAllResumes}
+                loading={deletingResumes}
+                variant="danger"
+                size="sm"
+              >
+                Delete All Resumes
+              </Button>
             </div>
-            <Button
-              onClick={handleDeleteAccount}
-              variant="danger"
-              size="sm"
-            >
-              Delete Account
-            </Button>
+
+            <div className="border-t border-rose-900/20 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-bold text-[#F5F5F5] block">Deactivate & Remove Account</span>
+                <span className="text-[10px] text-[#A7ADB7] font-semibold mt-0.5 block">
+                  Permanently deletes your account credentials, login access, and user profile data.
+                </span>
+              </div>
+              <Button
+                onClick={handleDeleteAccount}
+                variant="danger"
+                size="sm"
+              >
+                Delete Account
+              </Button>
+            </div>
           </div>
         </Card>
       </div>

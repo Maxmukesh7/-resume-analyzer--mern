@@ -448,3 +448,117 @@ export const autoAnalyzeResume = asyncHandler(async (req, res) => {
   );
 });
 
+/**
+ * @desc    Delete all uploaded resumes and cascade-delete associated analysis records for authenticated user
+ * @route   DELETE /api/resumes/all or DELETE /api/resumes
+ * @access  Private
+ */
+export const deleteAllResumes = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  // 1. Find all resumes belonging to logged-in user
+  const resumes = await Resume.find({ user: userId });
+
+  if (!resumes || resumes.length === 0) {
+    return successResponse(
+      res,
+      { count: 0, deletedIds: [] },
+      'No resumes found to delete.'
+    );
+  }
+
+  const resumeIds = resumes.map((r) => r._id);
+
+  // 2. Delete physical files from disk asynchronously
+  resumes.forEach((resume) => {
+    if (resume.uploadPath) {
+      fs.promises.unlink(resume.uploadPath).catch((err) => {
+        if (err.code !== 'ENOENT') {
+          console.error(`Failed to delete physical file at ${resume.uploadPath}:`, err.message);
+        }
+      });
+    }
+  });
+
+  // 3. Concurrently delete MongoDB documents and cascade relations
+  await Promise.all([
+    Resume.deleteMany({ user: userId }),
+    ResumeAnalysis.deleteMany({
+      $or: [{ user: userId }, { resume: { $in: resumeIds } }, { resumeId: { $in: resumeIds } }]
+    }),
+    AIAnalysis.deleteMany({
+      $or: [{ userId: userId }, { resumeId: { $in: resumeIds } }]
+    }),
+    JobMatch.deleteMany({
+      $or: [{ userId: userId }, { resumeId: { $in: resumeIds } }]
+    }),
+    ResumeImprovement.deleteMany({ resumeId: { $in: resumeIds } })
+  ]);
+
+  return successResponse(
+    res,
+    { count: resumes.length, deletedIds: resumeIds },
+    `Successfully deleted all ${resumes.length} resume(s) and associated records.`
+  );
+});
+
+/**
+ * @desc    Delete multiple selected resumes and associated records for authenticated user
+ * @route   DELETE /api/resumes/bulk
+ * @access  Private
+ */
+export const deleteBulkResumes = asyncHandler(async (req, res) => {
+  const { ids } = req.body || {};
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    throw new ApiError(400, 'Please provide an array of resume IDs to delete.');
+  }
+
+  const userId = req.user._id;
+
+  // 1. Find resumes belonging to this user matching the provided IDs
+  const resumes = await Resume.find({
+    _id: { $in: ids },
+    user: userId
+  });
+
+  if (!resumes || resumes.length === 0) {
+    return successResponse(
+      res,
+      { count: 0, deletedIds: [] },
+      'No matching resumes found to delete.'
+    );
+  }
+
+  const validIds = resumes.map((r) => r._id);
+
+  // 2. Delete physical files from disk asynchronously
+  resumes.forEach((resume) => {
+    if (resume.uploadPath) {
+      fs.promises.unlink(resume.uploadPath).catch((err) => {
+        if (err.code !== 'ENOENT') {
+          console.error(`Failed to delete physical file at ${resume.uploadPath}:`, err.message);
+        }
+      });
+    }
+  });
+
+  // 3. Concurrently cascade delete MongoDB documents
+  await Promise.all([
+    Resume.deleteMany({ _id: { $in: validIds } }),
+    ResumeAnalysis.deleteMany({
+      $or: [{ resume: { $in: validIds } }, { resumeId: { $in: validIds } }]
+    }),
+    AIAnalysis.deleteMany({ resumeId: { $in: validIds } }),
+    JobMatch.deleteMany({ resumeId: { $in: validIds } }),
+    ResumeImprovement.deleteMany({ resumeId: { $in: validIds } })
+  ]);
+
+  return successResponse(
+    res,
+    { count: resumes.length, deletedIds: validIds },
+    `Successfully deleted ${resumes.length} selected resume(s).`
+  );
+});
+
+

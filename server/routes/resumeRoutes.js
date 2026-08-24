@@ -7,6 +7,8 @@ import {
   getResumes,
   getResumeDetails,
   deleteResume,
+  deleteAllResumes,
+  deleteBulkResumes,
   parseResume,
   getParsedResume,
   getResumeText,
@@ -53,6 +55,20 @@ router.post('/:id/auto-analyze', autoAnalyzeResume);
 
 // Route: Get Resume details by ID
 router.get('/:id', getResumeDetails);
+
+// Route: Delete All Resumes for authenticated user
+router.delete('/all', deleteAllResumes);
+
+// Route: Delete Bulk Resumes for authenticated user
+router.delete('/bulk', deleteBulkResumes);
+
+// Route: Delete All or Bulk Resumes for authenticated user (root DELETE)
+router.delete('/', (req, res, next) => {
+  if (req.body?.ids && Array.isArray(req.body.ids) && req.body.ids.length > 0) {
+    return deleteBulkResumes(req, res, next);
+  }
+  return deleteAllResumes(req, res, next);
+});
 
 // Route: Delete Resume by ID
 router.delete('/:id', deleteResume);

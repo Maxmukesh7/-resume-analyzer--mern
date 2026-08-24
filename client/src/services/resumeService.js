@@ -55,6 +55,23 @@ export const deleteResume = async (id) => {
 };
 
 /**
+ * Delete all uploaded resumes for the authenticated user
+ */
+export const deleteAllResumes = async () => {
+  const response = await api.delete('/resumes/all');
+  return response.data;
+};
+
+/**
+ * Delete multiple selected resumes by ID array
+ * @param {string[]} ids
+ */
+export const deleteBulkResumes = async (ids) => {
+  const response = await api.delete('/resumes/bulk', { data: { ids } });
+  return response.data;
+};
+
+/**
  * Trigger or re-run resume text and candidate parsing
  * @param {string} id 
  * @param {boolean} [force] 
