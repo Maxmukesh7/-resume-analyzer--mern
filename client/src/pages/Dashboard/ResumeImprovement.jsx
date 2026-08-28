@@ -7,6 +7,7 @@ import {
   FaSync,
   FaCheck,
   FaFilePdf,
+  FaFileAlt,
   FaGraduationCap,
   FaBriefcase,
   FaCode,
