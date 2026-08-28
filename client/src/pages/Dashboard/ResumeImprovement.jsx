@@ -289,13 +289,38 @@ export default function ResumeImprovement() {
     });
   };
 
+  // Helper to extract summary with support for all common field aliases
+  const extractSummaryText = (orig, imp) => {
+    const candidates = [
+      orig?.summary,
+      orig?.professionalSummary,
+      orig?.professional_summary,
+      orig?.profile,
+      orig?.objective,
+      orig?.about,
+      orig?.bio,
+      imp?.originalResume?.summary,
+      imp?.originalResume?.professionalSummary,
+      imp?.originalResume?.professional_summary,
+      imp?.originalResume?.profile,
+      imp?.originalResume?.objective
+    ];
+    for (const c of candidates) {
+      if (typeof c === 'string' && c.trim().length > 0) {
+        return c.trim();
+      }
+    }
+    return '';
+  };
+
   // Single Section Rewrite: Summary
   const handleRewriteSummaryOnly = async () => {
     try {
       setRewriteLoading(true);
       const original = selectedResume?.parsedData || {};
+      const currentSum = extractSummaryText(original, improvementData);
       const res = await rewriteSummary({
-        currentSummary: original.summary || '',
+        currentSummary: currentSum,
         experienceLevel,
         targetRole: industry,
         skills: original.skills || []
@@ -536,9 +561,9 @@ export default function ResumeImprovement() {
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-[#A7ADB7]">Professional Summary</h4>
                   <div className="p-4 bg-[#0D0F12] border border-[#292D33] rounded-2xl text-[#F5F5F5] text-sm leading-relaxed min-h-[140px]">
                     {(() => {
-                      const sum = (originalData.summary || improvementData?.originalResume?.summary || '').trim();
+                      const sum = extractSummaryText(originalData, improvementData);
                       return sum.length > 0 ? (
-                        sum
+                        <p className="whitespace-pre-line leading-relaxed text-slate-200">{sum}</p>
                       ) : (
                         <p className="text-[#A7ADB7] text-xs italic">No professional summary found in the uploaded resume.</p>
                       );
@@ -771,7 +796,14 @@ export default function ResumeImprovement() {
               {/* TAB 4: RECOMMENDED SKILLS CATEGORIZATION */}
               {activeTab === 'skills' && (
                 <div className="space-y-4">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#FFD166]">AI Recommended Skills Matrix</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-[#FFD166]">
+                      AI Recommended Skills Matrix
+                    </h4>
+                    <span className="text-[11px] text-[#A7ADB7] font-mono">
+                      Filtered against existing resume skills (Missing Only)
+                    </span>
+                  </div>
                   {(() => {
                     const rec = improvementData.recommendedSkills || {};
                     const categories = [
@@ -782,9 +814,19 @@ export default function ResumeImprovement() {
                       { key: 'devOpsTools', title: 'DevOps & Tooling', icon: <FaTools size={14} className="text-[#F5B83D]" /> }
                     ];
 
+                    const activeCategories = categories.filter((cat) => (rec[cat.key] || []).length > 0);
+
+                    if (activeCategories.length === 0) {
+                      return (
+                        <div className="p-6 bg-[#0D0F12] border border-[#292D33] rounded-2xl text-center text-[#A7ADB7] text-xs">
+                          No additional missing skills recommendations for this profile.
+                        </div>
+                      );
+                    }
+
                     return (
                       <div className="grid grid-cols-1 gap-3">
-                        {categories.map((cat) => {
+                        {activeCategories.map((cat) => {
                           const items = rec[cat.key] || [];
                           return (
                             <div key={cat.key} className="p-3.5 bg-[#0D0F12] border border-[#292D33] rounded-xl space-y-2">
@@ -794,15 +836,11 @@ export default function ResumeImprovement() {
                                 <span className="text-[10px] text-[#A7ADB7] font-mono">({items.length})</span>
                               </div>
                               <div className="flex flex-wrap gap-1.5">
-                                {items.length === 0 ? (
-                                  <span className="text-[#6F7682] text-xs italic">None listed</span>
-                                ) : (
-                                  items.map((item, iIdx) => (
-                                    <span key={iIdx} className="px-2.5 py-1 rounded-lg bg-[#08090B] border border-[#292D33] text-[#F5F5F5] text-xs font-medium shadow-sm">
-                                      + {item}
-                                    </span>
-                                  ))
-                                )}
+                                {items.map((item, iIdx) => (
+                                  <span key={iIdx} className="px-2.5 py-1 rounded-lg bg-[#08090B] border border-[#292D33] text-[#F5F5F5] text-xs font-medium shadow-sm">
+                                    + {item}
+                                  </span>
+                                ))}
                               </div>
                             </div>
                           );

@@ -119,7 +119,11 @@ const SECTION_MAP = {
     'personal summary','professional profile','career profile','personal statement',
     'career objective','objective','about me','about','profile','overview',
     'introduction','professional overview','bio','background','summary of qualifications',
-    'career overview','personal profile',
+    'qualifications summary','career overview','personal profile','profile statement',
+    'executive profile','career goal','professional bio','synopsis','brief overview',
+    'career aim','statement of purpose','candidature summary','core qualifications',
+    'summary statement','profile & summary','professional summary & objective','profile objective',
+    'professional background summary'
   ],
   experience: [
     'experience','work experience','professional experience','employment history',
@@ -210,8 +214,8 @@ function cleanText(raw) {
  */
 function normaliseHeading(line) {
   return line
-    .replace(/^[\s•▪■▶►*\-=|#>◆◇→●★]+/, '')
-    .replace(/[:;.\s]+$/, '')
+    .replace(/^[\s•▪■▶►*\-=|#>◆◇→●★_~]+/, '')
+    .replace(/[:;.\s\-–—|]+$/, '')
     .replace(/[^a-zA-Z0-9\s&'/]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
@@ -222,22 +226,39 @@ function normaliseHeading(line) {
  * Returns the section key if the line is a recognised section heading,
  * otherwise returns null.
  *
- * Heuristic: the normalised line must be ≤ 60 chars and must not look
- * like a bullet point or sentence (no terminating period/! after text).
+ * Heuristic: the normalised line must be ≤ 80 chars and must not look
+ * like a sentence (no terminating period/! after text).
  */
 function detectSection(line) {
-  if (!line || line.trim().length < 2 || line.trim().length > 80) return null;
+  if (!line || line.trim().length < 2) return null;
 
-  const norm = normaliseHeading(line);
-  if (!norm || norm.length < 2) return null;
+  const trimmed = line.trim();
+  if (trimmed.length > 90) return null;
 
-  // Exact match
-  if (ALIAS_LOOKUP.has(norm)) return ALIAS_LOOKUP.get(norm);
+  // 1. Direct normalise heading check
+  const norm = normaliseHeading(trimmed);
+  if (norm && norm.length >= 2) {
+    if (ALIAS_LOOKUP.has(norm)) return ALIAS_LOOKUP.get(norm);
 
-  // Prefix match (allows trailing short suffix like " (2023)")
-  for (const [alias, section] of ALIAS_LOOKUP.entries()) {
-    if (norm.length <= alias.length + 15 && norm.startsWith(alias)) {
-      return section;
+    for (const [alias, section] of ALIAS_LOOKUP.entries()) {
+      if (norm.length <= alias.length + 15 && norm.startsWith(alias)) {
+        return section;
+      }
+    }
+  }
+
+  // 2. Check if line starts with a section heading before a delimiter (colon, dash, pipe)
+  // e.g. "Summary: Experienced software engineer...", "Skills - Python, Java...", "Profile | Full Stack Developer"
+  const delimiterMatch = trimmed.match(/^([^:\-–—|•]{2,35})[:\-–—|]\s*(.+)$/);
+  if (delimiterMatch) {
+    const prefix = normaliseHeading(delimiterMatch[1]);
+    if (prefix && ALIAS_LOOKUP.has(prefix)) {
+      return ALIAS_LOOKUP.get(prefix);
+    }
+    for (const [alias, section] of ALIAS_LOOKUP.entries()) {
+      if (prefix && prefix.length <= alias.length + 10 && prefix.startsWith(alias)) {
+        return section;
+      }
     }
   }
 
@@ -278,12 +299,12 @@ function segmentSections(cleanedText) {
       currentSection = detected;
       headerFinished = true;
 
-      // Handle "SKILLS: React, Node.js, ..." on the same line as the heading
-      const colonIdx = trimmed.indexOf(':');
-      if (colonIdx > -1) {
-        const afterColon = trimmed.slice(colonIdx + 1).trim();
-        if (afterColon.length > 2) {
-          buckets[detected].push(afterColon);
+      // Handle "SKILLS: React, Node.js, ..." or "Summary: Passionate developer..." on the same line
+      const delimiterMatch = trimmed.match(/^[^:\-–—|]{2,35}[:\-–—|]\s*(.+)$/);
+      if (delimiterMatch && delimiterMatch[1]) {
+        const afterDelimiter = delimiterMatch[1].trim();
+        if (afterDelimiter.length > 1) {
+          buckets[detected].push(afterDelimiter);
         }
       }
       continue;
@@ -293,7 +314,6 @@ function segmentSections(cleanedText) {
     if (!headerFinished) {
       buckets.header.push(trimmed);
       // Stop treating lines as header once we've seen enough contact lines
-      // (contact blocks are rarely more than 6–8 lines)
       if (buckets.header.length >= 10) headerFinished = true;
       continue;
     }
@@ -1060,25 +1080,42 @@ function extractLanguages(langLines, fallbackText) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function extractSummary(summaryLines, allLines) {
-  if (summaryLines.length > 0) {
-    return summaryLines.join(' ').replace(/\s+/g, ' ').trim();
+  if (Array.isArray(summaryLines) && summaryLines.length > 0) {
+    const text = summaryLines.join(' ').replace(/\s+/g, ' ').trim();
+    if (text.length > 10) return text;
   }
 
-  // Heuristic fallback: collect long descriptive lines near the top
+  // Heuristic fallback: collect introductory descriptive sentences/paragraphs near the top
   const candidates = [];
-  let seenSection = false;
 
-  for (let i = 0; i < Math.min(20, allLines.length); i++) {
+  for (let i = 0; i < Math.min(25, allLines.length); i++) {
     const line = allLines[i].trim();
     if (!line) continue;
-    if (detectSection(line)) { seenSection = true; break; }
+
+    // If we reached a major structural non-summary section (skills, experience, education, projects), stop scanning
+    const sec = detectSection(line);
+    if (sec && sec !== 'summary') {
+      break;
+    }
+    if (sec === 'summary') {
+      continue;
+    }
+
+    // Skip contact info, emails, phones, URLs, links
     if (RE_EMAIL.test(line) || RE_PHONE.test(line)) continue;
-    if (/https?:\/\/|linkedin|github|@/i.test(line)) continue;
-    if (line.length > 40) candidates.push(line);
-    if (candidates.length >= 4) break;
+    if (/https?:\/\/|linkedin\.com|github\.com|portfolio|behance|dribbble|@/i.test(line)) continue;
+    if (line.length < 25) continue;
+
+    // Skip if line looks like a raw list of skills (e.g. "React, Node.js, Python, Java, Docker")
+    if (line.split(',').length >= 4 && !line.includes('.')) continue;
+    // Skip if line looks like degree or education
+    if (RE_DEGREE.test(line) && line.length < 50) continue;
+
+    candidates.push(line);
+    if (candidates.length >= 6) break;
   }
 
-  if (!seenSection && candidates.length > 0) {
+  if (candidates.length > 0) {
     return candidates.join(' ').replace(/\s+/g, ' ').trim();
   }
 

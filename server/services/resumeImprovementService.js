@@ -7,25 +7,245 @@ import { parseAndSaveResume } from './resumeParserService.js';
 dotenv.config();
 
 /**
- * Generate fallback AI improved resume payload if Gemini API key is missing or fails
+ * Helper to extract any available professional summary / profile text from parsed resume data
  */
-function generateFallbackImprovement(parsed, options = {}) {
-  const { targetJobDescription = '', experienceLevel = 'Experienced' } = options;
-  const rawSkills = parsed.skills || [];
+export const getCandidateSummary = (parsedObj) => {
+  if (!parsedObj || typeof parsedObj !== 'object') return '';
+  const candidates = [
+    parsedObj.summary,
+    parsedObj.professionalSummary,
+    parsedObj.professional_summary,
+    parsedObj.profile,
+    parsedObj.objective,
+    parsedObj.about,
+    parsedObj.bio
+  ];
+  for (const c of candidates) {
+    if (typeof c === 'string' && c.trim().length > 0) {
+      return c.trim();
+    }
+  }
+  return '';
+};
 
-  // Summary improvement fallback logic
-  const isFresher = (experienceLevel || '').toLowerCase() === 'fresher' || (parsed.experience?.length || 0) === 0;
+/**
+ * Helper to extract all existing skills present in the resume
+ */
+export const getExistingSkillsList = (parsedObj) => {
+  if (!parsedObj || typeof parsedObj !== 'object') return [];
+  const list = [
+    ...(Array.isArray(parsedObj.skills) ? parsedObj.skills : []),
+    ...(Array.isArray(parsedObj.technicalSkills) ? parsedObj.technicalSkills : []),
+    ...(Array.isArray(parsedObj.softSkills) ? parsedObj.softSkills : []),
+    ...((Array.isArray(parsedObj.projects) ? parsedObj.projects : []).flatMap((p) =>
+      Array.isArray(p?.technologies) ? p.technologies : []
+    ))
+  ];
 
-  let improvedSummary = isFresher
-    ? `Highly motivated and detail-oriented Computer Science professional with a strong foundation in modern software engineering principles, full-stack application development, and problem solving. Demonstrated hands-on expertise in building responsive web applications using ${rawSkills.slice(0, 4).join(', ') || 'React, Node.js, and modern JavaScript'}. Eager to leverage technical skills, quick learning capabilities, and collaborative mindset to contribute effectively to high-impact development projects.`
-    : `Results-driven Software Engineer with extensive experience in designing, building, and deploying scalable web applications and distributed systems. Proficient across the full software lifecycle with specialized expertise in ${rawSkills.slice(0, 5).join(', ') || 'JavaScript, MERN Stack, and Cloud Architectures'}. Proven track record of optimizing application performance, implementing robust API endpoints, and delivering business value through clean, maintainable code.`;
+  return Array.from(
+    new Set(
+      list
+        .filter((s) => typeof s === 'string' && s.trim().length > 0)
+        .map((s) => s.trim())
+    )
+  );
+};
 
-  if (targetJobDescription && targetJobDescription.trim().length > 10) {
-    improvedSummary += ` Specifically aligned with target role requirements emphasizing system scalability, clean architecture, and modern industry best practices.`;
+/**
+ * Normalise skill string to base alphanumeric token for comparison
+ */
+export const normalizeSkillKey = (skill) => {
+  if (!skill || typeof skill !== 'string') return '';
+  return skill
+    .toLowerCase()
+    .replace(/\.js\b|\bjs\b|\.ts\b|\bts\b|\bframework\b|\blibrary\b|\btechnologies\b|\btools\b|\bplatform\b|\bcontainerization\b|\bpipelines?\b|\bactions\b/gi, '')
+    .replace(/[^a-z0-9+#]/g, '')
+    .trim();
+};
+
+// Canonical equivalences to catch variations (e.g. React.js = React, Git = GitHub = GitHub Actions, Node.js = Node)
+const SKILL_CANONICAL_MAP = {
+  js: 'javascript',
+  javascript: 'javascript',
+  ts: 'typescript',
+  typescript: 'typescript',
+  react: 'react',
+  reactjs: 'react',
+  node: 'node',
+  nodejs: 'node',
+  express: 'express',
+  expressjs: 'express',
+  next: 'nextjs',
+  nextjs: 'nextjs',
+  vue: 'vue',
+  vuejs: 'vue',
+  angular: 'angular',
+  angularjs: 'angular',
+  git: 'git',
+  github: 'git',
+  gitlab: 'git',
+  githubactions: 'git',
+  gitactions: 'git',
+  aws: 'aws',
+  amazonwebservices: 'aws',
+  gcp: 'gcp',
+  googlecloud: 'gcp',
+  googlecloudplatform: 'gcp',
+  azure: 'azure',
+  msazure: 'azure',
+  mongo: 'mongodb',
+  mongodb: 'mongodb',
+  postgres: 'postgresql',
+  postgresql: 'postgresql',
+  tailwind: 'tailwindcss',
+  tailwindcss: 'tailwindcss',
+  docker: 'docker',
+  dockercontainerization: 'docker',
+  k8s: 'kubernetes',
+  kubernetes: 'kubernetes',
+  rest: 'restapi',
+  restapi: 'restapi',
+  restfulapi: 'restapi',
+  restfulapis: 'restapi',
+  graphql: 'graphql',
+  cicd: 'cicd',
+  cicdpipelines: 'cicd',
+  python: 'python',
+  py: 'python',
+  java: 'java',
+  c: 'c',
+  cpp: 'cpp',
+  csharp: 'csharp',
+  flutter: 'flutter',
+  dart: 'dart',
+  figma: 'figma',
+  photoshop: 'photoshop',
+  linux: 'linux',
+  html: 'html',
+  html5: 'html',
+  css: 'css',
+  css3: 'css',
+  communication: 'communication',
+  problemsolving: 'problemsolving',
+  teamwork: 'teamwork',
+  collaboration: 'teamwork',
+  leadership: 'leadership'
+};
+
+export const getCanonicalSkillKey = (skill) => {
+  const norm = normalizeSkillKey(skill);
+  return SKILL_CANONICAL_MAP[norm] || norm;
+};
+
+/**
+ * Check if candidate already has a given skill or near-duplicate
+ */
+export const isSkillAlreadyPresent = (candidateSkill, existingCanonicalSet) => {
+  if (!candidateSkill || typeof candidateSkill !== 'string') return true;
+  const canonical = getCanonicalSkillKey(candidateSkill);
+  if (!canonical || canonical.length < 1) return true;
+
+  if (existingCanonicalSet.has(canonical)) return true;
+
+  // Substring / prefix matching for multi-word or compound skills
+  for (const existing of existingCanonicalSet) {
+    if (existing === canonical) return true;
+    if (canonical.length >= 3 && existing.length >= 3) {
+      if (
+        existing.includes(canonical) ||
+        canonical.includes(existing) ||
+        existing.startsWith(canonical) ||
+        canonical.startsWith(existing)
+      ) {
+        return true;
+      }
+    }
   }
 
-  // Experience bullet points enhancer fallback
-  // New parser outputs: { company, role, period, bulletPoints[] }
+  return false;
+};
+
+/**
+ * Strict filtering & capping of recommended skills (Max 8-12 total, no duplicates of existing skills)
+ */
+export const filterAndLimitRecommendations = (recommendedObj, existingSkillsList) => {
+  const existingSet = new Set(
+    (existingSkillsList || []).map((s) => getCanonicalSkillKey(s)).filter(Boolean)
+  );
+
+  const categories = [
+    'technicalSkills',
+    'softSkills',
+    'frameworks',
+    'cloudTechnologies',
+    'devOpsTools'
+  ];
+
+  const seenInRecommendations = new Set();
+  const filtered = {
+    technicalSkills: [],
+    softSkills: [],
+    frameworks: [],
+    cloudTechnologies: [],
+    devOpsTools: []
+  };
+
+  let totalCount = 0;
+  const MAX_RECOMMENDATIONS = 12;
+
+  // Distribute recommendations cleanly across categories
+  for (const cat of categories) {
+    const list = Array.isArray(recommendedObj?.[cat]) ? recommendedObj[cat] : [];
+    for (const item of list) {
+      if (totalCount >= MAX_RECOMMENDATIONS) break;
+      if (!item || typeof item !== 'string') continue;
+
+      const trimmed = item.trim();
+      if (!trimmed || trimmed.length < 2 || trimmed.length > 45) continue;
+
+      const canonical = getCanonicalSkillKey(trimmed);
+      if (!canonical) continue;
+
+      if (isSkillAlreadyPresent(trimmed, existingSet)) continue;
+      if (seenInRecommendations.has(canonical)) continue;
+
+      seenInRecommendations.add(canonical);
+      filtered[cat].push(trimmed);
+      totalCount++;
+
+      // Max 3 items per category to maintain balance
+      if (filtered[cat].length >= 3) break;
+    }
+  }
+
+  return filtered;
+};
+
+/**
+ * Generate fallback AI improved resume payload if Gemini API key is missing or fails
+ */
+export function generateFallbackImprovement(parsed, options = {}) {
+  const { targetJobDescription = '', experienceLevel = 'Experienced', industry = 'Software Engineering' } = options;
+  const existingSkills = getExistingSkillsList(parsed);
+  const origSummary = getCandidateSummary(parsed);
+  const isFresher = (experienceLevel || '').toLowerCase() === 'fresher' || (parsed.experience?.length || 0) === 0;
+
+  // 1. SUMMARY REFINEMENT: Grounded strictly in candidate's real data
+  let improvedSummary = '';
+  if (origSummary && origSummary.length > 15) {
+    // Enhance existing summary wording without fabricating facts
+    improvedSummary = isFresher
+      ? `${origSummary.replace(/\s+/g, ' ').trim()} Demonstrates strong foundational problem-solving abilities and enthusiasm for building scalable, high-quality software solutions.`
+      : `${origSummary.replace(/\s+/g, ' ').trim()} Specialized in architecting robust end-to-end software solutions, delivering clean maintainable code, and driving technical excellence across the development lifecycle.`;
+  } else {
+    // Synthesize from actual extracted skills and projects
+    const topSkills = existingSkills.slice(0, 5).join(', ') || 'modern software engineering principles';
+    improvedSummary = isFresher
+      ? `Dedicated and results-oriented Computer Science professional with hands-on proficiency in ${topSkills}. Skilled in developing responsive user interfaces and modular backend components. Seeking to leverage engineering fundamentals and strong collaboration skills in an entry-level ${industry || 'Software Engineering'} position.`
+      : `Results-driven Software Engineer with demonstrated experience in designing and deploying full-stack web applications and services using ${topSkills}. Proven track record in collaborating across cross-functional teams to deliver reliable, production-grade solutions.`;
+  }
+
+  // 2. EXPERIENCE ENHANCEMENT: Action verbs and clear scope without fake metrics
   const improvedExperience = (parsed.experience || []).map((exp) => {
     const rawBullets = Array.isArray(exp.bulletPoints) && exp.bulletPoints.length > 0
       ? exp.bulletPoints
@@ -33,23 +253,23 @@ function generateFallbackImprovement(parsed, options = {}) {
         ? [exp.description]
         : typeof exp === 'string'
           ? [exp]
-          : ['Contributed to core product features and engineering excellence.'];
+          : ['Contributed to core application development and team engineering standards.'];
 
     const enhancedBullets = rawBullets.map((b) => {
-      let trimmed = (b || '').trim().replace(/^\s*[-•*]\s*/, '');
-      if (!trimmed) return 'Engineered scalable features using industry standard design patterns, improving system throughput and reliability.';
-      if (!/developed|engineered|designed|architected|optimized|implemented|spearheaded/i.test(trimmed)) {
-        trimmed = `Engineered and optimized ${trimmed.toLowerCase()}, enhancing system performance and user satisfaction across production workloads.`;
+      let trimmed = (b || '').trim().replace(/^[\s•▪\-*]+\s*/, '');
+      if (!trimmed) {
+        return 'Engineered scalable feature modules adhering to clean code architecture and industry design patterns.';
       }
-      if (!/\d+%|\d+x|\d+ms|million|thousand|users/i.test(trimmed)) {
-        trimmed += ' resulting in a 25% increase in operational efficiency and zero critical downtime.';
+      if (!/^(developed|engineered|designed|architected|optimized|implemented|spearheaded|streamlined|delivered|built)/i.test(trimmed)) {
+        trimmed = `Engineered and delivered ${trimmed.charAt(0).toLowerCase() + trimmed.slice(1)}`;
       }
+      if (!trimmed.endsWith('.')) trimmed += '.';
       return trimmed;
     });
 
     if (enhancedBullets.length === 0) {
       enhancedBullets.push(
-        `Architected and deployed responsive modules for ${typeof exp === 'object' ? (exp.company || 'production environment') : 'production environment'} utilizing ${rawSkills.slice(0, 3).join(', ') || 'modern frameworks'}, driving a 30% speed improvement in data processing.`
+        `Architected and deployed responsive feature modules for ${typeof exp === 'object' ? exp.company || 'production systems' : 'production systems'}, ensuring high code maintainability and test coverage.`
       );
     }
 
@@ -62,8 +282,7 @@ function generateFallbackImprovement(parsed, options = {}) {
     };
   });
 
-  // Projects improvement fallback
-  // New parser outputs: { title, description, technologies[], bulletPoints[], duration }
+  // 3. PROJECTS ENHANCEMENT: Technical clarity without fabricated claims
   const improvedProjects = (parsed.projects || []).map((proj) => {
     const rawBullets = Array.isArray(proj.bulletPoints) && proj.bulletPoints.length > 0
       ? proj.bulletPoints
@@ -74,47 +293,56 @@ function generateFallbackImprovement(parsed, options = {}) {
           : [];
 
     const enhancedBullets = rawBullets.map((b) => {
-      let trimmed = (b || '').trim().replace(/^\s*[-•*]\s*/, '');
-      if (!trimmed) return 'Developed and deployed high-performance application modules using modern state management and clean REST API endpoints.';
-      if (!/deployed|built|designed|implemented|integrated/i.test(trimmed)) {
-        trimmed = `Designed and built ${trimmed.toLowerCase()} with focus on maintainable clean code architecture and seamless user interface responsiveness.`;
+      let trimmed = (b || '').trim().replace(/^[\s•▪\-*]+\s*/, '');
+      if (!trimmed) {
+        return 'Designed and implemented full-stack application logic with modular components and clean RESTful API integration.';
       }
-      if (!/deployed|github|ci\/cd|cloud|docker/i.test(trimmed)) {
-        trimmed += ' and established automated build workflows for rapid production releases.';
+      if (!/^(built|designed|developed|implemented|architected|engineered|deployed|integrated)/i.test(trimmed)) {
+        trimmed = `Designed and implemented ${trimmed.charAt(0).toLowerCase() + trimmed.slice(1)}`;
       }
+      if (!trimmed.endsWith('.')) trimmed += '.';
       return trimmed;
     });
 
     if (enhancedBullets.length === 0) {
-      const projTitle = typeof proj === 'object' ? (proj.title || 'Full Stack Application') : 'Full Stack Application';
-      const projTech = typeof proj === 'object' ? (proj.technologies?.join(', ') || 'React, Node.js, and MongoDB') : 'React, Node.js, and MongoDB';
+      const projTitle = typeof proj === 'object' ? proj.title || 'Full Stack Application' : 'Full Stack Application';
       enhancedBullets.push(
-        `Built and published ${projTitle} using ${projTech}, supporting real-time data synchronization and responsive UI design.`
+        `Architected ${projTitle} focusing on clean state management, modular component design, and seamless data flow.`
       );
     }
 
     return {
-      title: (typeof proj === 'object' ? proj.title : proj) || 'MERN Stack Web Application',
-      description: (typeof proj === 'object' ? proj.description : '') || 'Full stack web application with real-time capabilities.',
+      title: (typeof proj === 'object' ? proj.title : proj) || 'Software Application',
+      description: (typeof proj === 'object' ? proj.description : '') || 'Full stack software application with modern UI and API integration.',
       bulletPoints: enhancedBullets,
-      technologies: (typeof proj === 'object' && proj.technologies?.length) ? proj.technologies : ['React', 'Node.js', 'Express', 'MongoDB', 'Tailwind CSS']
+      technologies: typeof proj === 'object' && Array.isArray(proj.technologies) && proj.technologies.length > 0
+        ? proj.technologies
+        : ['JavaScript', 'React', 'Node.js', 'REST APIs']
     };
   });
 
-  // Recommended Skills breakdown
-  const recommendedSkills = {
-    technicalSkills: Array.from(new Set([...rawSkills, 'TypeScript', 'GraphQL', 'RESTful APIs', 'Data Structures & Algorithms'])),
-    softSkills: ['Agile Team Collaboration', 'Problem Solving', 'Code Review & Mentorship', 'Technical Documentation', 'Cross-Functional Communication'],
-    frameworks: ['React.js', 'Node.js', 'Express.js', 'Next.js', 'Tailwind CSS'],
-    cloudTechnologies: ['AWS (S3, EC2)', 'Docker Containerization', 'Vercel / Render Deployment', 'MongoDB Atlas'],
-    devOpsTools: ['Git & GitHub Actions', 'CI/CD Pipelines', 'Jest / Vitest Unit Testing', 'Postman API Testing']
+  // 4. RECOMMENDED SKILLS: Dynamic selection of complementary MISSING skills filtered against resume
+  const candidateTechStr = existingSkills.join(' ').toLowerCase();
+
+  const domainPool = {
+    technicalSkills: ['TypeScript', 'RESTful API Architecture', 'GraphQL', 'System Design & Architecture', 'Data Structures & Algorithms', 'Microservices'],
+    softSkills: ['Agile & Scrum Methodologies', 'Code Review & Technical Mentorship', 'Technical Documentation', 'Cross-Functional Collaboration'],
+    frameworks: candidateTechStr.includes('python')
+      ? ['FastAPI', 'Django', 'PyTest', 'Celery']
+      : candidateTechStr.includes('flutter')
+        ? ['Bloc State Management', 'Provider', 'Dio HTTP', 'Riverpod']
+        : ['Next.js', 'Express.js', 'Tailwind CSS', 'Redux Toolkit', 'FastAPI'],
+    cloudTechnologies: ['AWS (S3, EC2, Lambda)', 'Docker Containerization', 'Firebase & Cloud Functions', 'MongoDB Atlas', 'Google Cloud Platform (GCP)'],
+    devOpsTools: ['Git & GitHub Actions', 'CI/CD Automated Pipelines', 'Jest / Vitest Testing', 'Postman API Testing', 'Kubernetes']
   };
 
+  const recommendedSkills = filterAndLimitRecommendations(domainPool, existingSkills);
+
   const optimizationNotes = [
-    'Transformed summary into an impact-oriented professional pitch with quantified focus.',
-    'Enhanced bullet points with strong action verbs (Engineered, Architected, Spearheaded) and performance metrics (25%+ efficiency boost).',
-    'Categorized recommended skills across Technical, Soft, Frameworks, Cloud, and DevOps domains for maximum recruiter appeal.',
-    targetJobDescription ? 'Tailored resume key terminology to mirror target job description requirements.' : 'Standardized formatting and section hierarchy to surpass modern ATS parsing thresholds.'
+    origSummary ? 'Refined professional summary for improved ATS keyword alignment while preserving your authentic background.' : 'Synthesized a targeted professional summary highlighting your core skills and project achievements.',
+    'Strengthened experience and project bullet points with action-driven verbs and clear technical scope.',
+    'Categorized relevant missing skills to strengthen your profile against modern industry requirements.',
+    'Standardized formatting and section hierarchy to surpass ATS parsing standards.'
   ];
 
   return {
@@ -146,15 +374,20 @@ export const improveFullResumeService = async (resumeId, userId, options = {}) =
     resume = await parseAndSaveResume(resumeId, false);
   }
 
+  const parsed = resume.parsedData || {};
+  const origSummary = getCandidateSummary(parsed);
+  const existingSkills = getExistingSkillsList(parsed);
+
   // Check MongoDB cache unless force regenerate
   if (!force) {
     const existing = await ResumeImprovement.findOne({ resumeId, userId });
     if (existing) {
       console.log(`ℹ️ [DEBUG] Found cached ResumeImprovement for resume ${resumeId}`);
-      if (resume.parsedData?.summary && (!existing.originalResume?.summary || existing.originalResume.summary.length === 0)) {
+      if (origSummary && (!existing.originalResume?.summary || existing.originalResume.summary.length === 0)) {
         existing.originalResume = {
           ...(existing.originalResume || {}),
-          summary: resume.parsedData.summary
+          summary: origSummary,
+          professionalSummary: origSummary
         };
         await existing.save();
       }
@@ -162,39 +395,47 @@ export const improveFullResumeService = async (resumeId, userId, options = {}) =
     }
   }
 
-  const parsed = resume.parsedData || {};
   const apiKey = process.env.GEMINI_API_KEY;
   let aiResult = null;
 
   if (apiKey && apiKey.trim().length > 10) {
     try {
       console.log(`🤖 [DEBUG] Calling Gemini API for AI Resume Improvement on resume ${resumeId}...`);
-      const promptText = `You are an elite Recruiter and AI Resume Optimization Expert.
-Your task is to take candidate resume details and produce an improved, ATS-optimized, metric-driven version.
+      const promptText = `You are an elite AI Resume Optimization Expert and Executive Recruiter.
+Analyze the candidate's authentic resume data and produce a refined, ATS-optimized version with STRICT FACTUAL INTEGRITY.
 
 Parameters:
-- Target Job Description: ${targetJobDescription || 'General Senior Software Developer / Tech Specialist'}
+- Target Role / Industry: ${industry || 'Software Engineering'}
 - Experience Level: ${experienceLevel}
-- Target Industry: ${industry}
+${targetJobDescription ? `- Target Job Description: ${targetJobDescription}` : ''}
 
-Input Candidate Data:
+Candidate Data (Extracted from uploaded resume):
 Name: ${parsed.fullName || 'Candidate'}
-Current Summary: ${parsed.summary || 'N/A'}
-Skills: ${JSON.stringify(parsed.skills || [])}
-Experience: ${JSON.stringify(parsed.experience || [])}
+Original Professional Summary: ${origSummary ? JSON.stringify(origSummary) : 'None provided in resume'}
+Existing Skills in Resume: ${JSON.stringify(existingSkills)}
+Work Experience: ${JSON.stringify(parsed.experience || [])}
 Projects: ${JSON.stringify(parsed.projects || [])}
 
-Instructions:
-1. Rewrite the professional summary into a high-impact, ATS-optimized pitch tailored to the candidate's level (${experienceLevel}).
-2. Rewrite work experience bullet points: start with strong action verbs (Engineered, Architected, Implemented, Optimized), add context, and include realistic quantified metrics (percentages, speed increases, volume).
-3. Enhance project bullet points with deployment details, modern tech stack highlights, and achievements.
-4. Provide structured skills recommendations categorized strictly into:
-   - technicalSkills (Array of strings)
-   - softSkills (Array of strings)
-   - frameworks (Array of strings)
-   - cloudTechnologies (Array of strings)
-   - devOpsTools (Array of strings)
-5. Provide concise optimization notes explaining key changes made.
+STRICT INTEGRITY RULES (DO NOT FABRICATE):
+1. FACTUAL INTEGRITY: Do NOT invent fake companies, fake jobs, fake projects, or fake technologies.
+2. NO FABRICATED METRICS: Do NOT invent arbitrary numbers, percentages, or metrics (e.g. do NOT invent "25% efficiency increase" or "30% latency reduction" unless explicitly stated in the candidate's original resume).
+3. PROFESSIONAL SUMMARY:
+   - If an Original Summary exists above, refine its flow, grammar, and ATS keyword presence while preserving the candidate's real profile.
+   - If no summary exists, generate a concise 2-3 sentence summary based ONLY on the candidate's actual extracted skills, projects, and domain.
+4. EXPERIENCE & PROJECTS:
+   - Enhance wording with strong action verbs (Architected, Engineered, Developed, Streamlined, Spearheaded, Implemented).
+   - Clarify technical scope and responsibilities without fabricating unverified achievements.
+5. RECOMMENDED SKILLS (CRITICAL):
+   - The candidate ALREADY possesses: ${JSON.stringify(existingSkills)}.
+   - Recommend ONLY 8 to 12 high-value, highly-relevant MISSING skills that logically complement the candidate's existing background and target role (${industry}).
+   - Do NOT recommend any skill that is already in the candidate's resume (or any synonym/alternate spelling of it).
+   - Categorize recommendations into:
+     * technicalSkills (2-3 missing skills)
+     * softSkills (1-2 missing soft/leadership skills)
+     * frameworks (2-3 missing frameworks/libraries)
+     * cloudTechnologies (1-2 missing cloud/infrastructure tools)
+     * devOpsTools (1-2 missing DevOps/CI/CD tools)
+6. OPTIMIZATION NOTES: Provide 3-4 concise bullet points explaining key enhancements made.
 
 Return ONLY a valid JSON object matching this EXACT structure with no markdown backticks:
 {
@@ -204,7 +445,7 @@ Return ONLY a valid JSON object matching this EXACT structure with no markdown b
       "company": "...",
       "role": "...",
       "description": "...",
-      "bulletPoints": ["bullet 1", "bullet 2"],
+      "bulletPoints": ["enhanced bullet 1", "enhanced bullet 2"],
       "period": "..."
     }
   ],
@@ -212,7 +453,7 @@ Return ONLY a valid JSON object matching this EXACT structure with no markdown b
     {
       "title": "...",
       "description": "...",
-      "bulletPoints": ["bullet 1", "bullet 2"],
+      "bulletPoints": ["enhanced bullet 1", "enhanced bullet 2"],
       "technologies": ["tech1", "tech2"]
     }
   ],
@@ -223,12 +464,11 @@ Return ONLY a valid JSON object matching this EXACT structure with no markdown b
     "cloudTechnologies": ["..."],
     "devOpsTools": ["..."]
   },
-  "optimizationNotes": ["note 1", "note 2"]
+  "optimizationNotes": ["note 1", "note 2", "note 3"]
 }`;
 
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey.trim()}`;
       
-      // Controller with timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 12000);
 
@@ -263,11 +503,15 @@ Return ONLY a valid JSON object matching this EXACT structure with no markdown b
   }
 
   if (!aiResult || !aiResult.improvedSummary) {
-    aiResult = generateFallbackImprovement(parsed, { targetJobDescription, experienceLevel });
+    aiResult = generateFallbackImprovement(parsed, { targetJobDescription, experienceLevel, industry });
+  } else {
+    // Post-filter Gemini recommended skills to guarantee strict deduplication and capping
+    aiResult.recommendedSkills = filterAndLimitRecommendations(
+      aiResult.recommendedSkills,
+      existingSkills
+    );
   }
 
-  // Construct final MongoDB document payload
-  // Handle both new structured objects and legacy flat string arrays
   const normalizeExperienceForStorage = (expArr) =>
     (expArr || []).map((exp) =>
       typeof exp === 'object' && exp !== null
@@ -294,8 +538,9 @@ Return ONLY a valid JSON object matching this EXACT structure with no markdown b
     );
 
   const originalResumePayload = {
-    summary: parsed.summary || '',
-    skills: parsed.skills || [],
+    summary: origSummary || parsed.summary || '',
+    professionalSummary: origSummary || parsed.summary || '',
+    skills: existingSkills,
     experience: normalizeExperienceForStorage(parsed.experience),
     projects: normalizeProjectsForStorage(parsed.projects)
   };
@@ -335,11 +580,15 @@ export const rewriteSummaryService = async ({ currentSummary = '', experienceLev
 
   if (apiKey && apiKey.trim().length > 10) {
     try {
-      const promptText = `Rewrite the following resume summary into a compelling, ATS-friendly professional summary.
+      const promptText = `Rewrite the following resume summary into a compelling, ATS-friendly professional summary with strict factual integrity.
 Target Level: ${experienceLevel} (${isFresher ? 'Entry Level / Fresher' : 'Experienced Professional'})
 Target Role: ${targetRole || 'Software Engineer'}
 Skills: ${JSON.stringify(skills)}
 Current Summary: "${currentSummary}"
+
+Rules:
+- Preserve genuine background and skills without adding unverified claims or fake years of experience.
+- Enhance professional tone, action verbs, and ATS readability.
 
 Return ONLY valid JSON with this format:
 {
@@ -371,10 +620,12 @@ Return ONLY valid JSON with this format:
   }
 
   // Fallback summary generator
-  const skillsText = skills.length > 0 ? skills.slice(0, 4).join(', ') : 'modern tech stacks and software development';
-  const fallbackSummary = isFresher
-    ? `Ambitious and results-oriented Computer Science graduate with strong hands-on proficiency in ${skillsText}. Adept at designing clean software solutions, building responsive user interfaces, and applying computer science fundamentals to real-world engineering challenges. Seeking an entry-level ${targetRole || 'Software Development'} position to add value from day one.`
-    : `Performance-focused ${targetRole || 'Software Engineer'} with hands-on expertise in ${skillsText}. Specialized in architecting scalable web applications, optimizing database performance, and delivering robust full-stack features. Demonstrated success in collaborating across teams to ship clean, maintainable code on tight deadlines.`;
+  const skillsText = Array.isArray(skills) && skills.length > 0 ? skills.slice(0, 4).join(', ') : 'modern software engineering principles';
+  const fallbackSummary = currentSummary && currentSummary.trim().length > 15
+    ? `${currentSummary.trim()} Demonstrates strong technical foundation in ${skillsText} with focus on clean code and robust software delivery.`
+    : isFresher
+      ? `Ambitious Computer Science professional with hands-on proficiency in ${skillsText}. Adept at designing clean software solutions and applying computer science fundamentals to real-world engineering challenges. Seeking an entry-level ${targetRole || 'Software Development'} position.`
+      : `Performance-focused ${targetRole || 'Software Engineer'} with hands-on expertise in ${skillsText}. Specialized in architecting scalable web applications and delivering robust full-stack features with focus on maintainable, clean code.`;
 
   return {
     improvedSummary: fallbackSummary,
@@ -390,11 +641,15 @@ export const rewriteProjectService = async ({ title = '', description = '', tech
 
   if (apiKey && apiKey.trim().length > 10) {
     try {
-      const promptText = `Enhance the following project showcase details into high-impact ATS bullet points.
+      const promptText = `Enhance the following project showcase details into high-impact ATS bullet points with strict factual integrity.
 Project Title: ${title}
 Description: ${description}
 Technologies: ${JSON.stringify(technologies)}
 Bullet Points: ${JSON.stringify(bulletPoints)}
+
+Rules:
+- Do NOT fabricate fake metrics or speed numbers.
+- Start bullet points with strong action verbs (Architected, Engineered, Implemented, Streamlined).
 
 Return ONLY valid JSON with this format:
 {
@@ -428,11 +683,11 @@ Return ONLY valid JSON with this format:
   }
 
   // Fallback project enhancer
-  const techStr = technologies.length > 0 ? technologies.join(', ') : 'MERN Stack & Cloud Tools';
+  const techStr = technologies.length > 0 ? technologies.join(', ') : 'Software Tools & Frameworks';
   const enhancedBullets = (bulletPoints.length > 0 ? bulletPoints : [description]).map((b) => {
-    let cleanB = (b || '').replace(/^\s*[-•*]\s*/, '').trim();
-    if (!cleanB) cleanB = `Architected ${title || 'web project'} backend services and frontend interfaces.`;
-    return `Engineered ${cleanB.toLowerCase()} utilizing ${techStr}, improving execution speed by 35% and ensuring seamless cross-browser accessibility.`;
+    let cleanB = (b || '').replace(/^[\s•▪\-*]+\s*/, '').trim();
+    if (!cleanB) cleanB = `Architected ${title || 'software project'} core modules and component interfaces.`;
+    return `Engineered ${cleanB.charAt(0).toLowerCase() + cleanB.slice(1)} utilizing ${techStr}, ensuring high maintainability and robust error handling.`;
   });
 
   return {
@@ -451,11 +706,15 @@ export const rewriteExperienceService = async ({ company = '', role = '', descri
 
   if (apiKey && apiKey.trim().length > 10) {
     try {
-      const promptText = `Enhance the following work experience details into quantified, action-verb led ATS bullet points.
+      const promptText = `Enhance the following work experience details into action-verb led ATS bullet points with strict factual accuracy.
 Company: ${company}
 Role: ${role}
 Description: ${description}
 Bullet Points: ${JSON.stringify(bulletPoints)}
+
+Rules:
+- Do NOT fabricate arbitrary numbers or percentage claims.
+- Enhance wording with action verbs (Spearheaded, Engineered, Architected, Delivered).
 
 Return ONLY valid JSON with this format:
 {
@@ -489,13 +748,13 @@ Return ONLY valid JSON with this format:
 
   // Fallback experience enhancer
   const enhancedBullets = (bulletPoints.length > 0 ? bulletPoints : [description]).map((b) => {
-    let cleanB = (b || '').replace(/^\s*[-•*]\s*/, '').trim();
+    let cleanB = (b || '').replace(/^[\s•▪\-*]+\s*/, '').trim();
     if (!cleanB) cleanB = `Developed core feature modules for ${company || 'production systems'}.`;
-    return `Spearheaded ${cleanB.toLowerCase()}, enhancing application throughput by 30% and reducing API request latency across high-traffic endpoints.`;
+    return `Spearheaded ${cleanB.charAt(0).toLowerCase() + cleanB.slice(1)}, delivering reliable feature implementations and maintaining high code standards.`;
   });
 
   return {
-    improvedCompany: company || 'Tech Corporation',
+    improvedCompany: company || 'Technology Corporation',
     improvedRole: role || 'Software Developer',
     improvedBulletPoints: enhancedBullets
   };
@@ -519,11 +778,15 @@ export const getStoredImprovementsService = async (resumeId, userId) => {
     resume = await parseAndSaveResume(resumeId, false);
   }
 
+  const parsed = resume.parsedData || {};
+  const origSummary = getCandidateSummary(parsed);
+
   const improvement = await ResumeImprovement.findOne({ resumeId, userId });
-  if (improvement && resume.parsedData?.summary && (!improvement.originalResume?.summary || improvement.originalResume.summary.length === 0)) {
+  if (improvement && origSummary && (!improvement.originalResume?.summary || improvement.originalResume.summary.length === 0)) {
     improvement.originalResume = {
       ...(improvement.originalResume || {}),
-      summary: resume.parsedData.summary
+      summary: origSummary,
+      professionalSummary: origSummary
     };
     await improvement.save();
   }
